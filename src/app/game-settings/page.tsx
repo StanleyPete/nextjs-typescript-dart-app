@@ -1,11 +1,11 @@
 'use client'
 import React, { useState} from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-interface GameSettingsProps {
-   gameMode: string
-}
-
-const GameSettings: React.FC<GameSettingsProps> = ({ gameMode }) => {
+const GameSettings = () => {
+   const router = useRouter()
+   const searchParams = useSearchParams() 
+   const gameMode = searchParams.get('mode') || 'default'
    const [numberOfPlayers, setNumberOfPlayers] = useState(2)
    const [playerNames, setPlayerNames] = useState<string[]>(Array(2).fill(''))
    const [numberOfLegs, setNumberOfLegs] = useState(3)
@@ -20,7 +20,7 @@ const GameSettings: React.FC<GameSettingsProps> = ({ gameMode }) => {
    // Player name update handler
    const handleNameChange = (index: number, value: string) => {
       const newNames = [...playerNames]
-      newNames[index] = value // player name update for particular index
+      newNames[index] = value // Player name update for particular index
       setPlayerNames(newNames)
    }
 
@@ -68,8 +68,10 @@ const GameSettings: React.FC<GameSettingsProps> = ({ gameMode }) => {
             </select>
          </div>
          
-         
-         <button className='game-start'>To the game!</button>
+         <div className='game-settings-buttons'>
+            <button className='game-start'>To the game!</button>
+            <button onClick={() => router.back()} className='go-back'>Go back</button>
+         </div>
       </div>
    )
 }
