@@ -1,13 +1,14 @@
 'use client'
-import React, { useState} from 'react'
+import React, { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 
 const GameSettings = () => {
    const router = useRouter()
    const searchParams = useSearchParams() 
-   const gameMode = searchParams.get('mode') || 'default'
-   const [numberOfPlayers, setNumberOfPlayers] = useState(2)
+   const gameMode = searchParams.get('mode')! //exclamation point added (non-null assertion used when mode never returns null or undefined)
    const [playerNames, setPlayerNames] = useState<string[]>(Array(2).fill(''))
+   const [numberOfPlayers, setNumberOfPlayers] = useState(2)
    const [numberOfLegs, setNumberOfLegs] = useState(3)
 
    //Number of players handler
@@ -29,19 +30,25 @@ const GameSettings = () => {
       setNumberOfLegs(Number(event.target.value))
    }
 
+   // Preparing players data and generating URL
+   const players = playerNames.map(name => ({ name, score: gameMode, lastThrow: 0, average: 0 }))
+   const playersJson = encodeURIComponent(JSON.stringify(players))
+   const gameUrl = `/game?mode=${gameMode}&players=${playersJson}`
+
    return (
       <div className='game-settings'>
          <h2>{gameMode}</h2>
 
-         {/* Number of players selection */}
+         {/* Selecting number of players section */}
          <label htmlFor="numberOfPlayers">Select number of players:</label>
-         <select className='number-of-players' id="numberOfPlayers" value={numberOfPlayers} onChange={handleNumberOfPlayers}>
+         <select className='select-element number-of-players' id="numberOfPlayers" value={numberOfPlayers} onChange={handleNumberOfPlayers}>
             <option value={1}>1</option>
             <option value={2}>2</option>
             <option value={3}>3</option>
             <option value={4}>4</option>
          </select>
 
+         {/* Player names input section */}
          <div>
             {Array.from({ length: numberOfPlayers }).map((_, index) => (
                <div key={index}>
@@ -56,10 +63,10 @@ const GameSettings = () => {
             ))}
          </div>
          
-         {/* Number of legs selection */}
+         {/* Selecting number of legs section */}
          <div>
             <label htmlFor="numberOfLegs">Select number of legs to win:</label>
-            <select className='number-of-legs' id="numberOfLegs" value={numberOfLegs} onChange={handleNumberOfLegs}>
+            <select className='select-element number-of-legs' id="numberOfLegs" value={numberOfLegs} onChange={handleNumberOfLegs}>
                <option value={1}>1</option>
                <option value={2}>2</option>
                <option value={3}>3</option>
@@ -68,9 +75,12 @@ const GameSettings = () => {
             </select>
          </div>
          
+         {/* Buttons section */}
          <div className='game-settings-buttons'>
-            <button className='game-start'>To the game!</button>
-            <button onClick={() => router.back()} className='go-back'>Go back</button>
+            <Link href={gameUrl}>
+               <button className='game-start'>To the game!</button>
+            </Link>
+            <button className='go-back' onClick={() => router.back()}>Go back</button>
          </div>
       </div>
    )
