@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Player {
@@ -7,6 +7,13 @@ interface Player {
    pointsLeft: number
    lastThrow: number
    average: number
+}
+
+interface HistoryEntry {
+   historyPlayerIndex: number
+   historyPointsLeft: number
+   historyLastThrow: number
+   historyLastAverage: number
 }
 
 const Game = () => {
@@ -24,6 +31,9 @@ const Game = () => {
       average: 0,    // Initial average
       pointsLeft: player.pointsLeft // Initial pointsLeft sent via URL
    })))
+
+   // State to track history of moves
+   const [history, setHistory] = useState<HistoryEntry[]>([])
    // CurrentThrow state declared in order to temporarily keep score filled in the score input
    const [currentThrow, setCurrentThrow] = useState<number>(0)
    // CurrentPlayerIndex state declared in order to keep players index who currently plays
@@ -42,9 +52,20 @@ const Game = () => {
       // PointsLeft and lastThorw update:
       currentPlayer.lastThrow = currentThrow
       currentPlayer.pointsLeft -= currentThrow
-
+      
+      // Creating newHistoryEntry
+      const newHistoryEntry: HistoryEntry = {
+         historyPlayerIndex: currentPlayerIndex,
+         historyPointsLeft: currentPlayer.pointsLeft + currentThrow, // Points left before the throw
+         historyLastThrow: currentThrow, // The score just submitted
+         historyLastAverage: 0
+      }
+     
+      // Update history state
+      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+    
       setPlayers(gamePlayers)
-
+      
       /* 
       Switch to another player: 
       //Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
@@ -52,11 +73,12 @@ const Game = () => {
       */
       const nextPlayerIndex = (currentPlayerIndex + 1) % players.length 
       setCurrentPlayerIndex(nextPlayerIndex)
-
+     
       // Resetting input value
       setCurrentThrow(0)
    }
-
+   
+   
    // Restart game handler
    const handleRestartGame = () => {
       setPlayers(urlPlayers.map(player => ({
@@ -67,7 +89,45 @@ const Game = () => {
       })))
       setCurrentPlayerIndex(0) // Reset to the first player
       setCurrentThrow(0) // Reset current throw input
+      setHistory([])
    }
+
+   // Undo handler
+   const handleUndo = () => {
+      if(history.length === 0) return
+   
+      const lastEntry = history[history.length - 1] // last history entry
+      const previousLastEntry = history[history.length - 3] // previous to last history entry
+      const gamePlayers = [...players]
+
+      // Update current player's state
+      const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+
+      // Restoring pointsLeft
+      currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
+
+      // Restoring lastThrow
+      if(history.length <= 2){
+         currentPlayer.lastThrow = 0// Restore pointsLeft
+      } else {
+         currentPlayer.lastThrow = previousLastEntry.historyLastThrow
+      }
+      
+      // Removing last history entry
+      setHistory(prevHistory => prevHistory.slice(0, -1))
+
+      //Updating players state
+      setPlayers(gamePlayers) 
+
+      // Setting the last player who played
+      setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+   }
+
+   //Added for tests
+   useEffect(() => {
+      console.log(history)
+   }, [history])
+   
 
    return (
       <div>
@@ -82,8 +142,7 @@ const Game = () => {
          </ul>
 
          {/*Score section:*/}
-         <div>
-            
+         <div>  
             <label>
                <p>Current player: {players[currentPlayerIndex].name}</p>
                <input
@@ -93,6 +152,7 @@ const Game = () => {
                />
             </label>
             <button onClick={handleSubmitThrow}>Submit Score</button>
+            <button onClick={handleUndo}>Undo</button>
          </div>
 
          <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
