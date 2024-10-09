@@ -31,7 +31,7 @@ const GameSettings = () => {
    }
 
    // Preparing players data and generating URL
-   const players = playerNames.map(name => ({ name, score: gameMode, lastThrow: 0, average: 0 }))
+   const players = playerNames.map(name => ({ name, pointsLeft: gameMode}))
    const playersJson = encodeURIComponent(JSON.stringify(players))
    const gameUrl = `/game?mode=${gameMode}&players=${playersJson}`
 
