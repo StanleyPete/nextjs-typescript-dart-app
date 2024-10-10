@@ -6,6 +6,7 @@ interface Player {
    name: string
    pointsLeft: number
    lastThrow: number
+   totalAttempts: number
    average: number
 }
 
@@ -28,8 +29,9 @@ const Game = () => {
    const [players, setPlayers] = useState<Player[]>(urlPlayers.map(player => ({
       ...player,
       lastThrow: 0, // Initial lastThrow
+      totalAttempts: 0, //Initial totalAttempts
       average: 0,    // Initial average
-      pointsLeft: player.pointsLeft // Initial pointsLeft sent via URL
+      pointsLeft: Number(player.pointsLeft) // Initial pointsLeft sent via URL
    })))
 
    // State to track history of moves
@@ -49,18 +51,19 @@ const Game = () => {
       const gamePlayers = [...players]
       const currentPlayer = gamePlayers[currentPlayerIndex]
 
-      // PointsLeft and lastThorw update:
-      currentPlayer.lastThrow = currentThrow
-      currentPlayer.pointsLeft -= currentThrow
-      
       // Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentPlayerIndex,
-         historyPointsLeft: currentPlayer.pointsLeft + currentThrow, // Points left before the throw
-         historyLastThrow: currentThrow, // The score just submitted
-         historyLastAverage: 0
+         historyPointsLeft: currentPlayer.pointsLeft, // Points left before the throw
+         historyLastThrow: currentPlayer.lastThrow, // The score just submitted
+         historyLastAverage: currentPlayer.average
       }
-     
+      
+      // PointsLeft, lastThrow, totalAttempts update
+      currentPlayer.pointsLeft -= currentThrow
+      currentPlayer.lastThrow = currentThrow
+      currentPlayer.totalAttempts += 1
+      
       // Update history state
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
     
@@ -78,7 +81,6 @@ const Game = () => {
       setCurrentThrow(0)
    }
    
-   
    // Restart game handler
    const handleRestartGame = () => {
       setPlayers(urlPlayers.map(player => ({
@@ -95,30 +97,25 @@ const Game = () => {
    // Undo handler
    const handleUndo = () => {
       if(history.length === 0) return
-   
-      const lastEntry = history[history.length - 1] // last history entry
-      const previousLastEntry = history[history.length - 3] // previous to last history entry
+      
+      //Declaring last history entry available
+      const lastEntry = history[history.length - 1]
+
       const gamePlayers = [...players]
 
       // Update current player's state
       const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
 
-      // Restoring pointsLeft
+      // Restoring pointsLeft, lastThrow
       currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
-
-      // Restoring lastThrow
-      if(history.length <= 2){
-         currentPlayer.lastThrow = 0// Restore pointsLeft
-      } else {
-         currentPlayer.lastThrow = previousLastEntry.historyLastThrow
-      }
-      
-      // Removing last history entry
-      setHistory(prevHistory => prevHistory.slice(0, -1))
+      currentPlayer.lastThrow = lastEntry.historyLastThrow
+      currentPlayer.average = lastEntry.historyLastAverage
 
       //Updating players state
       setPlayers(gamePlayers) 
-
+      
+      // Removing last history entry
+      setHistory(prevHistory => prevHistory.slice(0, -1))
       // Setting the last player who played
       setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
    }
