@@ -6,6 +6,7 @@ interface Player {
    name: string
    pointsLeft: number
    lastThrow: number
+   totalThrows: number
    totalAttempts: number
    average: number
 }
@@ -25,13 +26,14 @@ const Game = () => {
    const gameMode = searchParams.get('mode')
    const urlPlayers: Player[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
 
-   // Players state declared in order to keep and update pointsLeft, lastThrow, average:
+   // Players state declared with initial values in order to keep and update pointsLeft, lastThrow, totalThrows, totalAttempts, average:
    const [players, setPlayers] = useState<Player[]>(urlPlayers.map(player => ({
       ...player,
-      lastThrow: 0, // Initial lastThrow
-      totalAttempts: 0, //Initial totalAttempts
-      average: 0,    // Initial average
-      pointsLeft: Number(player.pointsLeft) // Initial pointsLeft sent via URL
+      pointsLeft: Number(player.pointsLeft), // Initial pointsLeft sent via URL
+      lastThrow: 0,
+      totalThrows: 0,
+      totalAttempts: 0, 
+      average: 0    
    })))
 
    // State to track history of moves
@@ -59,10 +61,14 @@ const Game = () => {
          historyLastAverage: currentPlayer.average
       }
       
-      // PointsLeft, lastThrow, totalAttempts update
+      // PointsLeft, lastThrow, totalThrows, totalAttempts update
       currentPlayer.pointsLeft -= currentThrow
       currentPlayer.lastThrow = currentThrow
+      currentPlayer.totalThrows += currentThrow
       currentPlayer.totalAttempts += 1
+      
+      //Average calculatation
+      currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
       
       // Update history state
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
@@ -85,9 +91,11 @@ const Game = () => {
    const handleRestartGame = () => {
       setPlayers(urlPlayers.map(player => ({
          ...player,
-         lastThrow: 0,  // Reset lastThrow
-         average: 0,     // Reset average
-         pointsLeft: player.pointsLeft // Reset pointsLeft to initial state
+         pointsLeft: Number(player.pointsLeft),
+         lastThrow: 0, 
+         totalThrows: 0,
+         totalAttempts: 0,  
+         average: 0     
       })))
       setCurrentPlayerIndex(0) // Reset to the first player
       setCurrentThrow(0) // Reset current throw input
