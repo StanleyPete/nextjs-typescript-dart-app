@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+
 interface Player {
    name: string
    pointsLeft: number
@@ -15,6 +16,7 @@ interface HistoryEntry {
    historyPlayerIndex: number
    historyPointsLeft: number
    historyLastScore: number
+   historyTotalThrows: number
    historyLastAverage: number
 }
 
@@ -65,6 +67,7 @@ const Game = () => {
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentPlayerIndex,
          historyPointsLeft: currentPlayer.pointsLeft, // Points left before the throw
+         historyTotalThrows: currentPlayer.totalThrows,
          historyLastScore: currentPlayer.lastScore, // lastScore before the throw
          historyLastAverage: currentPlayer.average
       }
@@ -104,10 +107,12 @@ const Game = () => {
       // Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentPlayerIndex,
-         historyPointsLeft: currentPlayer.pointsLeft + throwValueSum, // Points left before the throw
+         historyPointsLeft: currentPlayer.pointsLeft + throwValueSum,
+         historyTotalThrows: throwValueSum + throwValue, // Points left before the throw
          historyLastScore: currentPlayer.lastScore, // The score just submitted
          historyLastAverage: currentPlayer.average
       }
+      console.log(newHistoryEntry)
       
       // Incrementing the currentPlayerThrowsCount to keep track of the throws
       const updatedThrowCount = currentPlayerThrowsCount + 1
@@ -116,6 +121,7 @@ const Game = () => {
          // Updating currentPlayerThrosCount when player has NOT thrown 3 times
          currentPlayer.pointsLeft -= throwValue
          currentPlayer.totalThrows += throwValue
+         console.log(currentPlayer)
          setThrowValueSum(prevSum => prevSum + throwValue)
          setCurrentPlayerThrows(prevThrows => [...prevThrows, throwValue].slice(-3))
          setCurrentPlayerThrowsCount(updatedThrowCount)
@@ -168,64 +174,89 @@ const Game = () => {
       //Game players array copy
       const gamePlayers = [...players]
       
-      //SCENARIO 1: Empty history, currentPlayerThrowCount !== 0
-      if(history.length === 0 && currentPlayerThrowsCount !== 0){
-         const currentPlayer = gamePlayers[currentPlayerIndex]
-
-         //Temporary variables with updated throw count and throws array
-         const updatedThrowCount = currentPlayerThrowsCount - 1
-         const updatedThrows = [...currentPlayerThrows]
-
-         //Updating pointsLeft, totalThrows and throwValueSum
-         currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
-         currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
-         setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
-
-         // Removing last available throw from temporary variable
-         updatedThrows.pop()
-
-         //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
-         setCurrentPlayerThrows(updatedThrows)
-         setCurrentPlayerThrowsCount(updatedThrowCount)
-      } 
-      //SCENARIO 2: Empty history
-      else if (history.length === 0){
-         return
-      } 
-      //SCENARIO 3: History available and no currentPlayerThrowsCount
-      else if (history.length !== 0 && currentPlayerThrowsCount === 0){
+      //Undo handler for input
+      if(!showNumberButtons){
+         if(history.length === 0) return
+       
          const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
-         
-         // Restoring pointsLeft, lastScore, average
+
+         // Restoring pointsLeft, lastScore, average, totalAttempts, totalThrows
+         currentPlayer.totalThrows -= currentPlayer.lastScore
          currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
          currentPlayer.lastScore = lastEntry.historyLastScore
          currentPlayer.average = lastEntry.historyLastAverage
-         
-         // Removing last history entry
-         setHistory(prevHistory => prevHistory.slice(0, -1))
+         currentPlayer.totalAttempts -= 1
 
          // Setting currentPlayerIndex to the last player who played in the history
          setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+
+         // Removing last history entry
+         setHistory(prevHistory => prevHistory.slice(0, -1))
       }
-      //SCENARIO 4: History availble and currentPlayer has already thrown at least once 
-      else {
-         const currentPlayer = gamePlayers[currentPlayerIndex]
-        
-         //Temporary variables with updated throw count and throws array
-         const updatedThrowCount = currentPlayerThrowsCount - 1
-         const updatedThrows = [...currentPlayerThrows]
-
-         //Updating pointsLeft, totalThrows and throwValueSum
-         currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
-         currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
-         setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
-
-         // Removing last available throw from temporary variable
-         updatedThrows.pop()
-
-         //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
-         setCurrentPlayerThrows(updatedThrows)
-         setCurrentPlayerThrowsCount(updatedThrowCount)
+     
+      //Undo handler for buttons
+      if(showNumberButtons){
+         //SCENARIO 1: Empty history, currentPlayerThrowCount !== 0
+         if(history.length === 0 && currentPlayerThrowsCount !== 0){
+            const currentPlayer = gamePlayers[currentPlayerIndex]
+           
+            //Temporary variables with updated throw count and throws array
+            const updatedThrowCount = currentPlayerThrowsCount - 1
+            const updatedThrows = [...currentPlayerThrows]
+   
+            //Updating pointsLeft, totalThrows and throwValueSum
+            currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
+            currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
+            setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
+   
+            // Removing last available throw from temporary variable
+            updatedThrows.pop()
+   
+            //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
+            setCurrentPlayerThrows(updatedThrows)
+            setCurrentPlayerThrowsCount(updatedThrowCount)
+         } 
+         //SCENARIO 2: Empty history
+         else if (history.length === 0){
+            return
+         } 
+         //SCENARIO 3: History available and no currentPlayerThrowsCount
+         else if (history.length !== 0 && currentPlayerThrowsCount === 0){
+            const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+          
+            // Restoring pointsLeft, lastScore, average
+            currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
+            currentPlayer.lastScore = lastEntry.historyLastScore
+            currentPlayer.average = lastEntry.historyLastAverage
+            currentPlayer.totalThrows -= lastEntry.historyTotalThrows
+            currentPlayer.totalAttempts -= 1
+            
+            // Removing last history entry
+            setHistory(prevHistory => prevHistory.slice(0, -1))
+   
+            // Setting currentPlayerIndex to the last player who played in the history
+            setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+         }
+         //SCENARIO 4: History availble and currentPlayer has already thrown at least once 
+         else {
+            const currentPlayer = gamePlayers[currentPlayerIndex]
+          
+            //Temporary variables with updated throw count and throws array
+            const updatedThrowCount = currentPlayerThrowsCount - 1
+            const updatedThrows = [...currentPlayerThrows]
+   
+            //Updating pointsLeft, totalThrows and throwValueSum
+            currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
+            currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
+            setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
+   
+            // Removing last available throw from temporary variable
+            updatedThrows.pop()
+   
+            //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
+            setCurrentPlayerThrows(updatedThrows)
+            setCurrentPlayerThrowsCount(updatedThrowCount)
+         }
       }
 
       //Updating players state
@@ -272,7 +303,25 @@ const Game = () => {
                   </div>
                )}
                {/* Toggle between input and number buttons */}
-               <button onClick={() => setShowNumberButtons(!showNumberButtons)}>{showNumberButtons ? 'Input' : 'Buttons'}</button>
+               <button onClick={() => {
+                  {/* Resetting values when toggle button clicked */}
+                  if (currentPlayerThrowsCount > 0) {
+                     const gamePlayers = [...players]
+                     const currentPlayer = gamePlayers[currentPlayerIndex]
+               
+                     //Resetting pointsLeft and totalThrows values
+                     currentPlayer.pointsLeft += throwValueSum
+                     currentPlayer.totalThrows -= throwValueSum
+               
+                     // Resetting throwValueSum, currentPlayerThrows and currentPlayersThrowsCount states
+                     setThrowValueSum(0)
+                     setCurrentPlayerThrows([])
+                     setCurrentPlayerThrowsCount(0)
+               
+                     // Players update
+                     setPlayers(gamePlayers)
+                  }
+                  setShowNumberButtons(!showNumberButtons)}}>{showNumberButtons ? 'Input' : 'Buttons'}</button>
                {!showNumberButtons ? (
                   <div className='score-input'>
                      <input
