@@ -52,6 +52,8 @@ const Game = () => {
    const [currentPlayerThrowsCount, setCurrentPlayerThrowsCount] = useState<number>(0)
    // State to track current player throw value and display it in current throw section
    const [currentPlayerThrows, setCurrentPlayerThrows] = useState<number[]>([])
+   // State to set multiplier for buttons (single, double, triple)
+   const [multiplier, setMultiplier] = useState<number>(1)
 
    // Score input handler:
    const handleThrowChange = (value: string) => {
@@ -66,9 +68,9 @@ const Game = () => {
       // Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentPlayerIndex,
-         historyPointsLeft: currentPlayer.pointsLeft, // Points left before the throw
-         historyTotalThrows: currentPlayer.totalThrows,
-         historyLastScore: currentPlayer.lastScore, // lastScore before the throw
+         historyPointsLeft: currentPlayer.pointsLeft, 
+         historyTotalThrows: currentPlayer.totalThrows + currentThrow,
+         historyLastScore: currentPlayer.lastScore,
          historyLastAverage: currentPlayer.average
       }
       
@@ -103,13 +105,14 @@ const Game = () => {
    const handleSubmitThrowButtons = (throwValue: number) => {
       const gamePlayers = [...players]
       const currentPlayer = gamePlayers[currentPlayerIndex]
+      const multiplierThrowValue = throwValue * multiplier
       
       // Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentPlayerIndex,
          historyPointsLeft: currentPlayer.pointsLeft + throwValueSum,
-         historyTotalThrows: throwValueSum + throwValue, // Points left before the throw
-         historyLastScore: currentPlayer.lastScore, // The score just submitted
+         historyTotalThrows: throwValueSum + multiplierThrowValue, 
+         historyLastScore: currentPlayer.lastScore,
          historyLastAverage: currentPlayer.average
       }
       console.log(newHistoryEntry)
@@ -119,17 +122,17 @@ const Game = () => {
       
       if (updatedThrowCount < 3) {
          // Updating currentPlayerThrosCount when player has NOT thrown 3 times
-         currentPlayer.pointsLeft -= throwValue
-         currentPlayer.totalThrows += throwValue
+         currentPlayer.pointsLeft -= multiplierThrowValue
+         currentPlayer.totalThrows += multiplierThrowValue
          console.log(currentPlayer)
-         setThrowValueSum(prevSum => prevSum + throwValue)
-         setCurrentPlayerThrows(prevThrows => [...prevThrows, throwValue].slice(-3))
+         setThrowValueSum(prevSum => prevSum + multiplierThrowValue)
+         setCurrentPlayerThrows(prevThrows => [...prevThrows, multiplierThrowValue].slice(-3))
          setCurrentPlayerThrowsCount(updatedThrowCount)
       } else {
          // Updating pointsLeft, lastScore, totalThrows, totalAttempts when player has already thrown 3 times:
-         currentPlayer.pointsLeft -= throwValue
-         currentPlayer.lastScore = throwValueSum + throwValue
-         currentPlayer.totalThrows += throwValue
+         currentPlayer.pointsLeft -= multiplierThrowValue
+         currentPlayer.lastScore = throwValueSum + multiplierThrowValue
+         currentPlayer.totalThrows += multiplierThrowValue
          currentPlayer.totalAttempts += 1
          
          //Average calculation:
@@ -266,9 +269,9 @@ const Game = () => {
    //Added temporarily for tests and bugs fixing
    useEffect(() => {
       console.log(history)
-      console.log(`throwValueSum: ${throwValueSum}`)
-      console.log(`currentPlayerThrowsCount: ${currentPlayerThrowsCount}`)
-      console.log(`currentPlayerThrows: ${currentPlayerThrows}`)
+      // console.log(`throwValueSum: ${throwValueSum}`)
+      // console.log(`currentPlayerThrowsCount: ${currentPlayerThrowsCount}`)
+      // console.log(`currentPlayerThrows: ${currentPlayerThrows}`)
       console.log(players)
    }, [players, history, throwValueSum, currentPlayerThrowsCount, currentPlayerThrows])
    
@@ -333,11 +336,19 @@ const Game = () => {
                   </div>
                ) : (
                   <div className='score-buttons'>
+                     {/* Multiplier buttons */}
+                     <div className="multiplier-buttons">
+                        <button onClick={() => setMultiplier(1)} className={multiplier === 1 ? 'active' : ''}>Single</button>
+                        <button onClick={() => setMultiplier(2)} className={multiplier === 2 ? 'active' : ''}>Double</button>
+                        <button onClick={() => setMultiplier(3)} className={multiplier === 3 ? 'active' : ''}>Triple</button>
+                     </div>
+                     {/* Score buttons */}
                      {Array.from({ length: 20 }, (_, i) => (
                         <button key={i + 1} onClick={() => handleSubmitThrowButtons(i + 1)}>{i + 1}</button>
                      ))}
                      <button onClick={() => handleSubmitThrowButtons(50)}>Bull - 50</button>
                      <button onClick={() => handleSubmitThrowButtons(25)}>Outer -25</button>
+                     <button onClick={() => handleSubmitThrowButtons(0)}>0</button>
                   </div>
                )}   
             </label>
