@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Player {
    name: string
+   legs: number
    pointsLeft: number
    lastScore: number
    totalThrows: number
@@ -32,6 +33,7 @@ const Game = () => {
    const [players, setPlayers] = useState<Player[]>(urlPlayers.map(player => ({
       ...player,
       pointsLeft: Number(player.pointsLeft), // Initial pointsLeft sent via URL
+      legs: 0,
       lastScore: 0,
       totalThrows: 0,
       totalAttempts: 0, 
@@ -55,6 +57,12 @@ const Game = () => {
    const [currentPlayerThrows, setCurrentPlayerThrows] = useState<number[]>([])
    //State to set multiplier for buttons (single, double, triple)
    const [multiplier, setMultiplier] = useState<number>(1)
+   //State to track if error occured
+   const [isError, setIsError] = useState<boolean>(false)
+   //State to set error message
+   const [errorMessage, setErrorMessage] = useState<string>('')
+   //State to turn on double points for input handler
+   const [isDoubleActive, setIsDoubleActive] = useState<boolean>(false)
    
    //Score input handler:
    const handleThrowChange = (value: string) => {
@@ -73,29 +81,77 @@ const Game = () => {
    }
 
    //Submit score handler for input:
-   const handleSubmitThrowInput = () => {
+   const handleSubmitThrowInput = (inputMultiplier: number) => {
       const gamePlayers = [...players]
       const currentPlayer = gamePlayers[currentPlayerIndex]
+      
+      //Error hanlder (currentThrow over 180)
+      if(currentThrow > 180){
+         setErrorMessage('Score cannot be higher than 180')
+         setIsError(true)
+         setCurrentThrow(0)
+         return
+      }
 
       //Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentPlayerIndex,
          historyPointsLeft: currentPlayer.pointsLeft, 
-         historyTotalThrows: currentPlayer.totalThrows + currentThrow,
+         historyTotalThrows: currentPlayer.totalThrows + (currentThrow * multiplier),
          historyLastScore: currentPlayer.lastScore,
          historyLastAverage: currentPlayer.average
       }
       
-      //PointsLeft, lastScore, totalThrows, totalAttempts update
-      currentPlayer.pointsLeft -= currentThrow
-      currentPlayer.lastScore = currentThrow
-      currentPlayer.totalThrows += currentThrow
+      //Updating pointsLeft
+      currentPlayer.pointsLeft -= (currentThrow * inputMultiplier)
+      
+      //End leg scenario
+      if(isDoubleActive && currentPlayer.pointsLeft === 0) {
+         //Updating legs for current player
+         currentPlayer.legs += 1
+         
+         //Updating game stats for new leg (for each player)
+         players.forEach(player => {
+            player.pointsLeft = Number(gameMode)
+            player.lastScore = 0
+            player.totalThrows = 0
+            player.totalAttempts = 0
+            player.average = 0
+            player.isInputPreffered = true
+         })
+         
+         //Updating history state
+         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+         setIsDoubleActive(false)
+         setCurrentThrow(0)
+         setPlayers(gamePlayers) 
+         return
+      }
+
+      //Scenario when updated pointsLeft are equal or less than 1
+      if(currentPlayer.pointsLeft <= 1){
+         newHistoryEntry.historyTotalThrows = currentPlayer.totalThrows
+         currentPlayer.pointsLeft += (currentThrow * inputMultiplier)
+         currentPlayer.lastScore = 0
+         currentPlayer.totalThrows += 0
+         currentPlayer.totalAttempts += 1
+         currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+         handleSwitchPlayer()
+         setCurrentThrow(0)
+         setPlayers(gamePlayers) 
+         return
+      }
+
+      //Updating lastScore, totalThrows, totalAttempts, average
+      currentPlayer.lastScore = (currentThrow * inputMultiplier)
+      currentPlayer.totalThrows += (currentThrow * inputMultiplier)
       currentPlayer.totalAttempts += 1
       currentPlayer.isInputPreffered = true
-      
-      //Average calculatation
       currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
       
+
       //Updating history state
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
       
@@ -127,22 +183,116 @@ const Game = () => {
       // Incrementing the currentPlayerThrowsCount to keep track of the throws
       const updatedThrowCount = currentPlayerThrowsCount + 1
       
+      //Scenario when player has not thrown 3 times yet
       if (updatedThrowCount < 3) {
-         //Updating pointsLeft, totalThrows and states when player has NOT thrown 3 times
+         //Updating pointsLeft
          currentPlayer.pointsLeft -= multiplierThrowValue
+
+         //End leg scenario when player has NOT thrown 3 times yet, multiplier === 2 and pointsLeft === 0
+         if(multiplier === 2 && currentPlayer.pointsLeft === 0){
+            currentPlayer.legs += 1 
+
+            //Updating game stats for new leg (for each player)
+            players.forEach(player => {
+               player.pointsLeft = Number(gameMode)
+               player.lastScore = 0
+               player.totalThrows = 0
+               player.totalAttempts = 0
+               player.average = 0
+               player.isInputPreffered = true
+            })
+            
+            //Updating history state
+            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+            //Resetting states
+            setThrowValueSum(0)
+            setCurrentPlayerThrowsCount(0)
+            setCurrentPlayerThrows([])
+            setCurrentThrow(0)
+            setCurrentThrow(0)
+            setPlayers(gamePlayers) 
+            return
+         }
+
+         //Scenario when player has not thrown 3 times yet but pointsLeft are equal or less than 1
+         if(currentPlayer.pointsLeft <= 1) {
+            currentPlayer.pointsLeft = newHistoryEntry.historyPointsLeft
+            currentPlayer.lastScore = 0
+            currentPlayer.totalThrows -= throwValueSum
+            currentPlayer.totalAttempts += 1
+            currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            handleSwitchPlayer()
+            setCurrentThrow(0)
+            setThrowValueSum(0)
+            setCurrentPlayerThrowsCount(0)
+            setCurrentPlayerThrows([])
+            setCurrentThrow(0)
+            setPlayers(gamePlayers) 
+            return
+         }
+
+         //Updating totalThrows, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount (currentThrow in case player would like to switch input method)
          currentPlayer.totalThrows += multiplierThrowValue
          setThrowValueSum(prevSum => prevSum + multiplierThrowValue)
          setCurrentPlayerThrows(prevThrows => [...prevThrows, multiplierThrowValue].slice(-3))
          setCurrentPlayerThrowsCount(updatedThrowCount)
          setCurrentThrow(0)
-      } else {
-         //Updating pointsLeft, lastScore, totalThrows, totalAttempts when player has already thrown 3 times:
+      } 
+      //Scenario when players has thrown already 3 times
+      else {
+         //Updating pointsLeft
          currentPlayer.pointsLeft -= multiplierThrowValue
+         
+         //End leg scenario when player has thrown already 3 times, multiplier === 2 and pointsLeft === 0
+         if(multiplier === 2 && currentPlayer.pointsLeft === 0){
+            currentPlayer.legs += 1 
+
+            //Updating game stats for new leg (for each player)
+            players.forEach(player => {
+               player.pointsLeft = Number(gameMode)
+               player.lastScore = 0
+               player.totalThrows = 0
+               player.totalAttempts = 0
+               player.average = 0
+               player.isInputPreffered = true
+            })
+            
+            //Updating history state
+            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+            //Resetting states
+            setThrowValueSum(0)
+            setCurrentPlayerThrowsCount(0)
+            setCurrentPlayerThrows([])
+            setCurrentThrow(0)
+            setCurrentThrow(0)
+            setPlayers(gamePlayers) 
+            return
+         }
+
+         //Scenario when player has already thrown 3 times, but pointsLeft are equal or less than 1
+         if(currentPlayer.pointsLeft <= 1) {
+            currentPlayer.pointsLeft += multiplierThrowValue
+            currentPlayer.lastScore = 0
+            currentPlayer.totalThrows -= throwValueSum
+            currentPlayer.totalAttempts += 1
+            currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            handleSwitchPlayer()
+            setThrowValueSum(0)
+            setCurrentPlayerThrowsCount(0)
+            setCurrentPlayerThrows([])
+            setCurrentThrow(0)
+            setPlayers(gamePlayers) 
+            return
+         }
+
+         //Updating lastScore, totalThrows, totalAttempts, average when player has already thrown 3 times:
          currentPlayer.lastScore = throwValueSum + multiplierThrowValue
          currentPlayer.totalThrows += multiplierThrowValue
          currentPlayer.totalAttempts += 1
-         
-         //Average calculation:
          currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
          
          //Updating history state
@@ -260,7 +410,7 @@ const Game = () => {
             currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
             currentPlayer.lastScore = lastEntry.historyLastScore
             currentPlayer.average = lastEntry.historyLastAverage
-            currentPlayer.totalThrows -= lastEntry.historyTotalThrows
+            currentPlayer.totalThrows = lastEntry.historyTotalThrows
             currentPlayer.totalAttempts -= 1
             
             //Removing last history entry
@@ -300,6 +450,7 @@ const Game = () => {
       setPlayers(urlPlayers.map(player => ({
          ...player,
          pointsLeft: Number(player.pointsLeft),
+         legs: 0,
          lastScore: 0, 
          totalThrows: 0,
          totalAttempts: 0,  
@@ -311,6 +462,10 @@ const Game = () => {
       setHistory([]) 
       setThrowValueSum(0) 
       setCurrentPlayerThrowsCount(0) 
+   }
+
+   const closeError = () => {
+      setIsError(false)
    }
 
    useEffect(() => {
@@ -328,12 +483,23 @@ const Game = () => {
          {/*Players section:*/}
          <h1>{gameMode}</h1>
          <ul>
-            {players.map((player: { name: string, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
+            {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
                <li key={index}>
-                  {player.name} - Points Left: {player.pointsLeft}, Last Score: {player.lastScore}, Average: {player.average}, isInputPreffered: {`${player.isInputPreffered}`}
+                  {player.name} - Legs: {player.legs} Points Left: {player.pointsLeft}, Last Score: {player.lastScore}, Average: {player.average}, isInputPreffered: {`${player.isInputPreffered}`}
                </li>
             ))}
          </ul>
+         
+         {/* Error section */}
+         {isError && (
+            <div className="error">
+               <div className="error-content">
+                  <p>{errorMessage}</p>
+                  <button onClick={closeError}>OK</button>
+               </div>
+            </div>
+         )}
+
 
          {/*Score section:*/}
          <div>  
@@ -384,7 +550,10 @@ const Game = () => {
                         value={currentThrow}
                         onChange={(e) => handleThrowChange(e.target.value)}
                      />
-                     <button onClick={() => handleSubmitThrowInput()}>Submit Score</button>
+                     {players[currentPlayerIndex].pointsLeft <= 40 && players[currentPlayerIndex].pointsLeft % 2 === 0 && (
+                        <button onClick={() => setIsDoubleActive(!isDoubleActive)} className={isDoubleActive ? 'active' : ''}>Double</button>
+                     )}
+                     <button onClick={() => isDoubleActive ? handleSubmitThrowInput(2) : handleSubmitThrowInput(1)}>Submit Score</button>
                   </div>
                ) : (
                   <div className='score-buttons'>
