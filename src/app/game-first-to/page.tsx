@@ -29,7 +29,7 @@ const Game = () => {
    //Declaring gameMode and players based on URL
    const gameMode = searchParams.get('mode')
    const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
-   
+
    //Players state declared with initial values in order to keep and update pointsLeft, lastScore, totalThrows, totalAttempts, average:
    const [players, setPlayers] = useState<Player[]>(urlPlayers.map((playerName: string) => ({
       name: playerName,
@@ -458,7 +458,7 @@ const Game = () => {
          setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
 
          //Removing last 3 history entries (inlcuding two additional entries created when player finished leg)
-         setHistory(prevHistory => prevHistory.slice(0, -3))
+         setHistory(prevHistory => prevHistory.slice(0, gamePlayers.length))
 
          //Updating players state
          setPlayers(gamePlayers) 

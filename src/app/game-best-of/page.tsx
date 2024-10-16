@@ -458,7 +458,7 @@ const Game = () => {
          setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
 
          //Removing last 3 history entries (inlcuding two additional entries created when player finished leg)
-         setHistory(prevHistory => prevHistory.slice(0, -3))
+         setHistory(prevHistory => prevHistory.slice(0, gamePlayers.length))
 
          //Updating players state
          setPlayers(gamePlayers) 
