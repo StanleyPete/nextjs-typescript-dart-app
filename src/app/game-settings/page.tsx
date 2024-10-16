@@ -11,7 +11,7 @@ const GameSettings = () => {
    //State to track player names
    const [playerNames, setPlayerNames] = useState<string[]>(['', ''])
    // State to track game type (best of / first to)
-   const [gameType, setGameType] = useState<'bestOf' | 'firstTo'>('bestOf')
+   const [gameType, setGameType] = useState<'best-of' | 'first-to'>('best-of')
    //State to track number of legs
    const [numberOfLegs, setNumberOfLegs] = useState(3)
    //State to track if error occured
@@ -50,7 +50,7 @@ const GameSettings = () => {
    }
 
    // Game type handler
-   const handleGameTypeChange = (type: 'bestOf' | 'firstTo') => {
+   const handleGameTypeChange = (type: 'best-of' | 'first-to') => {
       setGameType(type)
    }
    
@@ -66,9 +66,8 @@ const GameSettings = () => {
    }
    
    // Preparing players data and generating URL
-   const players = playerNames.map(name => ({ name, pointsLeft: gameMode}))
-   const playersJson = encodeURIComponent(JSON.stringify(players))
-   const gameUrl = `/game?mode=${gameMode}&players=${playersJson}`
+   const playersJson = encodeURIComponent(JSON.stringify(playerNames))
+   const gameUrl = `/game-${gameType}?mode=${gameMode}&players=${playersJson}&numberOfLegs=${numberOfLegs}`
    
    return (
       <div className='game-settings'>
@@ -105,14 +104,14 @@ const GameSettings = () => {
          {/* Selecting game type section */}
          <div className='game-type-buttons'>
             <button 
-               className={`game-type-button ${gameType === 'bestOf' ? 'active' : ''}`} 
-               onClick={() => handleGameTypeChange('bestOf')}
+               className={`game-type-button ${gameType === 'best-of' ? 'active' : ''}`} 
+               onClick={() => handleGameTypeChange('best-of')}
             >
                Best Of
             </button>
             <button 
-               className={`game-type-button ${gameType === 'firstTo' ? 'active' : ''}`} 
-               onClick={() => handleGameTypeChange('firstTo')}
+               className={`game-type-button ${gameType === 'first-to' ? 'active' : ''}`} 
+               onClick={() => handleGameTypeChange('first-to')}
             >
                First To
             </button>
@@ -123,7 +122,7 @@ const GameSettings = () => {
             {[1, 2, 3, 4, 5].map((legs) => (
                <button
                   key={legs}
-                  className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`} // Dodanie klasy "active" dla wybranego przycisku
+                  className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
                   onClick={() => handleNumberOfLegs(legs)}
                >
                   {legs}

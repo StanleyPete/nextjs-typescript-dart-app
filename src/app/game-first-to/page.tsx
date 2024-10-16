@@ -28,12 +28,12 @@ const Game = () => {
 
    //Declaring gameMode and players based on URL
    const gameMode = searchParams.get('mode')
-   const urlPlayers: Player[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
-
+   const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
+   
    //Players state declared with initial values in order to keep and update pointsLeft, lastScore, totalThrows, totalAttempts, average:
-   const [players, setPlayers] = useState<Player[]>(urlPlayers.map(player => ({
-      ...player,
-      pointsLeft: Number(player.pointsLeft), // Initial pointsLeft sent via URL
+   const [players, setPlayers] = useState<Player[]>(urlPlayers.map((playerName: string) => ({
+      name: playerName,
+      pointsLeft: Number(gameMode), // Initial pointsLeft sent via URL
       legs: 0,
       lastScore: 0,
       totalThrows: 0,
@@ -557,9 +557,9 @@ const Game = () => {
    
    //Restart game handler
    const handleRestartGame = () => {
-      setPlayers(urlPlayers.map(player => ({
-         ...player,
-         pointsLeft: Number(player.pointsLeft),
+      setPlayers(urlPlayers.map((playerName: string) => ({
+         name: playerName,
+         pointsLeft: Number(gameMode),
          legs: 0,
          lastScore: 0, 
          totalThrows: 0,
