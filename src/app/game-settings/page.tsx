@@ -7,78 +7,145 @@ const GameSettings = () => {
    const router = useRouter()
    const searchParams = useSearchParams() 
    const gameMode = searchParams.get('mode')! //exclamation point added (non-null assertion used when mode never returns null or undefined)
-   const [playerNames, setPlayerNames] = useState<string[]>(Array(2).fill(''))
-   const [numberOfPlayers, setNumberOfPlayers] = useState(2)
+
+   //State to track player names
+   const [playerNames, setPlayerNames] = useState<string[]>(['', ''])
+   // State to track game type (best of / first to)
+   const [gameType, setGameType] = useState<'bestOf' | 'firstTo'>('bestOf')
+   //State to track number of legs
    const [numberOfLegs, setNumberOfLegs] = useState(3)
+   //State to track if error occured
+   const [isError, setIsError] = useState<boolean>(false)
+   //State to set error message
+   const [errorMessage, setErrorMessage] = useState<string>('')
 
-   //Number of players handler
-   const handleNumberOfPlayers = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const newNumPlayers = Number(event.target.value)
-      setNumberOfPlayers(newNumPlayers)
-      setPlayerNames(Array(newNumPlayers).fill('')) 
-   }
-
-   // Player name update handler
+   //Max number of players
+   const maxPlayers = 4
+   
+   //Player name update handler
    const handleNameChange = (index: number, value: string) => {
       const newNames = [...playerNames]
       newNames[index] = value // Player name update for particular index
       setPlayerNames(newNames)
    }
-
-   // Number of legs handler
-   const handleNumberOfLegs = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setNumberOfLegs(Number(event.target.value))
+   
+   //Add a new player input field
+   const addPlayerInput = () => {
+      if (playerNames.length < maxPlayers) {
+         setPlayerNames([...playerNames, ''])
+      } else {
+         setIsError(true)
+         setErrorMessage('Max player number is 4')
+      }
+   }
+   
+   //Validate player names
+   const validatePlayerNames = () => {
+      if (playerNames.some(name => name.trim() === '')) {
+         setIsError(true)
+         setErrorMessage('All player names must be filled out.')
+         return false
+      }
+      return true
    }
 
+   // Game type handler
+   const handleGameTypeChange = (type: 'bestOf' | 'firstTo') => {
+      setGameType(type)
+   }
+   
+   // Number of legs handler
+   const handleNumberOfLegs = (legs: number) => {
+      setNumberOfLegs(legs)
+   }
+   
+   //Error close handler
+   const closeError = () => {
+      setIsError(false)
+      setErrorMessage('')
+   }
+   
    // Preparing players data and generating URL
    const players = playerNames.map(name => ({ name, pointsLeft: gameMode}))
    const playersJson = encodeURIComponent(JSON.stringify(players))
    const gameUrl = `/game?mode=${gameMode}&players=${playersJson}`
-
+   
    return (
       <div className='game-settings'>
          <h2>{gameMode}</h2>
 
-         {/* Selecting number of players section */}
-         <label htmlFor="numberOfPlayers">Select number of players:</label>
-         <select className='select-element number-of-players' id="numberOfPlayers" value={numberOfPlayers} onChange={handleNumberOfPlayers}>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-         </select>
+         {/* Error section */}
+         {isError && (
+            <div className="error">
+               <div className="error-content">
+                  <p>{errorMessage}</p>
+                  <button onClick={closeError}>OK</button>
+               </div>
+            </div>
+         )}
 
-         {/* Player names input section */}
+         {/* Button to add a new player */}
+         <button onClick={addPlayerInput} className='add-player-button'>Add Player</button>
+
+         {/* Selecting number of players section */}
          <div>
-            {Array.from({ length: numberOfPlayers }).map((_, index) => (
+            {playerNames.map((name, index) => (
                <div key={index}>
                   <label htmlFor={`player-${index}`}>Player {index + 1} Name:</label>
                   <input
                      type="text"
                      id={`player-${index}`}
-                     value={playerNames[index]}
-                     onChange={(e) => handleNameChange(index, e.target.value)}
+                     value={name}
+                     onChange={(event) => handleNameChange(index, event.target.value)}
                   />
                </div>
             ))}
          </div>
          
-         {/* Selecting number of legs section */}
-         <div>
-            <label htmlFor="numberOfLegs">Select number of legs to win:</label>
-            <select className='select-element number-of-legs' id="numberOfLegs" value={numberOfLegs} onChange={handleNumberOfLegs}>
-               <option value={1}>1</option>
-               <option value={2}>2</option>
-               <option value={3}>3</option>
-               <option value={4}>4</option>
-               <option value={5}>5</option>
-            </select>
+         {/* Selecting game type section */}
+         <div className='game-type-buttons'>
+            <button 
+               className={`game-type-button ${gameType === 'bestOf' ? 'active' : ''}`} 
+               onClick={() => handleGameTypeChange('bestOf')}
+            >
+               Best Of
+            </button>
+            <button 
+               className={`game-type-button ${gameType === 'firstTo' ? 'active' : ''}`} 
+               onClick={() => handleGameTypeChange('firstTo')}
+            >
+               First To
+            </button>
          </div>
+         
+         {/* Selecting number of legs section */}
+         <div className='legs-buttons'>
+            {[1, 2, 3, 4, 5].map((legs) => (
+               <button
+                  key={legs}
+                  className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`} // Dodanie klasy "active" dla wybranego przycisku
+                  onClick={() => handleNumberOfLegs(legs)}
+               >
+                  {legs}
+               </button>
+            ))}
+         </div>
+       
          
          {/* Buttons section */}
          <div className='game-settings-buttons'>
             <Link href={gameUrl}>
-               <button className='game-start'>To the game!</button>
+               <button 
+                  className='game-start' 
+                  onClick={(event) => {
+                     if(!validatePlayerNames()){
+                        event.preventDefault()
+                        return
+                     }
+                  }}
+               >
+                  To the game!
+               </button>
             </Link>
             <button className='go-back' onClick={() => router.back()}>Go back</button>
          </div>
