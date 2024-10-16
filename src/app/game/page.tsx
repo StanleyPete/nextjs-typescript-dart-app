@@ -19,6 +19,7 @@ interface HistoryEntry {
    historyLastScore: number
    historyTotalThrows: number
    historyLastAverage: number
+   historyTotalAttempts: number
 }
 
 const Game = () => {
@@ -71,10 +72,9 @@ const Game = () => {
    
    //Next player handler:
    const handleSwitchPlayer = () => {
-      /* 
-      Switch to another player: 
-      Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
-      after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
+      /* Switch to another player: 
+         Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
+         after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
       */
       const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
       setCurrentPlayerIndex(nextPlayerIndex)
@@ -97,9 +97,10 @@ const Game = () => {
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentPlayerIndex,
          historyPointsLeft: currentPlayer.pointsLeft, 
-         historyTotalThrows: currentPlayer.totalThrows + (currentThrow * multiplier),
+         historyTotalThrows: currentPlayer.totalThrows + (currentThrow * inputMultiplier),
          historyLastScore: currentPlayer.lastScore,
-         historyLastAverage: currentPlayer.average
+         historyLastAverage: currentPlayer.average,
+         historyTotalAttempts: currentPlayer.totalAttempts
       }
       
       //Updating pointsLeft
@@ -107,6 +108,26 @@ const Game = () => {
       
       //End leg scenario
       if(isDoubleActive && currentPlayer.pointsLeft === 0) {
+         // Additional history entries created if leg ends in order to properly Undo handler usage 
+         const newHistoryEntries = players
+            .map((player, index) => {
+               if (index === currentPlayerIndex) {
+                  return null //NewHistoryEntry not created for currentPlayerIndex!
+               }
+               return {
+                  historyPlayerIndex: index, 
+                  historyPointsLeft: player.pointsLeft, 
+                  historyTotalThrows: player.totalThrows, 
+                  historyLastScore: player.lastScore, 
+                  historyLastAverage: player.average, 
+                  historyTotalAttempts: player.totalAttempts 
+               }
+            })
+            .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
+
+         //Updating history with additional history entries
+         setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
+         
          //Updating legs for current player
          currentPlayer.legs += 1
          
@@ -119,28 +140,45 @@ const Game = () => {
             player.average = 0
             player.isInputPreffered = true
          })
-         
-         //Updating history state
+
+         //Updating history state with currentPlayerIndex
          setHistory(prevHistory => [...prevHistory, newHistoryEntry])
 
-         setIsDoubleActive(false)
-         setCurrentThrow(0)
+         //Upadating player's state
          setPlayers(gamePlayers) 
+
+         //Resetting isDoubleActive state
+         setIsDoubleActive(false)
+
+         //Resetting input value
+         setCurrentThrow(0)
+         
          return
       }
 
       //Scenario when updated pointsLeft are equal or less than 1
       if(currentPlayer.pointsLeft <= 1){
+         //Updating historyTotalThrows
          newHistoryEntry.historyTotalThrows = currentPlayer.totalThrows
+
+         //Updating pointsLeft, lastScore, totalThrows, totalAttempts and average
          currentPlayer.pointsLeft += (currentThrow * inputMultiplier)
          currentPlayer.lastScore = 0
          currentPlayer.totalThrows += 0
          currentPlayer.totalAttempts += 1
          currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+
+         //Updating history state
          setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+         //Upadating player's state
+         setPlayers(gamePlayers)
+
+         //Switching to the next player
          handleSwitchPlayer()
+
+         //Resetting input value
          setCurrentThrow(0)
-         setPlayers(gamePlayers) 
          return
       }
 
@@ -151,7 +189,6 @@ const Game = () => {
       currentPlayer.isInputPreffered = true
       currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
       
-
       //Updating history state
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
       
@@ -175,9 +212,10 @@ const Game = () => {
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentPlayerIndex,
          historyPointsLeft: currentPlayer.pointsLeft + throwValueSum,
-         historyTotalThrows: throwValueSum + multiplierThrowValue, 
+         historyTotalThrows: currentPlayer.totalThrows + multiplierThrowValue, 
          historyLastScore: currentPlayer.lastScore,
-         historyLastAverage: currentPlayer.average
+         historyLastAverage: currentPlayer.average,
+         historyTotalAttempts: currentPlayer.totalAttempts
       }
       
       // Incrementing the currentPlayerThrowsCount to keep track of the throws
@@ -190,6 +228,26 @@ const Game = () => {
 
          //End leg scenario when player has NOT thrown 3 times yet, multiplier === 2 and pointsLeft === 0
          if(multiplier === 2 && currentPlayer.pointsLeft === 0){
+            const newHistoryEntries = players
+               .map((player, index) => {
+                  if (index === currentPlayerIndex) {
+                     return null //NewHistoryEntry not created for currentPlayerIndex
+                  }
+                  return {
+                     historyPlayerIndex: index, 
+                     historyPointsLeft: player.pointsLeft, 
+                     historyTotalThrows: player.totalThrows, 
+                     historyLastScore: player.lastScore, 
+                     historyLastAverage: player.average, 
+                     historyTotalAttempts: player.totalAttempts 
+                  }
+               })
+               .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
+
+            //Updating history with additional history entries
+            setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
+            
+            //Updating legs
             currentPlayer.legs += 1 
 
             //Updating game stats for new leg (for each player)
@@ -205,13 +263,16 @@ const Game = () => {
             //Updating history state
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
 
+            //Updating player's state
+            setPlayers(gamePlayers) 
+
             //Resetting states
             setThrowValueSum(0)
             setCurrentPlayerThrowsCount(0)
             setCurrentPlayerThrows([])
             setCurrentThrow(0)
             setCurrentThrow(0)
-            setPlayers(gamePlayers) 
+
             return
          }
 
@@ -247,6 +308,24 @@ const Game = () => {
          
          //End leg scenario when player has thrown already 3 times, multiplier === 2 and pointsLeft === 0
          if(multiplier === 2 && currentPlayer.pointsLeft === 0){
+            const newHistoryEntries = players
+               .map((player, index) => {
+                  if (index === currentPlayerIndex) {
+                     return null //NewHistoryEntry not created for currentPlayerIndex
+                  }
+                  return {
+                     historyPlayerIndex: index, 
+                     historyPointsLeft: player.pointsLeft, 
+                     historyTotalThrows: player.totalThrows, 
+                     historyLastScore: player.lastScore, 
+                     historyLastAverage: player.average, 
+                     historyTotalAttempts: player.totalAttempts 
+                  }
+               })
+               .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
+
+            //Updating history with additional history entries
+            setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
             currentPlayer.legs += 1 
 
             //Updating game stats for new leg (for each player)
@@ -325,7 +404,8 @@ const Game = () => {
          historyPointsLeft: currentPlayer.pointsLeft + throwSum,
          historyTotalThrows: currentPlayer.totalThrows, 
          historyLastScore: currentPlayer.lastScore,
-         historyLastAverage: currentPlayer.average
+         historyLastAverage: currentPlayer.average,
+         historyTotalAttempts: currentPlayer.totalAttempts
       }
       
       //Updating lastScore and totalAttempts
@@ -355,19 +435,49 @@ const Game = () => {
    const handleUndo = () => {
       const lastEntry = history[history.length - 1]
       const gamePlayers = [...players]
+
+      //Scenario when players have just finished previous leg
+      if(lastEntry.historyTotalThrows === Number(gameMode)){
+         const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+
+         currentPlayer.legs -= 1
+
+         //Updating game stats for each player
+         gamePlayers.forEach((player, index) => {
+            const playerHistory = [...history].reverse().find(entry => entry.historyPlayerIndex === index)
+            if (playerHistory) {
+               player.pointsLeft = playerHistory.historyPointsLeft
+               player.lastScore = playerHistory.historyLastScore
+               player.totalThrows = playerHistory.historyTotalThrows === Number(gameMode) ? playerHistory.historyTotalThrows - playerHistory.historyLastScore : playerHistory.historyTotalThrows
+               player.totalAttempts = playerHistory.historyTotalAttempts
+               player.average = playerHistory.historyLastAverage
+            }
+         })
+
+         //Setting currentPlayerIndex to the last player who played in the history
+         setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+
+         //Removing last 3 history entries (inlcuding two additional entries created when player finished leg)
+         setHistory(prevHistory => prevHistory.slice(0, -3))
+
+         //Updating players state
+         setPlayers(gamePlayers) 
+
+         return
+      }
       
       //Undo handler for input
       if(!showNumberButtons){
          if(history.length === 0) return
          
          const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
-         
+
          //Restoring pointsLeft, lastScore, average, totalAttempts, totalThrows
          currentPlayer.totalThrows -= currentPlayer.lastScore
          currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
          currentPlayer.lastScore = lastEntry.historyLastScore
          currentPlayer.average = lastEntry.historyLastAverage
-         currentPlayer.totalAttempts -= 1
+         currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
          
          //Setting currentPlayerIndex to the last player who played in the history
          setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
@@ -411,7 +521,7 @@ const Game = () => {
             currentPlayer.lastScore = lastEntry.historyLastScore
             currentPlayer.average = lastEntry.historyLastAverage
             currentPlayer.totalThrows = lastEntry.historyTotalThrows
-            currentPlayer.totalAttempts -= 1
+            currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
             
             //Removing last history entry
             setHistory(prevHistory => prevHistory.slice(0, -1))
@@ -464,6 +574,7 @@ const Game = () => {
       setCurrentPlayerThrowsCount(0) 
    }
 
+   //Error close handler
    const closeError = () => {
       setIsError(false)
    }
