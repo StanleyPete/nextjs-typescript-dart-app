@@ -452,7 +452,7 @@ const Game = () => {
       const gamePlayers = [...players]
 
       //Scenario when players have just finished previous leg
-      if(lastEntry.historyTotalThrows === Number(gameMode)){
+      if(history.length !== 0 && lastEntry.historyTotalThrows === Number(gameMode)){
          const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
 
          currentPlayer.legs -= 1
@@ -669,76 +669,97 @@ const Game = () => {
 
          {/*Score section:*/}
          <div>  
-            <label>
-               <p>Current player: {players[currentPlayerIndex].name}</p>
-               {/*Current throws section:*/}
-               {showNumberButtons && (
-                  <div className="current-player-throws">
-                     <p>Throws:</p>
-                     <div>
-                        {Array.from({ length: 3 }, (_, i) => (
-                           <span key={i}>
-                              {currentPlayerThrows[i] !== undefined ? currentPlayerThrows[i] : '-'}
-                           </span>
-                        ))}
-                     </div>
-                     <button onClick={() => handleSubmitScoreButtons()}>Submit score</button>
+            <p>Current player: {players[currentPlayerIndex].name}</p>
+            {/*Current throws section:*/}
+            {showNumberButtons && (
+               <div className="current-player-throws">
+                  <p>Throws:</p>
+                  <div>
+                     {Array.from({ length: 3 }, (_, i) => (
+                        <span key={i}>
+                           {currentPlayerThrows[i] !== undefined ? currentPlayerThrows[i] : '-'}
+                        </span>
+                     ))}
                   </div>
-               )}
-               {/* Toggle between input and number buttons */}
-               <button onClick={() => {
-                  {/* Resetting values when toggle button clicked */}
-                  const gamePlayers = [...players]
-                  const currentPlayer = gamePlayers[currentPlayerIndex]
-                  if (currentPlayerThrowsCount > 0) {
+                  <button onClick={() => handleSubmitScoreButtons()}>Submit score</button>
+               </div>
+            )}
+            {/* Toggle between input and number buttons */}
+            <button onClick={() => {
+               {/* Resetting values when toggle button clicked */}
+               const gamePlayers = [...players]
+               const currentPlayer = gamePlayers[currentPlayerIndex]
+               if (currentPlayerThrowsCount > 0) {
+            
+                  //Resetting pointsLeft and totalThrows values
+                  currentPlayer.pointsLeft += throwValueSum
+                  currentPlayer.totalThrows -= throwValueSum
+            
+                  //Resetting throwValueSum, currentPlayerThrows and currentPlayersThrowsCount states
+                  setThrowValueSum(0)
+                  setCurrentPlayerThrows([])
+                  setCurrentPlayerThrowsCount(0)         
+               }
                
-                     //Resetting pointsLeft and totalThrows values
-                     currentPlayer.pointsLeft += throwValueSum
-                     currentPlayer.totalThrows -= throwValueSum
-               
-                     //Resetting throwValueSum, currentPlayerThrows and currentPlayersThrowsCount states
-                     setThrowValueSum(0)
-                     setCurrentPlayerThrows([])
-                     setCurrentPlayerThrowsCount(0)         
-                  }
-                  
-                  //Switching isInputPreffered
-                  currentPlayer.isInputPreffered = !currentPlayer.isInputPreffered
-                  //Updating player's state
-                  setPlayers(gamePlayers)    
-               }}>
-                  {showNumberButtons ? 'Input' : 'Buttons'}
-               </button>
-               {!showNumberButtons ? (
-                  <div className='score-input'>
+               //Switching isInputPreffered
+               currentPlayer.isInputPreffered = !currentPlayer.isInputPreffered
+               //Updating player's state
+               setPlayers(gamePlayers)    
+            }}>
+               {showNumberButtons ? 'Input' : 'Buttons'}
+            </button>
+            {!showNumberButtons ? (
+               <div className='score-input'>
+                  <div className='score-input-section'>
                      <input
                         type="number"
                         value={currentThrow}
                         onChange={(e) => handleThrowChange(e.target.value)}
                      />
-                     {players[currentPlayerIndex].pointsLeft <= 40 && players[currentPlayerIndex].pointsLeft % 2 === 0 && (
-                        <button onClick={() => setIsDoubleActive(!isDoubleActive)} className={isDoubleActive ? 'active' : ''}>Double</button>
-                     )}
-                     <button onClick={() => isDoubleActive ? handleSubmitThrowInput(2) : handleSubmitThrowInput(1)}>Submit Score</button>
+                     <button 
+                        onClick={() => {
+                           const newValue = String(currentThrow).slice(0, -1)
+                           setCurrentThrow(newValue ? Number(newValue) : 0)
+                        }}
+                     >
+                        Remove Last
+                     </button>
                   </div>
-               ) : (
-                  <div className='score-buttons'>
-                     {/* Multiplier buttons */}
-                     <div className="multiplier-buttons">
-                        <button onClick={() => setMultiplier(1)} className={multiplier === 1 ? 'active' : ''}>Single</button>
-                        <button onClick={() => setMultiplier(2)} className={multiplier === 2 ? 'active' : ''}>Double</button>
-                        <button onClick={() => setMultiplier(3)} className={multiplier === 3 ? 'active' : ''}>Triple</button>
-                     </div>
-                     {/* Score buttons */}
-                     {Array.from({ length: 20 }, (_, i) => (
-                        <button key={i + 1} onClick={() => handleSubmitThrowButtons(i + 1)}>{i + 1}</button>
+                  {players[currentPlayerIndex].pointsLeft <= 40 && players[currentPlayerIndex].pointsLeft % 2 === 0 && (
+                     <button onClick={() => setIsDoubleActive(!isDoubleActive)} className={isDoubleActive ? 'active' : ''}>Double</button>
+                  )}
+                  <button onClick={() => isDoubleActive ? handleSubmitThrowInput(2) : handleSubmitThrowInput(1)}>Submit Score</button>
+                  {/* Buttons 0-9 */}
+                  <div className='number-buttons'>
+                     {Array.from({ length: 10 }, (_, i) => (
+                        <button 
+                           key={i} 
+                           onClick={() => {
+                              const newValue = Number(`${currentThrow}${i}`)
+                              setCurrentThrow(newValue)
+                           }}>
+                           {i}
+                        </button>
                      ))}
-                     <button onClick={() => handleSubmitThrowButtons(50)}>Bull - 50</button>
-                     <button onClick={() => handleSubmitThrowButtons(25)}>Outer -25</button>
-                     <button onClick={() => handleSubmitThrowButtons(0)}>0</button>
                   </div>
-               )}   
-            </label>
+               </div>
+            ) : (
+               <div className='score-buttons'>
+                  {/* Multiplier buttons */}
+                  <div className="multiplier-buttons">
+                     <button onClick={() => setMultiplier(1)} className={multiplier === 1 ? 'active' : ''}>Single</button>
+                     <button onClick={() => setMultiplier(2)} className={multiplier === 2 ? 'active' : ''}>Double</button>
+                     <button onClick={() => setMultiplier(3)} className={multiplier === 3 ? 'active' : ''}>Triple</button>
+                  </div>
+                  {/* Score buttons */}
+                  {Array.from({ length: 20 }, (_, i) => (
+                     <button key={i + 1} onClick={() => handleSubmitThrowButtons(i + 1)}>{i + 1}</button>
+                  ))}
+                  <button onClick={() => handleSubmitThrowButtons(50)}>Bull - 50</button>
+                  <button onClick={() => handleSubmitThrowButtons(25)}>Outer -25</button>
+                  <button onClick={() => handleSubmitThrowButtons(0)}>0</button>
+               </div>
+            )}   
             <button onClick={handleUndo}>Undo</button>
          </div>
 
