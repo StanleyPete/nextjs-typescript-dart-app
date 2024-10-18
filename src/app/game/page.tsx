@@ -25,9 +25,11 @@ interface HistoryEntry {
 const Game = () => {
    const router = useRouter()
    const searchParams = useSearchParams()
-
+   
    //Declaring gameMode and players based on URL
    const gameMode = searchParams.get('mode')
+   const gameType = searchParams.get('game-type')
+   const numberOfLegs = searchParams.get('number-of-legs')
    const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
 
    //Players state declared with initial values in order to keep and update pointsLeft, lastScore, totalThrows, totalAttempts, average:
@@ -64,6 +66,10 @@ const Game = () => {
    const [errorMessage, setErrorMessage] = useState<string>('')
    //State to turn on double points for input handler
    const [isDoubleActive, setIsDoubleActive] = useState<boolean>(false)
+   //State to check if game ends
+   const [isGameEnd, setIsGameEnd] = useState<boolean>(false)
+   //State to set winner of the game
+   const [winner, setWinner] = useState<Player | null>(null)
    
    //Score input handler:
    const handleThrowChange = (value: string) => {
@@ -146,6 +152,9 @@ const Game = () => {
 
          //Upadating player's state
          setPlayers(gamePlayers) 
+
+         //End game check
+         checkGameEndHandler()
 
          //Resetting isDoubleActive state
          setIsDoubleActive(false)
@@ -266,6 +275,9 @@ const Game = () => {
             //Updating player's state
             setPlayers(gamePlayers) 
 
+            //Checking game end
+            checkGameEndHandler()
+
             //Resetting states
             setThrowValueSum(0)
             setCurrentPlayerThrowsCount(0)
@@ -340,6 +352,9 @@ const Game = () => {
             
             //Updating history state
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+            //Checking game end
+            checkGameEndHandler()
 
             //Resetting states
             setThrowValueSum(0)
@@ -554,6 +569,31 @@ const Game = () => {
       //Updating players state
       setPlayers(gamePlayers) 
    }
+
+   //Game end handler
+   const checkGameEndHandler = () => {
+      //Scenario when game type is set to best-of
+      if (gameType === 'best-of') {
+         //Sum of legs for all players
+         const totalLegs = players.reduce((acc, player) => acc + player.legs, 0)
+         
+         //Check if totalLegs for players equals to number-of-legs parameter
+         if (totalLegs === Number(numberOfLegs)) {
+            //Finding winner player
+            const maxLegs = Math.max(...players.map(player => player.legs))
+            const winner = players.find(player => player.legs === maxLegs) || null
+            setIsGameEnd(true)
+            setWinner(winner)
+         }       
+      }
+      //Scenario when game type is set to first-to
+      else if (gameType === 'first-to') {
+         //Finding winner player
+         const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
+         setIsGameEnd(true)
+         setWinner(winner)
+      }
+   }
    
    //Restart game handler
    const handleRestartGame = () => {
@@ -572,6 +612,11 @@ const Game = () => {
       setHistory([]) 
       setThrowValueSum(0) 
       setCurrentPlayerThrowsCount(0) 
+
+      if(isGameEnd){
+         setIsGameEnd(false)
+         setWinner(null)
+      }
    }
 
    //Error close handler
@@ -592,7 +637,6 @@ const Game = () => {
    return (
       <div>
          {/*Players section:*/}
-         <h1>{gameMode}</h1>
          <ul>
             {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
                <li key={index}>
@@ -610,6 +654,17 @@ const Game = () => {
                </div>
             </div>
          )}
+
+         {/* End game pop-up */}
+         {isGameEnd && (
+            <div className="game-over-popup">
+               <h2>Game Over!</h2>
+               <h3>Winner: {winner?.name}</h3>
+               <button onClick={handleRestartGame}>Play Again</button>
+               <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
+            </div>
+         )}
+           
 
 
          {/*Score section:*/}

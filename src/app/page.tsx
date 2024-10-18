@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 
-const GameSettings = () => {
+const Home = () => {
    //State to track player names
    const [playerNames, setPlayerNames] = useState<string[]>(['', ''])
    //State to track selected score (301, 501, 701)
@@ -81,7 +81,7 @@ const GameSettings = () => {
    
    // Preparing players data and generating URL
    const playersJson = encodeURIComponent(JSON.stringify(playerNames))
-   const gameUrl = `/game?mode=${selectedScore}&${gameType}&players=${playersJson}&numberOfLegs=${numberOfLegs}`
+   const gameUrl = `/game?mode=${selectedScore}&game-type=${gameType}&players=${playersJson}&number-of-legs=${numberOfLegs}`
    
    return (
       <div className='main-container'>
@@ -151,18 +151,29 @@ const GameSettings = () => {
          
          {/* Selecting number of legs section */}
          <div className='legs-buttons'>
-            {[1, 2, 3, 4, 5].map((legs) => (
-               <button
-                  key={legs}
-                  className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
-                  onClick={() => handleNumberOfLegs(legs)}
-               >
-                  {legs}
-               </button>
-            ))}
+            {/* Selecting number of legs section if game type is set to best-of*/}
+            {gameType === 'best-of'
+               ? [1, 3, 5, 7, 9].map((legs) => (
+                  <button
+                     key={legs}
+                     className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
+                     onClick={() => handleNumberOfLegs(legs)}
+                  >
+                     {legs}
+                  </button>
+               ))
+               //Selecting number of legs section if game type is set to first-to
+               : [1, 2, 3, 4, 5, 6, 7].map((legs) => (
+                  <button
+                     key={legs}
+                     className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
+                     onClick={() => handleNumberOfLegs(legs)}
+                  >
+                     {legs}
+                  </button>
+               ))}
          </div>
        
-         
          {/* Buttons section */}
          <div className='game-start'>
             <Link href={gameUrl}>
@@ -183,5 +194,5 @@ const GameSettings = () => {
    )
 }
 
-export default GameSettings
+export default Home
 
