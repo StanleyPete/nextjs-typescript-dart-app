@@ -1,12 +1,14 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+
 
 const Home = () => {
    //State to track player names
    const [playerNames, setPlayerNames] = useState<string[]>(['', ''])
    //State to track selected score (301, 501, 701)
-   const [selectedScore, setSelectedScore] = useState<number>(501)
+   const [selectedScore, setSelectedScore] = useState<number | string>(501)
    // State to track game type (best of / first to)
    const [gameType, setGameType] = useState<'best-of' | 'first-to'>('best-of')
    //State to track number of legs
@@ -15,6 +17,7 @@ const Home = () => {
    const [isError, setIsError] = useState<boolean>(false)
    //State to set error message
    const [errorMessage, setErrorMessage] = useState<string>('')
+   const [isHovered, setIsHovered] = useState(false)
 
    //Max number of players
    const maxPlayers = 4
@@ -28,24 +31,14 @@ const Home = () => {
    
    //Add a new player handler
    const addPlayerInput = () => {
-      if (playerNames.length < maxPlayers) {
-         setPlayerNames([...playerNames, ''])
-      } else {
-         setIsError(true)
-         setErrorMessage('Max player number is 4')
-      }
+      setPlayerNames([...playerNames, ''])
    }
 
    //Remove player handler
    const removePlayerInput = (index: number) => {
-      if (playerNames.length > 1) {
-         const newNames = [...playerNames]
-         newNames.splice(index, 1)
-         setPlayerNames(newNames)
-      } else {
-         setIsError(true)
-         setErrorMessage('At least one player is required.')
-      }
+      const newNames = [...playerNames]
+      newNames.splice(index, 1)
+      setPlayerNames(newNames)
    }
    
    //Validate player names
@@ -59,7 +52,7 @@ const Home = () => {
    }
 
    // Score selection handler
-   const handleScoreSelection = (score: number) => {
+   const handleScoreSelection = (score: number | string) => {
       setSelectedScore(score)
    }
 
@@ -85,6 +78,7 @@ const Home = () => {
    
    return (
       <div className='main-container'>
+         <h1>Free online dart scoring app</h1>
          {/* Error section */}
          {isError && (
             <div className="error">
@@ -95,87 +89,111 @@ const Home = () => {
             </div>
          )}
 
-         {/* Button to add a new player */}
-         <button onClick={addPlayerInput} className='add-player-button'>Add Player</button>
 
          {/* Players section */}
-         <div>
+         <div className='players-section main-form'>
+            <p className='players header'>{playerNames.length === 1 ? `${playerNames.length} Player:` : `${playerNames.length} Players:`}</p>
+            {/* Players name section */}
             {playerNames.map((name, index) => (
-               <div key={index}>
-                  <label htmlFor={`player-${index}`}>Player {index + 1} Name:</label>
+               <div className='player-input' key={index}>
                   <input
                      type="text"
+                     className={index === 0 ? 'full-width' : ''}
                      id={`player-${index}`}
                      value={name}
+                     placeholder={`Player ${index + 1} name`}
                      onChange={(event) => handleNameChange(index, event.target.value)}
                   />
                   {/* Button to remove player */}
-                  <button 
-                     className="remove-player-button" 
-                     onClick={() => removePlayerInput(index)}
-                  >
-                     Remove
-                  </button>
+                  {playerNames.length > 1 && index > 0 && (
+                     <button 
+                        className="remove-player-button" 
+                        onClick={() => removePlayerInput(index)}
+                     >
+                        <Image src='/remove.png' alt='Remove player icon' width={22} height={22} />
+                     </button>
+                  )}
                </div>
             ))}
-         </div>
-
-         {/* Selecting score section */}
-         <div className='score-buttons'>
-            {[301, 501, 701].map((score) => (
-               <button
-                  key={score}
-                  className={`score-button ${selectedScore === score ? 'active' : ''}`}
-                  onClick={() => handleScoreSelection(score)}
+            {/* Button to add a new player - displayed when players number < 4 players */}
+            {playerNames.length < maxPlayers && (
+               <button 
+                  onClick={addPlayerInput} 
+                  className={`add-player-button ${isHovered ? 'hovered' : ''}`}
+                  onMouseEnter={() => setIsHovered(true)} 
+                  onMouseLeave={() => setIsHovered(false)}
                >
-                  {score}
+                  <Image src='/plus.png' alt='Add player icon' width={16} height={16} />
+                  <span>Add new player</span>
                </button>
-            ))}
+            )}
+         </div>
+      
+         {/* Selecting score section */}
+         <div className='game-mode main-form'>
+            <p className='mode header'>Game mode:</p>
+            <div className="game-options">
+               {[301, 501, 701, 1001, 'Cricket'].map((score) => (
+                  <button
+                     key={score}
+                     className={`score-button ${selectedScore === score ? 'active' : ''}`}
+                     onClick={() => handleScoreSelection(score)}
+                  >
+                     {score}
+                  </button>
+               ))}
+            </div>
          </div>
          
          {/* Selecting game type section */}
-         <div className='game-type-buttons'>
-            <button 
-               className={`game-type-button ${gameType === 'best-of' ? 'active' : ''}`} 
-               onClick={() => handleGameTypeChange('best-of')}
-            >
-               Best Of
-            </button>
-            <button 
-               className={`game-type-button ${gameType === 'first-to' ? 'active' : ''}`} 
-               onClick={() => handleGameTypeChange('first-to')}
-            >
-               First To
-            </button>
+         <div className='game-type main-form'>
+            <p className='type header'>Win type:</p>
+            <div className="game-options">
+               <button 
+                  className={`game-type-button ${gameType === 'best-of' ? 'active' : ''}`} 
+                  onClick={() => handleGameTypeChange('best-of')}
+               >
+                  Best Of
+               </button>
+               <button 
+                  className={`game-type-button ${gameType === 'first-to' ? 'active' : ''}`} 
+                  onClick={() => handleGameTypeChange('first-to')}
+               >
+                  First To
+               </button>
+            </div>
          </div>
          
          {/* Selecting number of legs section */}
-         <div className='legs-buttons'>
-            {/* Selecting number of legs section if game type is set to best-of*/}
-            {gameType === 'best-of'
-               ? [1, 3, 5, 7, 9].map((legs) => (
-                  <button
-                     key={legs}
-                     className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
-                     onClick={() => handleNumberOfLegs(legs)}
-                  >
-                     {legs}
-                  </button>
-               ))
-               //Selecting number of legs section if game type is set to first-to
-               : [1, 2, 3, 4, 5, 6, 7].map((legs) => (
-                  <button
-                     key={legs}
-                     className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
-                     onClick={() => handleNumberOfLegs(legs)}
-                  >
-                     {legs}
-                  </button>
-               ))}
+         <div className='legs-buttons main-form'>
+            <p className='legs header'>Number of legs</p>
+            <div className="game-options">
+               {/* Selecting number of legs section if game type is set to best-of*/}
+               {gameType === 'best-of'
+                  ? [1, 3, 5, 7, 9].map((legs) => (
+                     <button
+                        key={legs}
+                        className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
+                        onClick={() => handleNumberOfLegs(legs)}
+                     >
+                        {legs}
+                     </button>
+                  ))
+                  //Selecting number of legs section if game type is set to first-to
+                  : [1, 2, 3, 4, 5, 6, 7].map((legs) => (
+                     <button
+                        key={legs}
+                        className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
+                        onClick={() => handleNumberOfLegs(legs)}
+                     >
+                        {legs}
+                     </button>
+                  ))}
+            </div>
          </div>
        
          {/* Buttons section */}
-         <div className='game-start'>
+         <div className='game-start main-form'>
             <Link href={gameUrl}>
                <button 
                   className='game-start-button' 

@@ -590,8 +590,10 @@ const Game = () => {
       else if (gameType === 'first-to') {
          //Finding winner player
          const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
-         setIsGameEnd(true)
-         setWinner(winner)
+         if(winner){
+            setIsGameEnd(true)
+            setWinner(winner)
+         }
       }
    }
    
