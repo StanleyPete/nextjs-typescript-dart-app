@@ -2,15 +2,19 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import './styles/home.scss'
+
 
 
 const Home = () => {
+   //State tp tracl game type
+   const [gameType, setGameType] = useState<'regular' | 'teams' | 'online'>('regular')
    //State to track player names
    const [playerNames, setPlayerNames] = useState<string[]>(['', ''])
    //State to track selected score (301, 501, 701)
    const [selectedScore, setSelectedScore] = useState<number | string>(501)
    // State to track game type (best of / first to)
-   const [gameType, setGameType] = useState<'best-of' | 'first-to'>('best-of')
+   const [gameWin, setGameWin] = useState<'best-of' | 'first-to'>('best-of')
    //State to track number of legs
    const [numberOfLegs, setNumberOfLegs] = useState(3)
    //State to track if error occured
@@ -22,6 +26,11 @@ const Home = () => {
    //Max number of players
    const maxPlayers = 4
    
+
+   const handleGameType = (type: 'regular' | 'teams' | 'online') => {
+      setGameType(type)
+   }
+
    //Player name update handler
    const handleNameChange = (index: number, value: string) => {
       const newNames = [...playerNames]
@@ -57,8 +66,8 @@ const Home = () => {
    }
 
    // Game type handler
-   const handleGameTypeChange = (type: 'best-of' | 'first-to') => {
-      setGameType(type)
+   const handleGameWin = (type: 'best-of' | 'first-to') => {
+      setGameWin(type)
    }
    
    // Number of legs handler
@@ -74,11 +83,33 @@ const Home = () => {
    
    // Preparing players data and generating URL
    const playersJson = encodeURIComponent(JSON.stringify(playerNames))
-   const gameUrl = `/game?mode=${selectedScore}&game-type=${gameType}&players=${playersJson}&number-of-legs=${numberOfLegs}`
+   const gameUrl = `/game?mode=${selectedScore}&game-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}`
    
    return (
       <div className='main-container'>
-         <h1>Free online dart scoring app</h1>
+         <div className='game-type main-form'>
+            <p className='type header'>Game type:</p>
+            <div className='game-options'>
+               <button 
+                  className={`game-type-button ${gameType === 'regular' ? 'active' : ''}`} 
+                  onClick={() => handleGameType('regular')}
+               >
+                  Regular
+               </button>
+               <button 
+                  className={`game-type-button ${gameType === 'teams' ? 'active' : ''}`} 
+                  onClick={() => handleGameType('teams')}
+               >
+                  Teams
+               </button>
+               <button 
+                  className={`game-type-button ${gameType === 'online' ? 'active' : ''}`} 
+                  onClick={() => handleGameType('online')}
+               >
+                  Online
+               </button>
+            </div>
+         </div>
          {/* Error section */}
          {isError && (
             <div className="error">
@@ -146,18 +177,18 @@ const Home = () => {
          </div>
          
          {/* Selecting game type section */}
-         <div className='game-type main-form'>
+         <div className='win-type main-form'>
             <p className='type header'>Win type:</p>
             <div className="game-options">
                <button 
-                  className={`game-type-button ${gameType === 'best-of' ? 'active' : ''}`} 
-                  onClick={() => handleGameTypeChange('best-of')}
+                  className={`win-type-button ${gameWin === 'best-of' ? 'active' : ''}`} 
+                  onClick={() => handleGameWin('best-of')}
                >
                   Best Of
                </button>
                <button 
-                  className={`game-type-button ${gameType === 'first-to' ? 'active' : ''}`} 
-                  onClick={() => handleGameTypeChange('first-to')}
+                  className={`win-type-button ${gameWin === 'first-to' ? 'active' : ''}`} 
+                  onClick={() => handleGameWin('first-to')}
                >
                   First To
                </button>
@@ -169,7 +200,7 @@ const Home = () => {
             <p className='legs header'>Number of legs</p>
             <div className="game-options">
                {/* Selecting number of legs section if game type is set to best-of*/}
-               {gameType === 'best-of'
+               {gameWin === 'best-of'
                   ? [1, 3, 5, 7, 9].map((legs) => (
                      <button
                         key={legs}
@@ -193,7 +224,7 @@ const Home = () => {
          </div>
        
          {/* Buttons section */}
-         <div className='game-start main-form'>
+         <div className='game-start'>
             <Link href={gameUrl}>
                <button 
                   className='game-start-button' 

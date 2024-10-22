@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import '../styles/game.scss'
 
 interface Player {
    name: string
@@ -637,15 +638,38 @@ const Game = () => {
    }, [players, history, players[currentPlayerIndex].isInputPreffered, currentPlayerIndex])
 
    return (
-      <div>
+      <div className='main-container game-container'>
          {/*Players section:*/}
-         <ul>
-            {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
-               <li key={index}>
-                  {player.name} - Legs: {player.legs} Points Left: {player.pointsLeft}, Last Score: {player.lastScore}, Average: {player.average}, isInputPreffered: {`${player.isInputPreffered}`}
-               </li>
-            ))}
-         </ul>
+         <div className="game-players-section">
+            <div className="current-player-section">
+               <div className='current-player-name-legs'>
+                  {players[currentPlayerIndex].name} 
+                  <div className='player-legs'>{players[currentPlayerIndex].legs}</div>
+               </div>
+               <p className='current-player-points-left'>{players[currentPlayerIndex].pointsLeft}</p>
+               <div className='current-player-stats'>
+                  3-DART AVERAGE: 
+                  <p>{players[currentPlayerIndex].average}</p>
+               </div>
+               <div className='current-player-stats'>
+                  LAST SCORE: 
+                  <p>{players[currentPlayerIndex].lastScore}</p>
+               </div>
+            </div>
+            <div className='game-players-list'>
+               {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
+                  <div 
+                     className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
+                     key={index}>
+                     {player.name} 
+                     <div className="game-players-list-stats">
+                        <div className='player-legs'>{player.legs}</div>
+                        <p>{player.pointsLeft}</p>
+                     </div>
+                  </div>
+               ))}  
+            </div>
+         </div>
          
          {/* Error section */}
          {isError && (
