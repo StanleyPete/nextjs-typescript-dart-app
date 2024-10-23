@@ -86,7 +86,7 @@ const Home = () => {
    const gameUrl = `/game?mode=${selectedScore}&game-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}`
    
    return (
-      <div className='main-container'>
+      <div className='main-container form'>
          <div className='game-type main-form'>
             <p className='type header'>Game type:</p>
             <div className='game-options'>
@@ -141,7 +141,7 @@ const Home = () => {
                         className="remove-player-button" 
                         onClick={() => removePlayerInput(index)}
                      >
-                        <Image src='/remove.png' alt='Remove player icon' width={22} height={22} />
+                        <Image src='/minus.svg' alt='Remove player icon' width={22} height={22} />
                      </button>
                   )}
                </div>
@@ -154,7 +154,7 @@ const Home = () => {
                   onMouseEnter={() => setIsHovered(true)} 
                   onMouseLeave={() => setIsHovered(false)}
                >
-                  <Image src='/plus.png' alt='Add player icon' width={16} height={16} />
+                  <Image src='/plus.svg' alt='Add player icon' width={16} height={16} />
                   <span>Add new player</span>
                </button>
             )}
