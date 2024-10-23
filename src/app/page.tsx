@@ -197,7 +197,7 @@ const Home = () => {
          
          {/* Selecting number of legs section */}
          <div className='legs-buttons main-form'>
-            <p className='legs header'>Number of legs</p>
+            <p className='legs header'>Number of legs:</p>
             <div className="game-options">
                {/* Selecting number of legs section if game type is set to best-of*/}
                {gameWin === 'best-of'

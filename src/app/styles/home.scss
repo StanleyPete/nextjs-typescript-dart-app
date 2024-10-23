@@ -48,9 +48,17 @@ $active-button-color: #df4040;
               width: 90%;
               height: 36px;
               padding: 12px;
+              padding-left: 30px;
               border: $border-style;
               border-radius: $game-options-border-radius;
-              ;
+              background: url('../../../public/user.svg');
+              background-size: 16px 16px;
+              background-repeat: no-repeat;
+              background-position: 10px center;
+              outline: none;
+            }
+            input:focus{
+              border: 2px solid $active-button-color;
             }
             input.full-width {
               width: 100%; 
@@ -64,6 +72,10 @@ $active-button-color: #df4040;
               border: $border-style;
               border-radius: 50%;
               background-color: white;
+              cursor: pointer;
+            }
+            button.remove-player-button:hover{
+              transform: scale(1.05)
             }
   }
   
@@ -97,7 +109,13 @@ button.add-player-button:hover{
         height: 38px;
         font-size: 18px;
         color: white;
+        border: none;
+        border-radius: $game-options-border-radius;
         background-color: green;
+        cursor: pointer;
+      }
+      .game-start-button:hover{
+        transform: scale(1.05);
       }
 }
 

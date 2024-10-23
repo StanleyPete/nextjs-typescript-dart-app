@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Image from 'next/image'
 import '../styles/game.scss'
 
 interface Player {
@@ -645,7 +646,10 @@ const Game = () => {
             {/*Current player section:*/}
             <div className="current-player-section">
                <div className='current-player-name-legs'>
-                  {players[currentPlayerIndex].name} 
+                  <div className='current-player-name'>
+                     <Image src='/game-user-throw.svg' alt='User icon' width={16} height={16} />
+                     {players[currentPlayerIndex].name} 
+                  </div>
                   <div className='player-legs'>
                      {players[currentPlayerIndex].legs}
                   </div>
@@ -666,10 +670,12 @@ const Game = () => {
             {/*Game player list:*/}
             <div className='game-players-list'>
                {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
-                  <div 
-                     className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
+                  <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
                      key={index}>
-                     {player.name} 
+                     <div className='game-players-list-player-name'>
+                        <Image src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                        {player.name} 
+                     </div>
                      <div className="game-players-list-stats">
                         <div className='player-legs'>{player.legs}</div>
                         <p>{player.pointsLeft}</p>
@@ -731,7 +737,7 @@ const Game = () => {
                            setCurrentThrow(newValue ? Number(newValue) : 0)
                         }}
                      >
-                        Remove Last
+                        <Image src='/backspace.svg' alt='User icon' width={24} height={24} />
                      </button>
                   </div>
                )}

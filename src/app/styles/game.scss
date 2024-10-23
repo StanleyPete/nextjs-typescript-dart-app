@@ -41,6 +41,13 @@ $score-buttons-background-color:  #464343;
               width: 100%;
               padding: 6px;
               border-bottom: 1px solid white;
+                  .current-player-name{
+                    display: flex;
+                    align-items: center;
+                        img{
+                          margin-right: 6px;
+                        }
+                  }
             } 
             .current-player-points-left{
               font-size: 42px;
@@ -73,11 +80,18 @@ $score-buttons-background-color:  #464343;
               width: 100%;
               padding: 4px 12px;
               border-radius: 8px;
-              .game-players-list-stats{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-              }
+                  .game-players-list-player-name{
+                    display: flex;
+                    align-items: center;
+                        img{
+                          margin-right: 6px;
+                        }
+                  }
+                  .game-players-list-stats{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                  }
         }
         .active-player{
           background-color: $green-color;
@@ -88,7 +102,7 @@ $score-buttons-background-color:  #464343;
 
 //Current player throw paragraph:
 .current-player-throw{
-  background-color: $red-color;
+  background-color: rgb(184, 113, 21);
   padding: 6px 0px;
   font-size: 12px;
   text-align: center;
@@ -102,24 +116,26 @@ $score-buttons-background-color:  #464343;
   grid-template-columns: 1fr 3fr 1fr; 
   align-items: center; 
       button{
-        border: none;
         height: 100%;
         padding: 4px 8px;
+        border: none;
         color: white;
+        cursor: pointer;
       }  
       .input-toggle{
         background-color: transparent;
       }
       .score-input-section{
         display: grid;
-        grid-template-columns: 5fr 1fr;
+        grid-template-columns: 5fr 1.5fr;
+        height: 100%;
             input{
               border: none;
               padding: 0px 6px;
               background-color: #fafafa;
             }
             .remove-last{
-              background-color: rgb(184, 113, 21);
+              background-color: $red-color;
             }
       }
       .submit-score{
