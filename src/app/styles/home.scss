@@ -77,30 +77,72 @@ $active-button-color: #df4040;
             button.remove-player-button:hover{
               transform: scale(1.05)
             }
-  }
+      } 
+      button.add-player-button{
+        display: flex;                   
+        align-items: center;             
+        margin-top: 8px;
+        padding: 8px 0px; 
+        height: 22px;
+        width: 120px;
+        border: none;
+        border-radius: $game-options-border-radius;
+        background-color: $main-container-background-color;
+        font-size: 12px;
+        text-align: center;
+        cursor: pointer;
+      }
+      button.add-player-button span {
+        margin-left: 6px;
+      }
+      button.add-player-button:hover{
+        transform: scale(1.05);
+        font-weight: 700;
+      }
+}
+
+.team-section{
+  display: flex;
   
-button.add-player-button{
-  display: flex;                   
-  align-items: center;             
-  margin-top: 8px;
-  padding: 8px 0px; 
-  height: 22px;
-  width: 120px;
-  border: none;
-  border-radius: $game-options-border-radius;
-  background-color: $main-container-background-color;
-  font-size: 12px;
-  text-align: center;
-  cursor: pointer;
 }
-button.add-player-button span {
-  margin-left: 6px;
+.team-header-image{
+  display: flex;
+      img{
+        margin-right: 4px;
+      }
 }
-button.add-player-button:hover{
-  transform: scale(1.05);
-  font-weight: 700;
+.team-player-input{
+  display: flex;
+  flex-direction: column;
+      input{
+          width: 90%;
+          height: 36px;
+          margin-bottom: 6px;
+          padding: 12px;
+          padding-left: 30px;
+          border: $border-style;
+          border-radius: $game-options-border-radius;
+          outline: none; 
+        }
+        input:focus{
+          border: 2px solid $active-button-color;
+        }
 }
-}     
+
+.team-1-section .team-player-input input{
+  background: url('../../../public/team-1-user.svg');
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+.team-2-section .team-player-input input{
+  background: url('../../../public/team-2-user.svg');
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+
+
 
 .game-start{
   margin-top: 38px;

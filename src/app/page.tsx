@@ -120,46 +120,88 @@ const Home = () => {
             </div>
          )}
 
-
-         {/* Players section */}
-         <div className='players-section main-form'>
-            <p className='players header'>{playerNames.length === 1 ? `${playerNames.length} Player:` : `${playerNames.length} Players:`}</p>
-            {/* Players name section */}
-            {playerNames.map((name, index) => (
-               <div className='player-input' key={index}>
-                  <input
-                     type="text"
-                     className={index === 0 ? 'full-width' : ''}
-                     id={`player-${index}`}
-                     value={name}
-                     placeholder={`Player ${index + 1} name`}
-                     onChange={(event) => handleNameChange(index, event.target.value)}
-                  />
-                  {/* Button to remove player */}
-                  {playerNames.length > 1 && index > 0 && (
-                     <button 
-                        className="remove-player-button" 
-                        onClick={() => removePlayerInput(index)}
-                     >
-                        <Image src='/minus.svg' alt='Remove player icon' width={22} height={22} />
-                     </button>
-                  )}
+         
+         {gameType === 'regular' ? (
+            <div className='players-section main-form'>
+               <p className='players header'>{playerNames.length === 1 ? `${playerNames.length} Player:` : `${playerNames.length} Players:`}</p>
+               {/* Players name section */}
+               {playerNames.map((name, index) => (
+                  <div className='player-input' key={index}>
+                     <input
+                        type="text"
+                        className={index === 0 ? 'full-width' : ''}
+                        id={`player-${index}`}
+                        value={name}
+                        placeholder={`Player ${index + 1} name`}
+                        onChange={(event) => handleNameChange(index, event.target.value)}
+                     />
+                     {/* Button to remove player */}
+                     {playerNames.length > 1 && index > 0 && (
+                        <button 
+                           className="remove-player-button" 
+                           onClick={() => removePlayerInput(index)}
+                        >
+                           <Image src='/minus.svg' alt='Remove player icon' width={22} height={22} />
+                        </button>
+                     )}
+                  </div>
+               ))}
+               {/* Button to add a new player - displayed when players number < 4 players */}
+               {playerNames.length < maxPlayers && (
+                  <button 
+                     onClick={addPlayerInput} 
+                     className={`add-player-button ${isHovered ? 'hovered' : ''}`}
+                     onMouseEnter={() => setIsHovered(true)} 
+                     onMouseLeave={() => setIsHovered(false)}
+                  >
+                     <Image src='/plus.svg' alt='Add player icon' width={16} height={16} />
+                     <span>Add new player</span>
+                  </button>
+               )}
+            </div>
+            
+         ) : gameType === 'teams' ? (
+            <div className='players-section main-form team-section'>
+               {/* Team 1 section */}
+               <div className="team-1-section">
+                  <div className='team-header-image'>
+                     <Image src='/team-1-icon.svg' alt='Team 1 icon' width={16} height={16} />
+                     <p className='team-1 header'>Team 1:</p>
+                  </div>
+                  <div className='team-player-input'>
+                     {[...Array(2)].map((_, index) => (
+                        <input
+                           key={index}
+                           type="text"
+                           placeholder={`T1: Player ${index + 1} name`}
+                        />
+                     ))}
+                  </div>
                </div>
-            ))}
-            {/* Button to add a new player - displayed when players number < 4 players */}
-            {playerNames.length < maxPlayers && (
-               <button 
-                  onClick={addPlayerInput} 
-                  className={`add-player-button ${isHovered ? 'hovered' : ''}`}
-                  onMouseEnter={() => setIsHovered(true)} 
-                  onMouseLeave={() => setIsHovered(false)}
-               >
-                  <Image src='/plus.svg' alt='Add player icon' width={16} height={16} />
-                  <span>Add new player</span>
-               </button>
-            )}
-         </div>
-      
+               {/* Team 2 section */}
+               <div className="team-2-section">
+                  <div className='team-header-image'>
+                     <Image src='/team-2-icon.svg' alt='Team 1 icon' width={16} height={16} />
+                     <p className='team-2 header'>Team 2:</p>
+                  </div>
+                  <div className='team-player-input'>
+                     {[...Array(2)].map((_, index) => (
+                        <input
+                           key={index}
+                           type="text"
+                           placeholder={`T2: Player ${index + 1} name`}
+                        />
+                     ))}
+                  </div>
+               </div>
+            </div>
+         ) : gameType === 'online' ? (
+            <div>Test</div>
+         ) : null }
+         
+   
+       
+       
          {/* Selecting score section */}
          <div className='game-mode main-form'>
             <p className='mode header'>Game mode:</p>
