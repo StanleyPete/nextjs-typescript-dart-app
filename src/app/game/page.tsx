@@ -639,50 +639,109 @@ const Game = () => {
    }, [players, history, players[currentPlayerIndex].isInputPreffered, currentPlayerIndex])
 
    return (
-      <div className='main-container game-container'>
+      <div className='game-container'>
 
          {/*Game players section:*/}
          <div className="game-players-section">
-            {/*Current player section:*/}
-            <div className="current-player-section">
-               <div className='current-player-name-legs'>
-                  <div className='current-player-name'>
-                     <Image src='/game-user-throw.svg' alt='User icon' width={16} height={16} />
-                     {players[currentPlayerIndex].name} 
-                  </div>
-                  <div className='player-legs'>
-                     {players[currentPlayerIndex].legs}
-                  </div>
-               </div>
-               <p className='current-player-points-left'>
-                  {players[currentPlayerIndex].pointsLeft}
-               </p>
-               <div className='current-player-stats'>
-                  3-DART AVERAGE: 
-                  <p>{players[currentPlayerIndex].average}</p>
-               </div>
-               <div className='current-player-stats'>
-                  LAST SCORE: 
-                  <p>{players[currentPlayerIndex].lastScore}</p>
-               </div>
-            </div>
 
-            {/*Game player list:*/}
-            <div className='game-players-list'>
-               {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
-                  <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
-                     key={index}>
-                     <div className='game-players-list-player-name'>
-                        <Image src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {player.name} 
+            {/*Two players preview:*/}
+            {players.length === 2 ? (
+               <div className='two-players-preview'>
+
+                  {/*Player 1: */}
+                  <div className={`current-player-section ${currentPlayerIndex === 0 ? 'current-active-player' : ''}`}>
+                     <div className='current-player-name-legs'>
+                        <div className='current-player-name'>
+                           <Image src={players[0].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                           {players[0].name} 
+                        </div>
+                        <div className='player-legs'>
+                           {players[0].legs}
+                        </div>
                      </div>
-                     <div className="game-players-list-stats">
-                        <div className='player-legs'>{player.legs}</div>
-                        <p>{player.pointsLeft}</p>
+                     <p className='current-player-points-left'>
+                        {players[0].pointsLeft}
+                     </p>
+                     <div className='current-player-stats'>
+                        3-DART AVERAGE: 
+                        <p>{players[0].average}</p>
+                     </div>
+                     <div className='current-player-stats'>
+                        LAST SCORE: 
+                        <p>{players[0].lastScore}</p>
                      </div>
                   </div>
-               ))}  
-            </div>
+
+                  {/*Player 2: */}
+                  <div className={`current-player-section ${currentPlayerIndex === 1 ? 'current-active-player' : ''}`}>
+                     <div className='current-player-name-legs'>
+                        <div className='current-player-name'>
+                           <Image src={players[1].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                           {players[1].name} 
+                        </div>
+                        <div className='player-legs'>
+                           {players[1].legs}
+                        </div>
+                     </div>
+                     <p className='current-player-points-left'>
+                        {players[1].pointsLeft}
+                     </p>
+                     <div className='current-player-stats'>
+                        3-DART AVERAGE: 
+                        <p>{players[1].average}</p>
+                     </div>
+                     <div className='current-player-stats'>
+                        LAST SCORE: 
+                        <p>{players[1].lastScore}</p>
+                     </div>
+                  </div>
+
+               </div>
+            ) : (
+               //View when players.length > 2:
+               <>
+                  {/*Current player section:*/}
+                  <div className="current-player-section">
+                     <div className='current-player-name-legs'>
+                        <div className='current-player-name'>
+                           <Image src='/game-user-throw.svg' alt='User icon' width={16} height={16} />
+                           {players[currentPlayerIndex].name} 
+                        </div>
+                        <div className='player-legs'>
+                           {players[currentPlayerIndex].legs}
+                        </div>
+                     </div>
+                     <p className='current-player-points-left'>
+                        {players[currentPlayerIndex].pointsLeft}
+                     </p>
+                     <div className='current-player-stats'>
+                        3-DART AVERAGE: 
+                        <p>{players[currentPlayerIndex].average}</p>
+                     </div>
+                     <div className='current-player-stats'>
+                        LAST SCORE: 
+                        <p>{players[currentPlayerIndex].lastScore}</p>
+                     </div>
+                  </div>
+
+                  {/*Game player list:*/}
+                  <div className='game-players-list'>
+                     {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
+                        <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
+                           key={index}>
+                           <div className='game-players-list-player-name'>
+                              <Image src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                              {player.name} 
+                           </div>
+                           <div className="game-players-list-stats">
+                              <div className='player-legs'>{player.legs}</div>
+                              <p>{player.pointsLeft}</p>
+                           </div>
+                        </div>
+                     ))}  
+                  </div>
+               </>
+            )}
 
          </div>
            

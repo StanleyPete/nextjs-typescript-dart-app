@@ -1,12 +1,29 @@
 $red-color: #df4040;
 $green-color: green;
 $score-buttons-background-color:  #464343;
+$game-container-border-radius: 16px;
 
 
 .game-container{
+  min-height: 90%;
+  width: 420px;
+  min-width: 340px;
+  padding: 16px 0;
   background-color: #292828;
-  padding: 38px 0;
+  border-radius: $game-container-border-radius;
   color:white;
+}
+
+//Two players preview:
+.two-players-preview{
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-bottom: 12px;
+      .current-active-player{
+        border-radius: 8px;
+        background-color: rgb(12, 66, 12);
+      }
 }
 
 //Game players section:
@@ -97,8 +114,8 @@ $score-buttons-background-color:  #464343;
           background-color: $green-color;
         }
       }
-
-}
+      
+    }
 
 //Current player throw paragraph:
 .current-player-throw{
@@ -123,7 +140,7 @@ $score-buttons-background-color:  #464343;
         cursor: pointer;
       }  
       .input-toggle{
-        background-color: transparent;
+        background-color: $score-buttons-background-color;
       }
       .score-input-section{
         display: grid;
@@ -173,7 +190,7 @@ $score-buttons-background-color:  #464343;
 }
 .multiplier-section button{
   height: 28px;
-  width: 80px;
+  width: 84px;
   color: white;
   background-color: transparent;
   border: none;
