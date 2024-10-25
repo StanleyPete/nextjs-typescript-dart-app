@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import '../styles/game.scss'
+import checkoutArray from '@/lib/checkout-table'
 
 interface Player {
    name: string
@@ -650,6 +651,8 @@ const Game = () => {
 
                   {/*Player 1: */}
                   <div className={`current-player-section ${currentPlayerIndex === 0 ? 'current-active-player' : ''}`}>
+
+                     {/*Player 1 header */}
                      <div className='current-player-name-legs'>
                         <div className='current-player-name'>
                            <Image src={players[0].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
@@ -659,9 +662,18 @@ const Game = () => {
                            {players[0].legs}
                         </div>
                      </div>
+
+                     {/*Player 1 points left*/}
                      <p className='current-player-points-left'>
                         {players[0].pointsLeft}
                      </p>
+
+                     {/*Player 1 checkout options*/}
+                     {players[0].pointsLeft <= 170 && (
+                        <p className='checkout-options'>{checkoutArray[players[0].pointsLeft - 2]}</p>
+                     )}
+
+                     {/*Player 1 stats*/}
                      <div className='current-player-stats'>
                         3-DART AVERAGE: 
                         <p>{players[0].average}</p>
@@ -670,10 +682,13 @@ const Game = () => {
                         LAST SCORE: 
                         <p>{players[0].lastScore}</p>
                      </div>
+
                   </div>
 
                   {/*Player 2: */}
                   <div className={`current-player-section ${currentPlayerIndex === 1 ? 'current-active-player' : ''}`}>
+
+                     {/*Player 2 header */}
                      <div className='current-player-name-legs'>
                         <div className='current-player-name'>
                            <Image src={players[1].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
@@ -683,9 +698,18 @@ const Game = () => {
                            {players[1].legs}
                         </div>
                      </div>
+
+                     {/*Player 2 points left*/}
                      <p className='current-player-points-left'>
                         {players[1].pointsLeft}
                      </p>
+
+                     {/*Player 2 checkout options*/}
+                     {players[1].pointsLeft <= 170 && (
+                        <p className='checkout-options'>{checkoutArray[players[1].pointsLeft - 2]}</p>
+                     )}
+
+                     {/*Player 2 checkout options*/}
                      <div className='current-player-stats'>
                         3-DART AVERAGE: 
                         <p>{players[1].average}</p>
@@ -694,6 +718,7 @@ const Game = () => {
                         LAST SCORE: 
                         <p>{players[1].lastScore}</p>
                      </div>
+
                   </div>
 
                </div>
@@ -702,6 +727,8 @@ const Game = () => {
                <>
                   {/*Current player section:*/}
                   <div className="current-player-section">
+
+                     {/*Current player header */}
                      <div className='current-player-name-legs'>
                         <div className='current-player-name'>
                            <Image src='/game-user-throw.svg' alt='User icon' width={16} height={16} />
@@ -711,9 +738,18 @@ const Game = () => {
                            {players[currentPlayerIndex].legs}
                         </div>
                      </div>
+
+                     {/*Current player points left */}
                      <p className='current-player-points-left'>
                         {players[currentPlayerIndex].pointsLeft}
                      </p>
+
+                     {/*Current player checkout options */}
+                     {players[currentPlayerIndex].pointsLeft <= 170 && (
+                        <p className='checkout-options'>{checkoutArray[players[currentPlayerIndex].pointsLeft - 2]}</p>
+                     )}
+
+                     {/*Current player stats */}
                      <div className='current-player-stats'>
                         3-DART AVERAGE: 
                         <p>{players[currentPlayerIndex].average}</p>
@@ -722,6 +758,7 @@ const Game = () => {
                         LAST SCORE: 
                         <p>{players[currentPlayerIndex].lastScore}</p>
                      </div>
+                     
                   </div>
 
                   {/*Game player list:*/}

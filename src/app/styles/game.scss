@@ -21,7 +21,7 @@ $game-container-border-radius: 16px;
   width: 100%;
   margin-bottom: 12px;
       .current-active-player{
-        border-radius: 8px;
+        border-radius: $game-container-border-radius;
         background-color: rgb(12, 66, 12);
       }
 }
@@ -50,7 +50,7 @@ $game-container-border-radius: 16px;
         align-items: center;
         width: 45%;
         height: 100%;
-        padding: 12px;
+        padding: 0px 12px;
             .current-player-name-legs{
               display: flex;
               justify-content: center;
@@ -65,9 +65,14 @@ $game-container-border-radius: 16px;
                           margin-right: 6px;
                         }
                   }
-            } 
+                } 
             .current-player-points-left{
-              font-size: 42px;
+                font-size: 38px;
+               
+            }
+            .checkout-options{
+                font-size: 12px;
+                margin-bottom: 6px;
             }
             .current-player-stats{
               display: flex;
@@ -147,9 +152,20 @@ $game-container-border-radius: 16px;
         grid-template-columns: 5fr 1.5fr;
         height: 100%;
             input{
-              border: none;
               padding: 0px 6px;
+              border: none;
               background-color: #fafafa;
+              outline: none; 
+              box-shadow: none; 
+              user-select: none;
+              cursor: default; 
+            }
+            input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
+              -webkit-appearance: none;
+              margin: 0;
+            }
+            input[type="number"] {
+              -moz-appearance: textfield;
             }
             .remove-last{
               background-color: $red-color;
