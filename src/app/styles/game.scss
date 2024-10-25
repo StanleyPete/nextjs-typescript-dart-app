@@ -1,17 +1,21 @@
 $red-color: #df4040;
-$green-color: green;
+$green-color: #008000;
+$yellow-color: #b87115;
+$active-player-color: #0c420c;
 $score-buttons-background-color:  #464343;
 $game-container-border-radius: 16px;
+$game-container-border-radius-v2: 8px;
 
 
 .game-container{
+  position: relative;
   min-height: 90%;
   width: 420px;
   min-width: 340px;
   padding: 16px 0px;
+  color:white;
   background-color: #292828;
   border-radius: $game-container-border-radius;
-  color:white;
 }
 
 //Two players preview:
@@ -22,7 +26,7 @@ $game-container-border-radius: 16px;
   margin-bottom: 12px;
       .current-active-player{
         border-radius: $game-container-border-radius;
-        background-color: rgb(12, 66, 12);
+        background-color: $active-player-color;
       }
 }
 
@@ -41,8 +45,8 @@ $game-container-border-radius: 16px;
         height: 24px;
         width: 24px;
         margin: 0px 6px;
-        border-radius: 8px;
         background-color: blue;
+        border-radius: $game-container-border-radius-v2;
       }
       //Current player section:
       .current-player-section{
@@ -102,7 +106,7 @@ $game-container-border-radius: 16px;
               align-items: center;
               width: 100%;
               padding: 4px 12px;
-              border-radius: 8px;
+              border-radius: $game-container-border-radius-v2;
                   .game-players-list-player-name{
                     display: flex;
                     align-items: center;
@@ -125,7 +129,7 @@ $game-container-border-radius: 16px;
 
 //Current player throw paragraph:
 .current-player-throw{
-  background-color: rgb(184, 113, 21);
+  background-color: $yellow-color;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   padding: 6px 0px;
@@ -143,13 +147,13 @@ $game-container-border-radius: 16px;
       button{
         height: 100%;
         padding: 4px 8px;
-        border: none;
         color: white;
+        border: none;
         cursor: pointer;
       }  
       .input-toggle{
         background-color: $score-buttons-background-color;
-        border-bottom-left-radius: 16px;
+        border-bottom-left-radius: $game-container-border-radius
       }
       .score-input-section{
         display: grid;
@@ -178,7 +182,7 @@ $game-container-border-radius: 16px;
       }
       .submit-score{
         background-color: $green-color; 
-        border-bottom-right-radius: 16px;
+        border-bottom-right-radius: $game-container-border-radius;
       }
       .current-player-throws{
         display: flex;
@@ -195,7 +199,7 @@ $game-container-border-radius: 16px;
               height: 80%;
               color: black;
               background-color:  #fafafa;
-              border-radius: 8px;
+              border-radius: $game-container-border-radius-v2;
             }
       }
 }
@@ -220,7 +224,7 @@ $game-container-border-radius: 16px;
 }
 .multiplier-section button.active{
   background-color: $green-color;
-  border-radius: 16px;
+  border-radius: $game-container-border-radius;
 }
 
 .score-input {
@@ -234,12 +238,10 @@ $game-container-border-radius: 16px;
 .score-input button {
   padding: 20px; 
   font-size: 22px; 
-
-
-  background-color: $score-buttons-background-color;
   color: white;
-  cursor: pointer; 
+  background-color: $score-buttons-background-color;
   transition: background-color 0.2s ease; 
+  cursor: pointer; 
 }
 
 .score-buttons {
@@ -252,7 +254,6 @@ $game-container-border-radius: 16px;
 .score-buttons button {
   padding: 15px;
   font-size: 16px;
-  background-color: transparent;
   color: white;
   background-color: $score-buttons-background-color;
   cursor: pointer;
@@ -273,15 +274,67 @@ $game-container-border-radius: 16px;
   }
   .go-back{
     background-color: $red-color;
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
+    border-top-left-radius: $game-container-border-radius;
+    border-bottom-left-radius: $game-container-border-radius;
   }
   .restart-game{
     background-color: $green-color;
-    border-top-right-radius: 16px;
-    border-bottom-right-radius: 16px;
+    border-top-right-radius: $game-container-border-radius;
+    border-bottom-right-radius: $game-container-border-radius;
   }
 
+}
+
+.error, .game-over-popup {
+  position: absolute; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%; 
+  left: 50%; 
+  height: 50%;
+  width: 82%;
+  padding: 20px; 
+  transform: translate(-50%, -50%); 
+  color: white; 
+  background-color: rgba(14, 13, 13, 0.8); 
+  border-radius: $game-container-border-radius-v2;
+  z-index: 1000;
+        .error-content, .game-over-popup-content{
+          height: 80%;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-evenly;
+          align-items: center;
+                
+                h3{
+                  font-size: 32px;
+                }
+                p{
+                  text-align: center;
+                }
+                button{
+                  height: 18%;
+                  width: 100%;
+                  margin-top: 12px;
+                  font-size: 16px;
+                  color: white;
+                  background-color: $red-color;
+                  border: none;
+                  border-radius: $game-container-border-radius-v2;
+                  cursor: pointer;
+                }
+                .play-again{
+                  background-color: $green-color;
+                }
+                .go-back{
+                  background-color: $red-color;
+                }
+                .undo{
+                  background-color: $yellow-color;
+                }
+               
+        } 
 }
 
 

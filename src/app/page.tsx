@@ -54,7 +54,7 @@ const Home = () => {
    const validatePlayerNames = () => {
       if (playerNames.some(name => name.trim() === '')) {
          setIsError(true)
-         setErrorMessage('All player names must be filled out.')
+         setErrorMessage('Each player name input must be filled out!')
          return false
       }
       return true
@@ -110,16 +110,6 @@ const Home = () => {
                </button>
             </div>
          </div>
-         {/* Error section */}
-         {isError && (
-            <div className="error">
-               <div className="error-content">
-                  <p>{errorMessage}</p>
-                  <button onClick={closeError}>OK</button>
-               </div>
-            </div>
-         )}
-
          
          {gameType === 'regular' ? (
             <div className='players-section main-form'>
@@ -281,6 +271,18 @@ const Home = () => {
                </button>
             </Link>
          </div>
+
+         {/* Error section */}
+         {isError && (
+            <div className="error">
+               <div className="error-content">
+                  <Image src='/error.svg' alt='Error icon' width={100} height={100} />
+                  <p>{errorMessage}</p>
+                  <button onClick={closeError}>OK</button>
+               </div>
+            </div>
+         )}
+
       </div>
    )
 }

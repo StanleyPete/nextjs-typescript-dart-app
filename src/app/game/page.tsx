@@ -974,6 +974,7 @@ const Game = () => {
          {isError && (
             <div className="error">
                <div className="error-content">
+                  <Image src='/error.svg' alt='Error icon' width={100} height={100} />
                   <p>{errorMessage}</p>
                   <button onClick={closeError}>OK</button>
                </div>
@@ -982,11 +983,14 @@ const Game = () => {
 
          {/* End game pop-up */}
          {isGameEnd && (
-            <div className="game-over-popup">
-               <h2>Game Over!</h2>
-               <h3>Winner: {winner?.name}</h3>
-               <button onClick={handleRestartGame}>Play Again</button>
-               <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
+            <div className='game-over-popup'>
+               <div className='game-over-popup-content'>
+                  <Image src='/winner.svg' alt='Error icon' width={80} height={80} />
+                  <h3>Winner: {winner?.name}</h3>
+                  <button className='play-again' onClick={handleRestartGame}>Play Again</button>
+                  <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
+                  <button className='undo' onClick={() => {handleUndo(); setIsGameEnd(false)}}>Undo</button>
+               </div>
             </div>
          )}
       </div>
