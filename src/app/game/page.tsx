@@ -53,6 +53,8 @@ const Game = () => {
    const [currentThrow, setCurrentThrow] = useState<number>(0)
    //CurrentPlayerIndex state declared in order to keep players index who currently plays
    const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0)
+   //State to track which player starts the leg
+   const [startLegPlayerIndex, setStartLegPlayerIndex] = useState<number>(0)
    //State to toggle between input and number buttons
    const [showNumberButtons, setShowNumberButtons] = useState<boolean>(false)
    //State to track total throws sum for current player when using buttons
@@ -87,6 +89,11 @@ const Game = () => {
       */
       const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
       setCurrentPlayerIndex(nextPlayerIndex)
+   }
+
+   //Next player who start the leg handler:
+   const handleSwitchPlayerLeg = () => {
+      setStartLegPlayerIndex(prevIndex => (prevIndex + 1) % players.length)
    }
 
    //Submit score handler for input:
@@ -155,6 +162,12 @@ const Game = () => {
 
          //Upadating player's state
          setPlayers(gamePlayers) 
+
+         //Switching to next player who start the leg
+         handleSwitchPlayerLeg()
+
+         //Setting current player index:
+         setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
 
          //End game check
          checkGameEndHandler()
@@ -275,6 +288,12 @@ const Game = () => {
             //Updating history state
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
 
+            //Switching to next player who start the leg
+            handleSwitchPlayerLeg()
+
+            //Setting current player index:
+            setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
+
             //Updating player's state
             setPlayers(gamePlayers) 
 
@@ -355,6 +374,12 @@ const Game = () => {
             
             //Updating history state
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+            //Switching to next player who start the leg
+            handleSwitchPlayerLeg()
+
+            //Setting current player index:
+            setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
 
             //Checking game end
             checkGameEndHandler()
@@ -475,8 +500,8 @@ const Game = () => {
          //Setting currentPlayerIndex to the last player who played in the history
          setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
 
-         //Removing last 3 history entries (inlcuding two additional entries created when player finished leg)
-         setHistory(prevHistory => prevHistory.slice(0, gamePlayers.length))
+         //Removing last history entries (inlcuding additional entries created when player finished leg)
+         setHistory(prevHistory => prevHistory.slice(0, prevHistory.length - gamePlayers.length))
 
          //Updating players state
          setPlayers(gamePlayers) 
@@ -676,7 +701,7 @@ const Game = () => {
                      {/*Player 1 stats*/}
                      <div className='current-player-stats'>
                         3-DART AVERAGE: 
-                        <p>{players[0].average}</p>
+                        <p>{players[0].average.toFixed(2)}</p>
                      </div>
                      <div className='current-player-stats'>
                         LAST SCORE: 
@@ -712,7 +737,7 @@ const Game = () => {
                      {/*Player 2 checkout options*/}
                      <div className='current-player-stats'>
                         3-DART AVERAGE: 
-                        <p>{players[1].average}</p>
+                        <p>{players[1].average.toFixed(2)}</p>
                      </div>
                      <div className='current-player-stats'>
                         LAST SCORE: 
@@ -752,13 +777,13 @@ const Game = () => {
                      {/*Current player stats */}
                      <div className='current-player-stats'>
                         3-DART AVERAGE: 
-                        <p>{players[currentPlayerIndex].average}</p>
+                        <p>{players[currentPlayerIndex].average.toFixed(2)}</p>
                      </div>
                      <div className='current-player-stats'>
                         LAST SCORE: 
                         <p>{players[currentPlayerIndex].lastScore}</p>
                      </div>
-                     
+
                   </div>
 
                   {/*Game player list:*/}

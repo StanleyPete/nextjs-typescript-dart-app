@@ -8,7 +8,7 @@ $game-container-border-radius: 16px;
   min-height: 90%;
   width: 420px;
   min-width: 340px;
-  padding: 16px 0;
+  padding: 16px 0px;
   background-color: #292828;
   border-radius: $game-container-border-radius;
   color:white;
@@ -32,6 +32,7 @@ $game-container-border-radius: 16px;
   justify-content: space-between;
   align-items: center;
   height: 160px;
+  padding: 12px;
       //Player-legs:
       .player-legs{
         display: flex;
@@ -50,7 +51,7 @@ $game-container-border-radius: 16px;
         align-items: center;
         width: 45%;
         height: 100%;
-        padding: 0px 12px;
+        padding: 12px;
             .current-player-name-legs{
               display: flex;
               justify-content: center;
@@ -71,7 +72,7 @@ $game-container-border-radius: 16px;
                
             }
             .checkout-options{
-                font-size: 12px;
+                font-size: 10px;
                 margin-bottom: 6px;
             }
             .current-player-stats{
@@ -83,7 +84,7 @@ $game-container-border-radius: 16px;
               color: $red-color;
             }
             .current-player-stats p{
-              font-size: 16px;
+              font-size: 12px;
               color: white;
             }
       }
@@ -125,6 +126,8 @@ $game-container-border-radius: 16px;
 //Current player throw paragraph:
 .current-player-throw{
   background-color: rgb(184, 113, 21);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   padding: 6px 0px;
   font-size: 12px;
   text-align: center;
@@ -146,6 +149,7 @@ $game-container-border-radius: 16px;
       }  
       .input-toggle{
         background-color: $score-buttons-background-color;
+        border-bottom-left-radius: 16px;
       }
       .score-input-section{
         display: grid;
@@ -169,10 +173,12 @@ $game-container-border-radius: 16px;
             }
             .remove-last{
               background-color: $red-color;
+             
             }
       }
       .submit-score{
         background-color: $green-color; 
+        border-bottom-right-radius: 16px;
       }
       .current-player-throws{
         display: flex;
@@ -210,9 +216,11 @@ $game-container-border-radius: 16px;
   color: white;
   background-color: transparent;
   border: none;
+  cursor: pointer;
 }
 .multiplier-section button.active{
   background-color: $green-color;
+  border-radius: 16px;
 }
 
 .score-input {
@@ -261,12 +269,17 @@ $game-container-border-radius: 16px;
     color: white;
     width: 50%;
     height: 100%;
+    cursor: pointer;
   }
   .go-back{
     background-color: $red-color;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
   }
   .restart-game{
     background-color: $green-color;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
   }
 
 }
