@@ -2,14 +2,23 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import '../styles/game.scss'
+import '../styles/game-teams.scss'
 import checkoutArray from '@/lib/checkout-table'
 
 interface Player {
    name: string
-   legs: number
+   lastScore: number
+   totalThrows: number
+   totalAttempts: number
+   average: number   
+}
+
+interface Team {
+   name: string
+   members: Player[]
    pointsLeft: number
    lastScore: number
+   legs: number
    totalThrows: number
    totalAttempts: number
    average: number
@@ -17,7 +26,7 @@ interface Player {
 }
 
 interface HistoryEntry {
-   historyPlayerIndex: number
+   historyTeamIndex: number
    historyPointsLeft: number
    historyLastScore: number
    historyTotalThrows: number
@@ -29,23 +38,46 @@ const Game = () => {
    const router = useRouter()
    const searchParams = useSearchParams()
    
-   //Declaring gameMode and players based on URL
+   //Declaring gameMode, gameWinType, numberOfLegs and players based on URL
    const gameMode = searchParams.get('mode')
-   const gameType = searchParams.get('game-type')
+   const gameWinType = searchParams.get('game-win-type')
    const numberOfLegs = searchParams.get('number-of-legs')
    const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
 
-   //Players state declared with initial values in order to keep and update pointsLeft, lastScore, totalThrows, totalAttempts, average:
+   //Players state:
    const [players, setPlayers] = useState<Player[]>(urlPlayers.map((playerName: string) => ({
       name: playerName,
-      pointsLeft: Number(gameMode), // Initial pointsLeft sent via URL
-      legs: 0,
       lastScore: 0,
       totalThrows: 0,
       totalAttempts: 0, 
       average: 0,
-      isInputPreffered: true   
    })))
+
+   // Teams state:
+   const [teams, setTeams] = useState<Team[]>([
+      { 
+         name: 'Team 1', 
+         members: players.slice(0, 2), 
+         legs: 0, 
+         pointsLeft: Number(gameMode),
+         lastScore: 0,
+         totalThrows: 0,
+         totalAttempts: 0,
+         average: 0,
+         isInputPreffered: true
+      },
+      { 
+         name: 'Team 2', 
+         members: players.slice(2, 4), 
+         legs: 0, 
+         pointsLeft: Number(gameMode),
+         lastScore: 0,
+         totalThrows: 0,
+         totalAttempts: 0,
+         average: 0,
+         isInputPreffered: true
+      }
+   ])
 
    //State to track history of moves
    const [history, setHistory] = useState<HistoryEntry[]>([])
@@ -53,6 +85,10 @@ const Game = () => {
    const [currentThrow, setCurrentThrow] = useState<number>(0)
    //CurrentPlayerIndex state declared in order to keep players index who currently plays
    const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0)
+   //CurrentPlayerIndex state declared in order to keep players index who currently plays
+   const [currentTeamIndex, setCurrentTeamIndex] = useState<number>(0)
+   //CurrentPlayerIndexInTeam state declared in order to keep player's index who is currently playing within team
+   const [currentPlayerIndexInTeam, setCurrentPlayerIndexInTeam] = useState<number>(0)
    //State to track which player starts the leg
    const [startLegPlayerIndex, setStartLegPlayerIndex] = useState<number>(0)
    //State to toggle between input and number buttons
@@ -82,13 +118,14 @@ const Game = () => {
    }
    
    //Next player handler:
-   const handleSwitchPlayer = () => {
-      /* Switch to another player: 
-         Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
-         after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
-      */
-      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
-      setCurrentPlayerIndex(nextPlayerIndex)
+   const handleSwitchTeam = () => {
+      const nextTeamIndex = (currentTeamIndex + 1) % teams.length
+      setCurrentTeamIndex(nextTeamIndex)
+      
+      //Switching to next player within team:
+      if (nextTeamIndex === 0) { 
+      setCurrentPlayerIndexInTeam((prevIndex) => (prevIndex + 1) % teams[0].members.length)
+      }
    }
 
    //Next player who start the leg handler:
@@ -98,8 +135,8 @@ const Game = () => {
 
    //Submit score handler for input:
    const handleSubmitThrowInput = (inputMultiplier: number) => {
-      const gamePlayers = [...players]
-      const currentPlayer = gamePlayers[currentPlayerIndex]
+      const gameTeams = [...teams]
+      const currentTeam = gameTeams[currentTeamIndex]
       
       //Error hanlder (currentThrow over 180)
       if(currentThrow > 180){
@@ -111,32 +148,32 @@ const Game = () => {
 
       //Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
-         historyPlayerIndex: currentPlayerIndex,
-         historyPointsLeft: currentPlayer.pointsLeft, 
-         historyTotalThrows: currentPlayer.totalThrows + (currentThrow * inputMultiplier),
-         historyLastScore: currentPlayer.lastScore,
-         historyLastAverage: currentPlayer.average,
-         historyTotalAttempts: currentPlayer.totalAttempts
+         historyTeamIndex: currentTeamIndex,
+         historyPointsLeft: currentTeam.pointsLeft, 
+         historyTotalThrows: currentTeam.totalThrows + (currentThrow * inputMultiplier),
+         historyLastScore: currentTeam.lastScore,
+         historyLastAverage: currentTeam.average,
+         historyTotalAttempts: currentTeam.totalAttempts
       }
       
       //Updating pointsLeft
-      currentPlayer.pointsLeft -= (currentThrow * inputMultiplier)
+      currentTeam.pointsLeft -= (currentThrow * inputMultiplier)
       
       //End leg scenario
-      if(isDoubleActive && currentPlayer.pointsLeft === 0) {
+      if(isDoubleActive && currentTeam.pointsLeft === 0) {
          // Additional history entries created if leg ends in order to properly Undo handler usage 
-         const newHistoryEntries = players
-            .map((player, index) => {
-               if (index === currentPlayerIndex) {
+         const newHistoryEntries = teams
+            .map((team, index) => {
+               if (index === currentTeamIndex) {
                   return null //NewHistoryEntry not created for currentPlayerIndex!
                }
                return {
-                  historyPlayerIndex: index, 
-                  historyPointsLeft: player.pointsLeft, 
-                  historyTotalThrows: player.totalThrows, 
-                  historyLastScore: player.lastScore, 
-                  historyLastAverage: player.average, 
-                  historyTotalAttempts: player.totalAttempts 
+                  historyTeamIndex: index, 
+                  historyPointsLeft: team.pointsLeft, 
+                  historyTotalThrows: team.totalThrows, 
+                  historyLastScore: team.lastScore, 
+                  historyLastAverage: team.average, 
+                  historyTotalAttempts: team.totalAttempts 
                }
             })
             .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
@@ -145,29 +182,29 @@ const Game = () => {
          setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
          
          //Updating legs for current player
-         currentPlayer.legs += 1
+         currentTeam.legs += 1
          
          //Updating game stats for new leg (for each player)
-         players.forEach(player => {
-            player.pointsLeft = Number(gameMode)
-            player.lastScore = 0
-            player.totalThrows = 0
-            player.totalAttempts = 0
-            player.average = 0
-            player.isInputPreffered = true
+         teams.forEach(team => {
+            team.pointsLeft = Number(gameMode)
+            team.lastScore = 0
+            team.totalThrows = 0
+            team.totalAttempts = 0
+            team.average = 0
+            team.isInputPreffered = true
          })
 
          //Updating history state with currentPlayerIndex
          setHistory(prevHistory => [...prevHistory, newHistoryEntry])
 
          //Upadating player's state
-         setPlayers(gamePlayers) 
+         setTeams(gameTeams) 
 
          //Switching to next player who start the leg
          handleSwitchPlayerLeg()
 
          //Setting current player index:
-         setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
+         setCurrentTeamIndex((startLegPlayerIndex + 1) % teams.length)
 
          //End game check
          checkGameEndHandler()
@@ -182,25 +219,25 @@ const Game = () => {
       }
 
       //Scenario when updated pointsLeft are equal or less than 1
-      if(currentPlayer.pointsLeft <= 1){
+      if(currentTeam.pointsLeft <= 1){
          //Updating historyTotalThrows
-         newHistoryEntry.historyTotalThrows = currentPlayer.totalThrows
+         newHistoryEntry.historyTotalThrows = currentTeam.totalThrows
 
          //Updating pointsLeft, lastScore, totalThrows, totalAttempts and average
-         currentPlayer.pointsLeft += (currentThrow * inputMultiplier)
-         currentPlayer.lastScore = 0
-         currentPlayer.totalThrows += 0
-         currentPlayer.totalAttempts += 1
-         currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+         currentTeam.pointsLeft += (currentThrow * inputMultiplier)
+         currentTeam.lastScore = 0
+         currentTeam.totalThrows += 0
+         currentTeam.totalAttempts += 1
+         currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
 
          //Updating history state
          setHistory(prevHistory => [...prevHistory, newHistoryEntry])
 
          //Upadating player's state
-         setPlayers(gamePlayers)
+         setTeams(gameTeams)
 
          //Switching to the next player
-         handleSwitchPlayer()
+         handleSwitchTeam()
 
          //Resetting input value
          setCurrentThrow(0)
@@ -208,20 +245,20 @@ const Game = () => {
       }
 
       //Updating lastScore, totalThrows, totalAttempts, average
-      currentPlayer.lastScore = (currentThrow * inputMultiplier)
-      currentPlayer.totalThrows += (currentThrow * inputMultiplier)
-      currentPlayer.totalAttempts += 1
-      currentPlayer.isInputPreffered = true
-      currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+      currentTeam.lastScore = (currentThrow * inputMultiplier)
+      currentTeam.totalThrows += (currentThrow * inputMultiplier)
+      currentTeam.totalAttempts += 1
+      currentTeam.isInputPreffered = true
+      currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
       
       //Updating history state
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
       
       //Upadating player's state
-      setPlayers(gamePlayers)
+      setTeams(gameTeams)
       
       //Switching to the next player
-      handleSwitchPlayer()
+      handleSwitchTeam()
      
       //Resetting input value
       setCurrentThrow(0)
@@ -229,18 +266,18 @@ const Game = () => {
 
    //Submit score handler for buttons
    const handleSubmitThrowButtons = (throwValue: number) => {
-      const gamePlayers = [...players]
-      const currentPlayer = gamePlayers[currentPlayerIndex]
+      const gameTeams = [...teams]
+      const currentTeam = gameTeams[currentTeamIndex]
       const multiplierThrowValue = throwValue * multiplier
       
       //Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
-         historyPlayerIndex: currentPlayerIndex,
-         historyPointsLeft: currentPlayer.pointsLeft + throwValueSum,
-         historyTotalThrows: currentPlayer.totalThrows + multiplierThrowValue, 
-         historyLastScore: currentPlayer.lastScore,
-         historyLastAverage: currentPlayer.average,
-         historyTotalAttempts: currentPlayer.totalAttempts
+         historyTeamIndex: currentTeamIndex,
+         historyPointsLeft: currentTeam.pointsLeft + throwValueSum,
+         historyTotalThrows: currentTeam.totalThrows + multiplierThrowValue, 
+         historyLastScore: currentTeam.lastScore,
+         historyLastAverage: currentTeam.average,
+         historyTotalAttempts: currentTeam.totalAttempts
       }
       
       // Incrementing the currentPlayerThrowsCount to keep track of the throws
@@ -249,22 +286,22 @@ const Game = () => {
       //Scenario when player has not thrown 3 times yet
       if (updatedThrowCount < 3) {
          //Updating pointsLeft
-         currentPlayer.pointsLeft -= multiplierThrowValue
+         currentTeam.pointsLeft -= multiplierThrowValue
 
          //End leg scenario when player has NOT thrown 3 times yet, multiplier === 2 and pointsLeft === 0
-         if(multiplier === 2 && currentPlayer.pointsLeft === 0){
-            const newHistoryEntries = players
-               .map((player, index) => {
-                  if (index === currentPlayerIndex) {
+         if(multiplier === 2 && currentTeam.pointsLeft === 0){
+            const newHistoryEntries = teams
+               .map((team, index) => {
+                  if (index === currentTeamIndex) {
                      return null //NewHistoryEntry not created for currentPlayerIndex
                   }
                   return {
-                     historyPlayerIndex: index, 
-                     historyPointsLeft: player.pointsLeft, 
-                     historyTotalThrows: player.totalThrows, 
-                     historyLastScore: player.lastScore, 
-                     historyLastAverage: player.average, 
-                     historyTotalAttempts: player.totalAttempts 
+                     historyTeamIndex: index, 
+                     historyPointsLeft: team.pointsLeft, 
+                     historyTotalThrows: team.totalThrows, 
+                     historyLastScore: team.lastScore, 
+                     historyLastAverage: team.average, 
+                     historyTotalAttempts: team.totalAttempts 
                   }
                })
                .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
@@ -273,16 +310,16 @@ const Game = () => {
             setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
             
             //Updating legs
-            currentPlayer.legs += 1 
+            currentTeam.legs += 1 
 
             //Updating game stats for new leg (for each player)
-            players.forEach(player => {
-               player.pointsLeft = Number(gameMode)
-               player.lastScore = 0
-               player.totalThrows = 0
-               player.totalAttempts = 0
-               player.average = 0
-               player.isInputPreffered = true
+            teams.forEach(team => {
+               team.pointsLeft = Number(gameMode)
+               team.lastScore = 0
+               team.totalThrows = 0
+               team.totalAttempts = 0
+               team.average = 0
+               team.isInputPreffered = true
             })
             
             //Updating history state
@@ -292,10 +329,10 @@ const Game = () => {
             handleSwitchPlayerLeg()
 
             //Setting current player index:
-            setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
+            setCurrentTeamIndex((startLegPlayerIndex + 1) % teams.length)
 
             //Updating player's state
-            setPlayers(gamePlayers) 
+            setPlayers(gameTeams) 
 
             //Checking game end
             checkGameEndHandler()
@@ -311,25 +348,25 @@ const Game = () => {
          }
 
          //Scenario when player has not thrown 3 times yet but pointsLeft are equal or less than 1
-         if(currentPlayer.pointsLeft <= 1) {
-            currentPlayer.pointsLeft = newHistoryEntry.historyPointsLeft
-            currentPlayer.lastScore = 0
-            currentPlayer.totalThrows -= throwValueSum
-            currentPlayer.totalAttempts += 1
-            currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+         if(currentTeam.pointsLeft <= 1) {
+            currentTeam.pointsLeft = newHistoryEntry.historyPointsLeft
+            currentTeam.lastScore = 0
+            currentTeam.totalThrows -= throwValueSum
+            currentTeam.totalAttempts += 1
+            currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
-            handleSwitchPlayer()
+            handleSwitchTeam()
             setCurrentThrow(0)
             setThrowValueSum(0)
             setCurrentPlayerThrowsCount(0)
             setCurrentPlayerThrows([])
             setCurrentThrow(0)
-            setPlayers(gamePlayers) 
+            setPlayers(gameTeams) 
             return
          }
 
          //Updating totalThrows, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount (currentThrow in case player would like to switch input method)
-         currentPlayer.totalThrows += multiplierThrowValue
+         currentTeam.totalThrows += multiplierThrowValue
          setThrowValueSum(prevSum => prevSum + multiplierThrowValue)
          setCurrentPlayerThrows(prevThrows => [...prevThrows, multiplierThrowValue].slice(-3))
          setCurrentPlayerThrowsCount(updatedThrowCount)
@@ -338,38 +375,38 @@ const Game = () => {
       //Scenario when players has thrown already 3 times
       else {
          //Updating pointsLeft
-         currentPlayer.pointsLeft -= multiplierThrowValue
+         currentTeam.pointsLeft -= multiplierThrowValue
          
          //End leg scenario when player has thrown already 3 times, multiplier === 2 and pointsLeft === 0
-         if(multiplier === 2 && currentPlayer.pointsLeft === 0){
-            const newHistoryEntries = players
-               .map((player, index) => {
-                  if (index === currentPlayerIndex) {
+         if(multiplier === 2 && currentTeam.pointsLeft === 0){
+            const newHistoryEntries = teams
+               .map((team, index) => {
+                  if (index === currentTeamIndex) {
                      return null //NewHistoryEntry not created for currentPlayerIndex
                   }
                   return {
-                     historyPlayerIndex: index, 
-                     historyPointsLeft: player.pointsLeft, 
-                     historyTotalThrows: player.totalThrows, 
-                     historyLastScore: player.lastScore, 
-                     historyLastAverage: player.average, 
-                     historyTotalAttempts: player.totalAttempts 
+                     historyTeamIndex: index, 
+                     historyPointsLeft: team.pointsLeft, 
+                     historyTotalThrows: team.totalThrows, 
+                     historyLastScore: team.lastScore, 
+                     historyLastAverage: team.average, 
+                     historyTotalAttempts: team.totalAttempts 
                   }
                })
                .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
 
             //Updating history with additional history entries
             setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
-            currentPlayer.legs += 1 
+            currentTeam.legs += 1 
 
             //Updating game stats for new leg (for each player)
-            players.forEach(player => {
-               player.pointsLeft = Number(gameMode)
-               player.lastScore = 0
-               player.totalThrows = 0
-               player.totalAttempts = 0
-               player.average = 0
-               player.isInputPreffered = true
+            teams.forEach(team => {
+               team.pointsLeft = Number(gameMode)
+               team.lastScore = 0
+               team.totalThrows = 0
+               team.totalAttempts = 0
+               team.average = 0
+               team.isInputPreffered = true
             })
             
             //Updating history state
@@ -379,7 +416,7 @@ const Game = () => {
             handleSwitchPlayerLeg()
 
             //Setting current player index:
-            setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
+            setCurrentTeamIndex((startLegPlayerIndex + 1) % teams.length)
 
             //Checking game end
             checkGameEndHandler()
@@ -390,32 +427,32 @@ const Game = () => {
             setCurrentPlayerThrows([])
             setCurrentThrow(0)
             setCurrentThrow(0)
-            setPlayers(gamePlayers) 
+            setPlayers(gameTeams) 
             return
          }
 
          //Scenario when player has already thrown 3 times, but pointsLeft are equal or less than 1
-         if(currentPlayer.pointsLeft <= 1) {
-            currentPlayer.pointsLeft += multiplierThrowValue
-            currentPlayer.lastScore = 0
-            currentPlayer.totalThrows -= throwValueSum
-            currentPlayer.totalAttempts += 1
-            currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+         if(currentTeam.pointsLeft <= 1) {
+            currentTeam.pointsLeft += multiplierThrowValue
+            currentTeam.lastScore = 0
+            currentTeam.totalThrows -= throwValueSum
+            currentTeam.totalAttempts += 1
+            currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
-            handleSwitchPlayer()
+            handleSwitchTeam()
             setThrowValueSum(0)
             setCurrentPlayerThrowsCount(0)
             setCurrentPlayerThrows([])
             setCurrentThrow(0)
-            setPlayers(gamePlayers) 
+            setPlayers(gameTeams) 
             return
          }
 
          //Updating lastScore, totalThrows, totalAttempts, average when player has already thrown 3 times:
-         currentPlayer.lastScore = throwValueSum + multiplierThrowValue
-         currentPlayer.totalThrows += multiplierThrowValue
-         currentPlayer.totalAttempts += 1
-         currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+         currentTeam.lastScore = throwValueSum + multiplierThrowValue
+         currentTeam.totalThrows += multiplierThrowValue
+         currentTeam.totalAttempts += 1
+         currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
          
          //Updating history state
          setHistory(prevHistory => [...prevHistory, newHistoryEntry])
@@ -427,36 +464,36 @@ const Game = () => {
          setCurrentThrow(0)
          
          //Switching to the next player
-         handleSwitchPlayer()
+         handleSwitchTeam()
       }
 
       //Updating  player's state
-      setPlayers(gamePlayers)
+      setPlayers(gameTeams)
    }
 
    //Submit score handler for buttons (for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value)
    const handleSubmitScoreButtons = () => {
-      const updatedPlayers = [...players]
-      const currentPlayer = updatedPlayers[currentPlayerIndex]
+      const updatedTeams = [...teams]
+      const currentTeam = updatedTeams[currentTeamIndex]
 
       const throwSum = currentPlayerThrows.reduce((acc, throwValue) => acc + throwValue, 0)
 
       //Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
-         historyPlayerIndex: currentPlayerIndex,
-         historyPointsLeft: currentPlayer.pointsLeft + throwSum,
-         historyTotalThrows: currentPlayer.totalThrows, 
-         historyLastScore: currentPlayer.lastScore,
-         historyLastAverage: currentPlayer.average,
-         historyTotalAttempts: currentPlayer.totalAttempts
+         historyTeamIndex: currentTeamIndex,
+         historyPointsLeft: currentTeam.pointsLeft + throwSum,
+         historyTotalThrows: currentTeam.totalThrows, 
+         historyLastScore: currentTeam.lastScore,
+         historyLastAverage: currentTeam.average,
+         historyTotalAttempts: currentTeam.totalAttempts
       }
       
       //Updating lastScore and totalAttempts
-      currentPlayer.lastScore = throwSum
-      currentPlayer.totalAttempts += 1
+      currentTeam.lastScore = throwSum
+      currentTeam.totalAttempts += 1
 
       //Average calculation:
-      currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
+      currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
 
       //Updating history state
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
@@ -468,43 +505,43 @@ const Game = () => {
       setCurrentThrow(0)
 
       //Switching to the next player
-      handleSwitchPlayer()
+      handleSwitchTeam()
       
       //Updating player's state
-      setPlayers(updatedPlayers)
+      setPlayers(updatedTeams)
    }
    
    //Undo handler
    const handleUndo = () => {
       const lastEntry = history[history.length - 1]
-      const gamePlayers = [...players]
+      const gameTeams = [...teams]
 
       //Scenario when players have just finished previous leg
       if(history.length !== 0 && lastEntry.historyTotalThrows === Number(gameMode)){
-         const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+         const currentTeam = gameTeams[lastEntry.historyTeamIndex]
 
-         currentPlayer.legs -= 1
+         currentTeam.legs -= 1
 
          //Updating game stats for each player
-         gamePlayers.forEach((player, index) => {
-            const playerHistory = [...history].reverse().find(entry => entry.historyPlayerIndex === index)
-            if (playerHistory) {
-               player.pointsLeft = playerHistory.historyPointsLeft
-               player.lastScore = playerHistory.historyLastScore
-               player.totalThrows = playerHistory.historyTotalThrows === Number(gameMode) ? playerHistory.historyTotalThrows - playerHistory.historyLastScore : playerHistory.historyTotalThrows
-               player.totalAttempts = playerHistory.historyTotalAttempts
-               player.average = playerHistory.historyLastAverage
+         gameTeams.forEach((team, index) => {
+            const teamHistory = [...history].reverse().find(entry => entry.historyTeamIndex === index)
+            if (teamHistory) {
+               team.pointsLeft = teamHistory.historyPointsLeft
+               team.lastScore = teamHistory.historyLastScore
+               team.totalThrows = teamHistory.historyTotalThrows === Number(gameMode) ? teamHistory.historyTotalThrows - teamHistory.historyLastScore : teamHistory.historyTotalThrows
+               team.totalAttempts = teamHistory.historyTotalAttempts
+               team.average = teamHistory.historyLastAverage
             }
          })
 
          //Setting currentPlayerIndex to the last player who played in the history
-         setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+         setCurrentTeamIndex(lastEntry.historyTeamIndex) 
 
          //Removing last history entries (inlcuding additional entries created when player finished leg)
-         setHistory(prevHistory => prevHistory.slice(0, prevHistory.length - gamePlayers.length))
+         setHistory(prevHistory => prevHistory.slice(0, prevHistory.length - gameTeams.length))
 
          //Updating players state
-         setPlayers(gamePlayers) 
+         setPlayers(gameTeams) 
 
          return
       }
@@ -513,17 +550,17 @@ const Game = () => {
       if(!showNumberButtons){
          if(history.length === 0) return
          
-         const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+         const currentTeam = gameTeams[lastEntry.historyTeamIndex]
 
          //Restoring pointsLeft, lastScore, average, totalAttempts, totalThrows
-         currentPlayer.totalThrows -= currentPlayer.lastScore
-         currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
-         currentPlayer.lastScore = lastEntry.historyLastScore
-         currentPlayer.average = lastEntry.historyLastAverage
-         currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
+         currentTeam.totalThrows -= currentTeam.lastScore
+         currentTeam.pointsLeft = lastEntry.historyPointsLeft 
+         currentTeam.lastScore = lastEntry.historyLastScore
+         currentTeam.average = lastEntry.historyLastAverage
+         currentTeam.totalAttempts = lastEntry.historyTotalAttempts
          
          //Setting currentPlayerIndex to the last player who played in the history
-         setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+         setCurrentTeamIndex(lastEntry.historyTeamIndex) 
          
          //Removing last history entry
          setHistory(prevHistory => prevHistory.slice(0, -1))
@@ -533,15 +570,15 @@ const Game = () => {
       if(showNumberButtons){
          //SCENARIO 1: Empty history, currentPlayerThrowCount !== 0
          if(history.length === 0 && currentPlayerThrowsCount !== 0){
-            const currentPlayer = gamePlayers[currentPlayerIndex]
+            const currentTeam = gameTeams[currentTeamIndex]
             
             //Temporary variables with updated throw count and throws array
             const updatedThrowCount = currentPlayerThrowsCount - 1
             const updatedThrows = [...currentPlayerThrows]
             
             //Updating pointsLeft, totalThrows and throwValueSum
-            currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
-            currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
+            currentTeam.pointsLeft += updatedThrows[updatedThrows.length -1]
+            currentTeam.totalThrows -= updatedThrows[updatedThrows.length -1]
             setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
             
             //Removing last available throw from temporary variable
@@ -557,32 +594,32 @@ const Game = () => {
          } 
          //SCENARIO 3: History available and no currentPlayerThrowsCount
          else if (history.length !== 0 && currentPlayerThrowsCount === 0){
-            const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+            const currentTeam = gameTeams[lastEntry.historyTeamIndex]
             
             //Restoring pointsLeft, lastScore, average
-            currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
-            currentPlayer.lastScore = lastEntry.historyLastScore
-            currentPlayer.average = lastEntry.historyLastAverage
-            currentPlayer.totalThrows = lastEntry.historyTotalThrows
-            currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
+            currentTeam.pointsLeft = lastEntry.historyPointsLeft 
+            currentTeam.lastScore = lastEntry.historyLastScore
+            currentTeam.average = lastEntry.historyLastAverage
+            currentTeam.totalThrows = lastEntry.historyTotalThrows
+            currentTeam.totalAttempts = lastEntry.historyTotalAttempts
             
             //Removing last history entry
             setHistory(prevHistory => prevHistory.slice(0, -1))
             
             //Setting currentPlayerIndex to the last player who played in the history
-            setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+            setCurrentTeamIndex(lastEntry.historyTeamIndex) 
          }
          //SCENARIO 4: History availble and currentPlayer has already thrown at least once 
          else {
-            const currentPlayer = gamePlayers[currentPlayerIndex]
+            const currentTeam = gameTeams[currentTeamIndex]
             
             //Temporary variables with updated throw count and throws array
             const updatedThrowCount = currentPlayerThrowsCount - 1
             const updatedThrows = [...currentPlayerThrows]
             
             //Updating pointsLeft, totalThrows and throwValueSum
-            currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
-            currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
+            currentTeam.pointsLeft += updatedThrows[updatedThrows.length -1]
+            currentTeam.totalThrows -= updatedThrows[updatedThrows.length -1]
             setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
             
             //Removing last available throw from temporary variable
@@ -595,29 +632,29 @@ const Game = () => {
       }
       
       //Updating players state
-      setPlayers(gamePlayers) 
+      setPlayers(gameTeams) 
    }
 
    //Game end handler
    const checkGameEndHandler = () => {
       //Scenario when game type is set to best-of
-      if (gameType === 'best-of') {
+      if (gameWinType === 'best-of') {
          //Sum of legs for all players
-         const totalLegs = players.reduce((acc, player) => acc + player.legs, 0)
+         const totalLegs = teams.reduce((acc, team) => acc + team.legs, 0)
          
          //Check if totalLegs for players equals to number-of-legs parameter
          if (totalLegs === Number(numberOfLegs)) {
             //Finding winner player
-            const maxLegs = Math.max(...players.map(player => player.legs))
-            const winner = players.find(player => player.legs === maxLegs) || null
+            const maxLegs = Math.max(...teams.map(team => team.legs))
+            const winner = teams.find(team => team.legs === maxLegs) || null
             setIsGameEnd(true)
             setWinner(winner)
          }       
       }
       //Scenario when game type is set to first-to
-      else if (gameType === 'first-to') {
+      else if (gameWinType === 'first-to') {
          //Finding winner player
-         const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
+         const winner = teams.find(team=> team.legs === Number(numberOfLegs)) || null
          if(winner){
             setIsGameEnd(true)
             setWinner(winner)
@@ -627,17 +664,31 @@ const Game = () => {
    
    //Restart game handler
    const handleRestartGame = () => {
-      setPlayers(urlPlayers.map((playerName: string) => ({
-         name: playerName,
-         pointsLeft: Number(gameMode),
-         legs: 0,
-         lastScore: 0, 
-         totalThrows: 0,
-         totalAttempts: 0,  
-         average: 0,
-         isInputPreffered: true    
-      })))
-      setCurrentPlayerIndex(0) 
+      setTeams([
+         { 
+            name: 'Team 1', 
+            members: players.slice(0, 2), 
+            legs: 0, 
+            pointsLeft: Number(gameMode),
+            lastScore: 0,
+            totalThrows: 0,
+            totalAttempts: 0,
+            average: 0,
+            isInputPreffered: true
+         },
+         { 
+            name: 'Team 2', 
+            members: players.slice(2, 4), 
+            legs: 0, 
+            pointsLeft: Number(gameMode),
+            lastScore: 0,
+            totalThrows: 0,
+            totalAttempts: 0,
+            average: 0,
+            isInputPreffered: true
+         }
+      ])
+      setCurrentTeamIndex(0) 
       setCurrentThrow(0) 
       setHistory([]) 
       setThrowValueSum(0) 
@@ -655,161 +706,137 @@ const Game = () => {
    }
 
    useEffect(() => {
-      if (players[currentPlayerIndex].isInputPreffered) {
+      if (teams[currentTeamIndex].isInputPreffered) {
          setShowNumberButtons(false)
       } else {
          setShowNumberButtons(true)
       }
       console.log(history)
       console.log(players)
-   }, [players, history, players[currentPlayerIndex].isInputPreffered, currentPlayerIndex])
+   }, [players, teams, history, teams[currentTeamIndex].isInputPreffered, currentTeamIndex])
 
    return (
       <div className='game-container'>
 
          {/*Game players section:*/}
          <div className="game-players-section">
+         
+            <div className='teams-preview'>
 
-            {/*Two players preview:*/}
-            {players.length === 2 ? (
-               <div className='two-players-preview'>
-
-                  {/*Player 1: */}
-                  <div className={`current-player-section ${currentPlayerIndex === 0 ? 'current-active-player' : ''}`}>
-
-                     {/*Player 1 header */}
-                     <div className='current-player-name-legs'>
-                        <div className='current-player-name'>
-                           <Image src={players[0].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                           {players[0].name} 
-                        </div>
-                        <div className='player-legs'>
-                           {players[0].legs}
-                        </div>
+               {/*Team 1: */}
+               <div className={`team-section ${currentTeamIndex === 0 ? 'current-active-team' : ''}`}>
+                  
+                  {/* Team 1 header */}
+                  <div className='team-header'>
+                     <p>TEAM 1:</p>
+                     <div className='team-legs'>
+                        {teams[0].legs}
                      </div>
-
-                     {/*Player 1 points left*/}
-                     <p className='current-player-points-left'>
-                        {players[0].pointsLeft}
-                     </p>
-
-                     {/*Player 1 checkout options*/}
-                     {players[0].pointsLeft <= 170 && (
-                        <p className='checkout-options'>{checkoutArray[players[0].pointsLeft - 2]}</p>
-                     )}
-
-                     {/*Player 1 stats*/}
-                     <div className='current-player-stats'>
-                        3-DART AVERAGE: 
-                        <p>{players[0].average.toFixed(2)}</p>
-                     </div>
-                     <div className='current-player-stats'>
-                        LAST SCORE: 
-                        <p>{players[0].lastScore}</p>
-                     </div>
-
                   </div>
 
-                  {/*Player 2: */}
-                  <div className={`current-player-section ${currentPlayerIndex === 1 ? 'current-active-player' : ''}`}>
-
-                     {/*Player 2 header */}
-                     <div className='current-player-name-legs'>
-                        <div className='current-player-name'>
-                           <Image src={players[1].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                           {players[1].name} 
-                        </div>
-                        <div className='player-legs'>
-                           {players[1].legs}
-                        </div>
+                  {/* Team 1, Player 1 header */}
+                  <div className='team-player'>
+                     <div className='team-player-name '>
+                        {players[0].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
+                        <Image src={players[0].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                        {players[0].name} 
                      </div>
+                    
+                  </div>
 
-                     {/*Player 2 points left*/}
-                     <p className='current-player-points-left'>
-                        {players[1].pointsLeft}
-                     </p>
-
-                     {/*Player 2 checkout options*/}
-                     {players[1].pointsLeft <= 170 && (
-                        <p className='checkout-options'>{checkoutArray[players[1].pointsLeft - 2]}</p>
-                     )}
-
-                     {/*Player 2 checkout options*/}
-                     <div className='current-player-stats'>
-                        3-DART AVERAGE: 
-                        <p>{players[1].average.toFixed(2)}</p>
+                  {/* Team 1, Player 2 header */}
+                  <div className='team-player'>
+                     <div className='team-player-name '>
+                        {players[1].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
+                        <Image src={players[1].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                        {players[1].name} 
                      </div>
-                     <div className='current-player-stats'>
-                        LAST SCORE: 
-                        <p>{players[1].lastScore}</p>
-                     </div>
+                    
+                  </div>
 
+                  {/*Team 1 points left*/}
+                  <p className='team-points-left'>
+                     {teams[0].pointsLeft}
+                  </p>
+
+                  {/*Team 1 checkout options*/}
+                  {teams[0].pointsLeft <= 170 && (
+                     <p className='checkout-options'>{checkoutArray[teams[0].pointsLeft - 2]}</p>
+                  )}
+
+                  {/*Team 1 stats*/}
+                  <div className='team-stats'>
+                     3-DART AVERAGE: 
+                     <p>{teams[0].average.toFixed(2)}</p>
+                  </div>
+                  <div className='team-stats'>
+                     LAST SCORE: 
+                     <p>{teams[0].lastScore}</p>
                   </div>
 
                </div>
-            ) : (
-               //View when players.length > 2:
-               <>
-                  {/*Current player section:*/}
-                  <div className="current-player-section">
 
-                     {/*Current player header */}
-                     <div className='current-player-name-legs'>
-                        <div className='current-player-name'>
-                           <Image src='/game-user-throw.svg' alt='User icon' width={16} height={16} />
-                           {players[currentPlayerIndex].name} 
-                        </div>
-                        <div className='player-legs'>
-                           {players[currentPlayerIndex].legs}
-                        </div>
+               {/*Team 2: */}
+               <div className={`team-section ${currentTeamIndex === 1 ? 'current-active-team' : ''}`}>
+                  
+                  {/* Team 2 header */}
+                  <div className='team-header'>
+                     <p>TEAM 2:</p>
+                     <div className='team-legs'>
+                        {teams[1].legs}
                      </div>
-
-                     {/*Current player points left */}
-                     <p className='current-player-points-left'>
-                        {players[currentPlayerIndex].pointsLeft}
-                     </p>
-
-                     {/*Current player checkout options */}
-                     {players[currentPlayerIndex].pointsLeft <= 170 && (
-                        <p className='checkout-options'>{checkoutArray[players[currentPlayerIndex].pointsLeft - 2]}</p>
-                     )}
-
-                     {/*Current player stats */}
-                     <div className='current-player-stats'>
-                        3-DART AVERAGE: 
-                        <p>{players[currentPlayerIndex].average.toFixed(2)}</p>
-                     </div>
-                     <div className='current-player-stats'>
-                        LAST SCORE: 
-                        <p>{players[currentPlayerIndex].lastScore}</p>
-                     </div>
-
                   </div>
 
-                  {/*Game player list:*/}
-                  <div className='game-players-list'>
-                     {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
-                        <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
-                           key={index}>
-                           <div className='game-players-list-player-name'>
-                              <Image src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                              {player.name} 
-                           </div>
-                           <div className="game-players-list-stats">
-                              <div className='player-legs'>{player.legs}</div>
-                              <p>{player.pointsLeft}</p>
-                           </div>
-                        </div>
-                     ))}  
+                  {/* Team 2, Player 1 header */}
+                  <div className='team-player'>
+                     <div className='team-player-name '>
+                        {players[2].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
+                        <Image src={players[2].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                        {players[2].name} 
+                     </div>
+                    
                   </div>
-               </>
-            )}
+
+                  {/* Team 2, Player 2 header */}
+                  <div className='team-player'>
+                     <div className='team-player-name '>
+                        {players[3].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}     
+                        <Image src={players[3].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                        {players[3].name} 
+                     </div>
+                    
+                  </div>
+
+                  {/*Team 2 points left*/}
+                  <p className='team-points-left'>
+                     {teams[1].pointsLeft}
+                  </p>
+
+                  {/*Team 2 checkout options*/}
+                  {teams[1].pointsLeft <= 170 && (
+                     <p className='checkout-options'>{checkoutArray[teams[1].pointsLeft - 2]}</p>
+                  )}
+
+                  {/*Team 2 stats*/}
+                  <div className='team-stats'>
+                     3-DART AVERAGE: 
+                     <p>{teams[1].average.toFixed(2)}</p>
+                  </div>
+                  <div className='team-stats'>
+                     LAST SCORE: 
+                     <p>{teams[1].lastScore}</p>
+                  </div>
+
+               </div>
+
+            </div>
+            
 
          </div>
            
          {/*Current player throw paragraph:*/}
          <p className='current-player-throw'>
-            {`${players[currentPlayerIndex].name.toUpperCase()}'S TURN TO THROW!`}
+            {`${teams[currentTeamIndex].members[currentPlayerIndexInTeam].name.toUpperCase()}'S TURN TO THROW!`}
          </p>
 
          {/*Main score input section (input/buttons toggle, score preview, submit score button, score buttons ):*/}
@@ -821,13 +848,13 @@ const Game = () => {
                   className='input-toggle' 
                   onClick={() => {
                      //Resetting values when toggle button clicked
-                     const gamePlayers = [...players]
-                     const currentPlayer = gamePlayers[currentPlayerIndex]
+                     const gameTeams = [...teams]
+                     const currentTeam = gameTeams[currentTeamIndex]
                      if (currentPlayerThrowsCount > 0) {
                   
                         //Resetting pointsLeft and totalThrows values
-                        currentPlayer.pointsLeft += throwValueSum
-                        currentPlayer.totalThrows -= throwValueSum
+                        currentTeam.pointsLeft += throwValueSum
+                        currentTeam.totalThrows -= throwValueSum
                   
                         //Resetting throwValueSum, currentPlayerThrows and currentPlayersThrowsCount states
                         setThrowValueSum(0)
@@ -836,9 +863,9 @@ const Game = () => {
                      }
                      
                      //Switching isInputPreffered
-                     currentPlayer.isInputPreffered = !currentPlayer.isInputPreffered
+                     currentTeam.isInputPreffered = !currentTeam.isInputPreffered
                      //Updating player's state
-                     setPlayers(gamePlayers)    
+                     setTeams(gameTeams)    
                   }}>
                   {showNumberButtons ? 'Input' : 'Buttons'}
                </button>
@@ -896,7 +923,7 @@ const Game = () => {
             {/* Multiplier section*/}
             <div className='multiplier-section'>
                {!showNumberButtons ? (
-                  players[currentPlayerIndex].pointsLeft <= 40 && players[currentPlayerIndex].pointsLeft % 2 === 0 && (
+                  teams[currentTeamIndex].pointsLeft <= 40 && teams[currentTeamIndex].pointsLeft % 2 === 0 && (
                      <button 
                         onClick={() => setIsDoubleActive(!isDoubleActive)} 
                         className={isDoubleActive ? 'active' : ''}

@@ -4,8 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import './styles/home.scss'
 
-
-
 const Home = () => {
    //State tp tracl game type
    const [gameType, setGameType] = useState<'regular' | 'teams' | 'online'>('regular')
@@ -29,6 +27,11 @@ const Home = () => {
 
    const handleGameType = (type: 'regular' | 'teams' | 'online') => {
       setGameType(type)
+      if(type === 'teams'){
+         setPlayerNames(['', '', '', ''])
+      } else if(type === 'regular'){
+         setPlayerNames(['', ''])
+      }
    }
 
    //Player name update handler
@@ -83,7 +86,16 @@ const Home = () => {
    
    // Preparing players data and generating URL
    const playersJson = encodeURIComponent(JSON.stringify(playerNames))
-   const gameUrl = `/game?mode=${selectedScore}&game-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}`
+
+   const gameFolders = {
+      regular: 'game-regular',
+      teams: 'game-teams',
+      online: 'game-online'
+   }
+
+   const gameFolder = gameFolders[gameType]
+
+   const gameUrl = `/${gameFolder}?mode=${selectedScore}&game-win-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}`
    
    return (
       <div className='main-container form'>
@@ -159,11 +171,13 @@ const Home = () => {
                      <p className='team-1 header'>Team 1:</p>
                   </div>
                   <div className='team-player-input'>
-                     {[...Array(2)].map((_, index) => (
+                     {[0, 1].map((index) => (
                         <input
                            key={index}
                            type="text"
                            placeholder={`T1: Player ${index + 1} name`}
+                           value={playerNames[index]}
+                           onChange={(event) => handleNameChange(index, event.target.value)}
                         />
                      ))}
                   </div>
@@ -171,15 +185,17 @@ const Home = () => {
                {/* Team 2 section */}
                <div className="team-2-section">
                   <div className='team-header-image'>
-                     <Image src='/team-2-icon.svg' alt='Team 1 icon' width={16} height={16} />
+                     <Image src='/team-2-icon.svg' alt='Team 2 icon' width={16} height={16} />
                      <p className='team-2 header'>Team 2:</p>
                   </div>
                   <div className='team-player-input'>
-                     {[...Array(2)].map((_, index) => (
+                     {[2, 3].map((index) => (
                         <input
                            key={index}
                            type="text"
-                           placeholder={`T2: Player ${index + 1} name`}
+                           placeholder={`T2: Player ${index - 1} name`}
+                           value={playerNames[index]}
+                           onChange={(event) => handleNameChange(index, event.target.value)}
                         />
                      ))}
                   </div>
