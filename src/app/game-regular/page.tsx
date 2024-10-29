@@ -75,13 +75,16 @@ const Game = () => {
    const [isGameEnd, setIsGameEnd] = useState<boolean>(false)
    //State to set winner of the game
    const [winner, setWinner] = useState<Player | null>(null)
+   //State to track if initial sound message ('game is on') has been played
+   const [initialSoundPlayed, setInitialSoundPlayed] = useState(false)
    
-   //Score input handler:
+   
+   //SCORE INPUT HANDLER
    const handleThrowChange = (value: string) => {
       setCurrentThrow(Number(value))
    }
    
-   //Next player handler:
+   //NEXT PLAYER HANDLER
    const handleSwitchPlayer = () => {
       /* Switch to another player: 
          Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
@@ -91,12 +94,18 @@ const Game = () => {
       setCurrentPlayerIndex(nextPlayerIndex)
    }
 
-   //Next player who start the leg handler:
+   //NEXT PLAYER WHO STARTS THE LEG HANDLER
    const handleSwitchPlayerLeg = () => {
       setStartLegPlayerIndex(prevIndex => (prevIndex + 1) % players.length)
    }
 
-   //Submit score handler for input:
+   //SOUND EFFECT HANDLER
+   const playSound = (fileName: string) => {
+      const audio = new Audio(`/sounds/${fileName}.mp3`)
+      audio.play().catch(error => console.log('Error:', error))
+   }
+
+   //SUBMIT SCORE HANDLER FOR INPUT
    const handleSubmitThrowInput = (inputMultiplier: number) => {
       const gamePlayers = [...players]
       const currentPlayer = gamePlayers[currentPlayerIndex]
@@ -199,11 +208,15 @@ const Game = () => {
          //Upadating player's state
          setPlayers(gamePlayers)
 
+         //Sound effect
+         playSound('no-score')
+
          //Switching to the next player
          handleSwitchPlayer()
 
          //Resetting input value
          setCurrentThrow(0)
+
          return
       }
 
@@ -219,6 +232,13 @@ const Game = () => {
       
       //Upadating player's state
       setPlayers(gamePlayers)
+
+      //Sound effect
+      if (currentThrow === 0) {
+         playSound('no-score')
+      } else {
+         playSound(currentThrow.toString())
+      }
       
       //Switching to the next player
       handleSwitchPlayer()
@@ -227,7 +247,7 @@ const Game = () => {
       setCurrentThrow(0)
    }
 
-   //Submit score handler for buttons
+   //SUBMIT SCORE HANDLER FOR BUTTONS
    const handleSubmitThrowButtons = (throwValue: number) => {
       const gamePlayers = [...players]
       const currentPlayer = gamePlayers[currentPlayerIndex]
@@ -318,13 +338,23 @@ const Game = () => {
             currentPlayer.totalAttempts += 1
             currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+            //Sound effect:
+            playSound('no-score')
+
+            //Switching to the next player:
             handleSwitchPlayer()
+
+            //Resetting states
             setCurrentThrow(0)
             setThrowValueSum(0)
             setCurrentPlayerThrowsCount(0)
             setCurrentPlayerThrows([])
             setCurrentThrow(0)
+
+            //Updating players state
             setPlayers(gamePlayers) 
+
             return
          }
 
@@ -402,6 +432,7 @@ const Game = () => {
             currentPlayer.totalAttempts += 1
             currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            playSound('no-score')
             handleSwitchPlayer()
             setThrowValueSum(0)
             setCurrentPlayerThrowsCount(0)
@@ -420,6 +451,9 @@ const Game = () => {
          //Updating history state
          setHistory(prevHistory => [...prevHistory, newHistoryEntry])
 
+         //Sound effect:
+         playSound((throwValueSum + multiplierThrowValue).toString())
+
          //Resetting states:
          setThrowValueSum(0)
          setCurrentPlayerThrowsCount(0)
@@ -434,7 +468,10 @@ const Game = () => {
       setPlayers(gamePlayers)
    }
 
-   //Submit score handler for buttons (for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value)
+   //SUBMIT SCORE HANDLER FOR BUTTONS 
+   /*
+      (for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value)
+   */
    const handleSubmitScoreButtons = () => {
       const updatedPlayers = [...players]
       const currentPlayer = updatedPlayers[currentPlayerIndex]
@@ -460,6 +497,13 @@ const Game = () => {
 
       //Updating history state
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+      //Sound-effect
+      if(throwSum === 0){
+         playSound('no-score')
+      } else {
+         playSound(throwSum.toString())
+      }
       
       //Resetting states
       setThrowValueSum(0)
@@ -474,7 +518,7 @@ const Game = () => {
       setPlayers(updatedPlayers)
    }
    
-   //Undo handler
+   //UNDO HANDLER
    const handleUndo = () => {
       const lastEntry = history[history.length - 1]
       const gamePlayers = [...players]
@@ -598,7 +642,7 @@ const Game = () => {
       setPlayers(gamePlayers) 
    }
 
-   //Game end handler
+   //GAME END HANDLER
    const checkGameEndHandler = () => {
       //Scenario when game type is set to best-of
       if (gameWinType === 'best-of') {
@@ -612,7 +656,10 @@ const Game = () => {
             const winner = players.find(player => player.legs === maxLegs) || null
             setIsGameEnd(true)
             setWinner(winner)
-         }       
+            playSound('and-the-game')
+         } else {
+            playSound('and-the-leg')
+         }      
       }
       //Scenario when game type is set to first-to
       else if (gameWinType === 'first-to') {
@@ -621,11 +668,14 @@ const Game = () => {
          if(winner){
             setIsGameEnd(true)
             setWinner(winner)
+            playSound('and-the-game')
+         } else {
+            playSound('and-the-leg')
          }
       }
    }
    
-   //Restart game handler
+   //RESTART GAME HANDLER
    const handleRestartGame = () => {
       setPlayers(urlPlayers.map((playerName: string) => ({
          name: playerName,
@@ -649,7 +699,7 @@ const Game = () => {
       }
    }
 
-   //Error close handler
+   //ERROR CLOSE HANDLER
    const closeError = () => {
       setIsError(false)
    }
@@ -660,9 +710,15 @@ const Game = () => {
       } else {
          setShowNumberButtons(true)
       }
+
+      if(!initialSoundPlayed){
+         playSound('game-is-on')
+         setInitialSoundPlayed(true)
+      }
+
       console.log(history)
       console.log(players)
-   }, [players, history, players[currentPlayerIndex].isInputPreffered, currentPlayerIndex])
+   }, [players, history, players[currentPlayerIndex].isInputPreffered, currentPlayerIndex, initialSoundPlayed])
 
    return (
       <div className='game-container'>
