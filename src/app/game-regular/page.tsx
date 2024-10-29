@@ -75,8 +75,10 @@ const Game = () => {
    const [isGameEnd, setIsGameEnd] = useState<boolean>(false)
    //State to set winner of the game
    const [winner, setWinner] = useState<Player | null>(null)
+   //State to track if the sound is on/off
+   const [isSoundEnabled, setIsSoundEnabled] = useState<boolean>(true)
    //State to track if initial sound message ('game is on') has been played
-   const [initialSoundPlayed, setInitialSoundPlayed] = useState(false)
+   const [initialSoundPlayed, setInitialSoundPlayed] = useState<boolean>(false)
    
    
    //SCORE INPUT HANDLER
@@ -101,8 +103,15 @@ const Game = () => {
 
    //SOUND EFFECT HANDLER
    const playSound = (fileName: string) => {
-      const audio = new Audio(`/sounds/${fileName}.mp3`)
-      audio.play().catch(error => console.log('Error:', error))
+      if(isSoundEnabled){
+         const audio = new Audio(`/sounds/${fileName}.mp3`)
+         audio.play().catch(error => console.log('Error:', error))
+      }
+   }
+
+   //SOUND TOGGLE HANDLER
+   const toggleSound = () => {
+      setIsSoundEnabled(prev => !prev)
    }
 
    //SUBMIT SCORE HANDLER FOR INPUT
@@ -865,7 +874,18 @@ const Game = () => {
            
          {/*Current player throw paragraph:*/}
          <p className='current-player-throw'>
-            {`${players[currentPlayerIndex].name.toUpperCase()}'S TURN TO THROW!`}
+            <button className='sound-button' onClick={toggleSound}>
+               <Image 
+                  src={isSoundEnabled ? '/sound-on.svg' : 'sound-off.svg'} 
+                  alt={isSoundEnabled ? 'Sound On' : 'Sound Off'} 
+                  width={16} 
+                  height={16} 
+               />
+               <span>{isSoundEnabled ? 'On' : 'Off'}</span>
+            </button>
+            <span className='current-player-throw-message'>
+               {`${players[currentPlayerIndex].name.toUpperCase()}'S TURN TO THROW!`}
+            </span>
          </p>
 
          {/*Main score input section (input/buttons toggle, score preview, submit score button, score buttons ):*/}

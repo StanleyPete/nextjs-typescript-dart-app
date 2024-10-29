@@ -128,17 +128,36 @@ $game-container-border-radius-v2: 8px;
 }
 
 
-
-
-
 //Current player throw paragraph:
 .current-player-throw{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
   background-color: $yellow-color;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  padding: 6px 0px;
-  font-size: 12px;
+  padding: 6px 12px;
   text-align: center;
+        button{
+          display: flex;
+          align-items: center;
+          position: absolute;
+          left: 10px;
+          font-size: 12px;
+          color: white;
+          background-color: transparent;
+          border: none;
+          border-style: none;
+          cursor: pointer;
+                span{
+                  margin-left: 4px;
+                }
+        }
+        .current-player-throw-message{
+          font-size: 12px;
+        }
+        
 }
 
 
