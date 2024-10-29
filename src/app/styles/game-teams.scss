@@ -293,6 +293,15 @@ $game-container-border-radius-v2: 8px;
 
 
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); 
+  z-index: 999; 
+}
 
 
 .error, .game-over-popup {

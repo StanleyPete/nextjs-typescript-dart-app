@@ -157,12 +157,20 @@ const Game = () => {
 
    //SUBMIT SCORE HANDLER FOR INPUT
    const handleSubmitThrowInput = (inputMultiplier: number) => {
+      const invalidScores = [163, 166, 169, 172, 173, 175, 176, 178, 179]
       const gameTeams = [...teams]
       const currentTeam = gameTeams[currentTeamIndex]
       
       //Error hanlder (currentThrow over 180)
       if(currentThrow > 180){
-         setErrorMessage('Score cannot be higher than 180')
+         setErrorMessage('Score higher than 180 is not possible')
+         setIsError(true)
+         setCurrentThrow(0)
+         return
+      }
+
+      if(invalidScores.includes(currentThrow)){
+         setErrorMessage(`${currentThrow} is not possible`)
          setIsError(true)
          setCurrentThrow(0)
          return
@@ -1090,6 +1098,9 @@ const Game = () => {
             <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
             <button className='restart-game' onClick={handleRestartGame}>Restart game</button>
          </div>
+         
+         {/* Error/Game End overlay */}
+         {(isError || isGameEnd) && <div className="overlay"></div>}
 
          {/* Error section */}
          {isError && (

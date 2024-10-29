@@ -287,6 +287,9 @@ const Home = () => {
                </button>
             </Link>
          </div>
+         
+         {/* Error overlay */}
+         {isError && <div className="overlay"></div>}
 
          {/* Error section */}
          {isError && (
