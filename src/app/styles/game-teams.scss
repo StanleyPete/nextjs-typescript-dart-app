@@ -157,8 +157,15 @@ $game-container-border-radius-v2: 8px;
         cursor: pointer;
       }  
       .input-toggle{
+        width: 84px;
         background-color: $score-buttons-background-color;
         border-bottom-left-radius: $game-container-border-radius
+      }
+      .buttons-active {
+        border-bottom-left-radius: 0;
+      }
+      .input-active {
+        border-bottom-left-radius: $game-container-border-radius;
       }
       .score-input-section{
         display: grid;
@@ -185,7 +192,8 @@ $game-container-border-radius-v2: 8px;
              
             }
       }
-      .submit-score{
+      button.submit-score{
+        width: 84px;
         background-color: $green-color; 
         border-bottom-right-radius: $game-container-border-radius;
       }
@@ -195,7 +203,7 @@ $game-container-border-radius-v2: 8px;
         align-items: center;
         height: 100%;
         padding: 6px;
-        background-color: transparent;
+        background-color: #5f5d5d;
             .current-throw{
               display: flex;
               justify-content: center;
@@ -203,7 +211,7 @@ $game-container-border-radius-v2: 8px;
               width: 20%;
               height: 80%;
               color: black;
-              background-color:  #fafafa;
+              background-color: #eeeeee;
               border-radius: $game-container-border-radius-v2;
             }
       }
@@ -224,13 +232,18 @@ $game-container-border-radius-v2: 8px;
   height: 28px;
   width: 84px;
   color: white;
-  background-color: transparent;
+  background-color: $score-buttons-background-color;
   border: none;
   cursor: pointer;
 }
+.multiplier-buttons button:first-child {
+  border-bottom-left-radius: $game-container-border-radius;
+}
+.multiplier-buttons button:last-child {
+  border-bottom-right-radius: $game-container-border-radius;
+}
 .multiplier-section button.active{
   background-color: $green-color;
-  border-radius: $game-container-border-radius;
 }
 
 

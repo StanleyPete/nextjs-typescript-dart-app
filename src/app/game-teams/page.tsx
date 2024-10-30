@@ -947,7 +947,7 @@ const Game = () => {
             <div className="throw-value-section">
                {/* Toggle between input and number buttons */}
                <button 
-                  className='input-toggle' 
+                  className={`input-toggle ${showNumberButtons ? 'buttons-active' : 'input-active'}`} 
                   onClick={() => {
                      //Resetting values when toggle button clicked
                      const gameTeams = [...teams]
