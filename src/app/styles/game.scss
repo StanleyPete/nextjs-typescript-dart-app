@@ -6,7 +6,7 @@ $score-buttons-background-color:  #464343;
 $game-container-border-radius: 16px;
 $game-container-border-radius-v2: 8px;
 
-
+//GAME CONTAINER:
 .game-container{
   position: relative;
   min-height: 90%;
@@ -19,7 +19,7 @@ $game-container-border-radius-v2: 8px;
 }
 
 
-//Two players preview:
+//TWO PLAYERS PREVIEW:
 .two-players-preview{
   display: flex;
   justify-content: space-evenly;
@@ -30,105 +30,110 @@ $game-container-border-radius-v2: 8px;
         background-color: $active-player-color;
       }
 }
-//Game players section:
+
+
+
+//GAME PLAYERS SECTION:
 .game-players-section{
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 160px;
   padding: 12px;
-  //Player-legs:
-  .player-legs{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 24px;
-    width: 24px;
-    margin: 0px 6px;
-    background-color: blue;
-    border-radius: $game-container-border-radius-v2;
-  }
-  //Current player section:
-  .current-player-section{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 45%;
-        height: 100%;
-        padding: 12px;
-            .current-player-name-legs{
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 100%;
-              padding: 6px;
-              border-bottom: 1px solid white;
-                  .current-player-name{
-                    display: flex;
-                    align-items: center;
-                        img{
-                          margin-right: 6px;
-                        }
-                  }
-                } 
-            .current-player-points-left{
-                font-size: 38px;
-               
-            }
-            .checkout-options{
-                font-size: 10px;
-                margin-bottom: 6px;
-            }
-            .current-player-stats{
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              width: 100%;
-              font-size: 12px;
-              color: $red-color;
-            }
-            .current-player-stats p{
-              font-size: 12px;
-              color: white;
-            }
-      }
-      //Game player list
-      .game-players-list{
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 55%;
-        min-height: 100%;
-        padding: 12px;
-            .game-players-list-player{
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              width: 100%;
-              padding: 4px 12px;
-              border-radius: $game-container-border-radius-v2;
-                  .game-players-list-player-name{
-                    display: flex;
-                    align-items: center;
-                        img{
-                          margin-right: 6px;
-                        }
-                  }
-                  .game-players-list-stats{
+        //Player-legs:
+        .player-legs{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 24px;
+          width: 24px;
+          margin: 0px 6px;
+          background-color: blue;
+          border-radius: $game-container-border-radius-v2;
+        }
+        //Current player section:
+        .current-player-section{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 45%;
+              height: 100%;
+              padding: 12px;
+                  .current-player-name-legs{
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                    width: 100%;
+                    padding: 6px;
+                    border-bottom: 1px solid white;
+                        .current-player-name{
+                          display: flex;
+                          align-items: center;
+                              img{
+                                margin-right: 6px;
+                              }
+                        }
+                      } 
+                  .current-player-points-left{
+                      font-size: 38px;
+                    
                   }
+                  .checkout-options{
+                      font-size: 10px;
+                      margin-bottom: 6px;
+                  }
+                  .current-player-stats{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    width: 100%;
+                    font-size: 12px;
+                    color: $red-color;
+                  }
+                  .current-player-stats p{
+                    font-size: 12px;
+                    color: white;
+                  }
+            }
+        //Game player list
+        .game-players-list{
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          width: 55%;
+          min-height: 100%;
+          padding: 12px;
+              .game-players-list-player{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                padding: 4px 12px;
+                border-radius: $game-container-border-radius-v2;
+                    .game-players-list-player-name{
+                      display: flex;
+                      align-items: center;
+                          img{
+                            margin-right: 6px;
+                          }
+                    }
+                    .game-players-list-stats{
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                    }
+          }
+          .active-player{
+            background-color: $green-color;
+          }
         }
-        .active-player{
-          background-color: $green-color;
-        }
-      }
       
 }
 
 
-//Current player throw paragraph:
+
+
+//CURRENT PLAYER THROW PARAGRAPH:
 .current-player-throw{
   display: flex;
   align-items: center;
@@ -161,7 +166,9 @@ $game-container-border-radius-v2: 8px;
 }
 
 
-//Main score input section:
+
+
+//SCORE SECTION:
 .throw-value-section{
   display: grid;
   width: 100%; 
@@ -229,6 +236,8 @@ $game-container-border-radius-v2: 8px;
 
 
 
+
+//MULTIPLIER SECTION:
 .multiplier-section{
   display: flex;
   align-items: center;
@@ -250,39 +259,60 @@ $game-container-border-radius-v2: 8px;
   border-radius: $game-container-border-radius;
 }
 
-.score-input {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+
+
+
+//SCORE BUTTONS SECTION:
+.score-buttons-section {
+  position: relative; 
   width: 100%; 
-  margin: 0 auto;
-
+  height: 300px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+        .score-input,
+        .score-buttons {
+          width: 100%;
+          height: 100%;
+          display: grid;
+          place-items: center; 
+        }
+        .score-input {
+          grid-template-columns: repeat(3, 1fr); 
+        }
+        .score-buttons {
+          grid-template-columns: repeat(5, 1fr); 
+        }
+        .score-input button,
+        .score-buttons button {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%; 
+          height: 100%; 
+          padding:10px; 
+          font-size: 16px;
+          color: white;
+          background-color: $score-buttons-background-color;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+        
+        .base-value {
+          font-size: 14px; 
+        }
+        
+        .multiplied-value {
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.7);
+        }
 }
 
-.score-input button {
-  padding: 20px; 
-  font-size: 22px; 
-  color: white;
-  background-color: $score-buttons-background-color;
-  transition: background-color 0.2s ease; 
-  cursor: pointer; 
-}
 
-.score-buttons {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  width: 100%;
-  margin: 0 auto;
-}
 
-.score-buttons button {
-  padding: 15px;
-  font-size: 16px;
-  color: white;
-  background-color: $score-buttons-background-color;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
 
+//SETTINGS BUTTONS SECTION:
 .settings-buttons{
   height: 38px;
   margin-top: 16px;
@@ -310,16 +340,8 @@ $game-container-border-radius-v2: 8px;
 
 
 
-.team-header-legs{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid white;
-  width: 100%;
-  padding: 6px;
-}
 
-
+//ERROR/GAMEOVER POP-UP SECTION:
 .overlay {
   position: fixed;
   top: 0;

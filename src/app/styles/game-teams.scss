@@ -6,7 +6,7 @@ $score-buttons-background-color:  #464343;
 $game-container-border-radius: 16px;
 $game-container-border-radius-v2: 8px;
 
-
+//GAME CONTAINER:
 .game-container{
   position: relative;
   min-height: 90%;
@@ -19,7 +19,7 @@ $game-container-border-radius-v2: 8px;
 }
 
 
-//Game players section:
+//GAME PLAYERS SECTION:
 .game-players-section{
   display: flex;
   justify-content: space-between;
@@ -109,7 +109,7 @@ $game-container-border-radius-v2: 8px;
 
 
 
-//Current player throw paragraph:
+//CURRENT PLAYER THROW PARAGRAPH:
 .current-player-throw{
   display: flex;
   align-items: center;
@@ -142,7 +142,8 @@ $game-container-border-radius-v2: 8px;
 }
 
 
-//Main score input section:
+
+//SCORE SECTION
 .throw-value-section{
   display: grid;
   width: 100%; 
@@ -210,6 +211,7 @@ $game-container-border-radius-v2: 8px;
 
 
 
+//MULTIPLIER SECTION:
 .multiplier-section{
   display: flex;
   align-items: center;
@@ -231,39 +233,60 @@ $game-container-border-radius-v2: 8px;
   border-radius: $game-container-border-radius;
 }
 
-.score-input {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+
+
+//SCORE BUTTONS SECTION:
+.score-buttons-section {
+  position: relative; 
   width: 100%; 
-  margin: 0 auto;
-
+  height: 300px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+        .score-input,
+        .score-buttons {
+          width: 100%;
+          height: 100%;
+          display: grid;
+          place-items: center; 
+        }
+        .score-input {
+          grid-template-columns: repeat(3, 1fr); 
+        }
+        .score-buttons {
+          grid-template-columns: repeat(5, 1fr); 
+        }
+        .score-input button,
+        .score-buttons button {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%; 
+          height: 100%; 
+          padding:10px; 
+          font-size: 16px;
+          color: white;
+          background-color: $score-buttons-background-color;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+        
+        .base-value {
+          font-size: 14px; 
+        }
+        
+        .multiplied-value {
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.7);
+        }
 }
 
-.score-input button {
-  padding: 20px; 
-  font-size: 22px; 
-  color: white;
-  background-color: $score-buttons-background-color;
-  transition: background-color 0.2s ease; 
-  cursor: pointer; 
-}
 
-.score-buttons {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  width: 100%;
-  margin: 0 auto;
-}
 
-.score-buttons button {
-  padding: 15px;
-  font-size: 16px;
-  color: white;
-  background-color: $score-buttons-background-color;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
 
+
+//SETTINGS BUTTONS SECTION:
 .settings-buttons{
   height: 38px;
   margin-top: 16px;
@@ -292,7 +315,7 @@ $game-container-border-radius-v2: 8px;
 
 
 
-
+//ERROR/GAMEOVER POP-UP SECTION:
 .overlay {
   position: fixed;
   top: 0;

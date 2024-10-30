@@ -1083,9 +1083,17 @@ const Game = () => {
                ) : (
                   <div className='score-buttons'>
                      {/* Score buttons */}
-                     {Array.from({ length: 20 }, (_, i) => (
-                        <button key={i + 1} onClick={() => handleSubmitThrowButtons(i + 1)}>{i + 1}</button>
-                     ))}
+                     {Array.from({ length: 20 }, (_, i) => {
+                        const baseValue = i + 1
+                        const displayValue = multiplier > 1 ? baseValue * multiplier : null
+
+                        return (
+                           <button key={baseValue} onClick={() => handleSubmitThrowButtons(baseValue)}>
+                              <span className="base-value">{baseValue}</span>
+                              {displayValue && <span className="multiplied-value">({displayValue})</span>}
+                           </button>
+                        )
+                     })}
                      <button onClick={() => handleSubmitThrowButtons(multiplier === 2 ? 50 / 2 : multiplier === 3 ? 50 / 3 : 50)}>Bull (50)</button>
                      <button onClick={() => handleSubmitThrowButtons(multiplier === 2 ? 25 / 2 : multiplier === 3 ? 25 / 3 : 25)}>Outer (25)</button>
                      <button onClick={() => handleSubmitThrowButtons(0)}>Miss</button>
