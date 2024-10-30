@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import '../styles/game-teams.scss'
 import checkoutArray from '@/lib/checkout-table'
 
 interface Player {

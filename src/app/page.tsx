@@ -95,7 +95,11 @@ const Home = () => {
 
    const gameFolder = gameFolders[gameType]
 
-   const gameUrl = `/${gameFolder}?mode=${selectedScore}&game-win-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}`
+   const isCricketMode = selectedScore === 'Cricket'
+
+   const gameUrl = isCricketMode 
+      ? `/${gameFolder}/game-cricket?game-win-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}` 
+      : `/${gameFolder}?mode=${selectedScore}&game-win-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}`
    
    return (
       <div className='main-container form'>
