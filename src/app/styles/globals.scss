@@ -518,6 +518,21 @@ body{
   background-color: $cricket-even-buttons-background-color;
 }
 
+.miss-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 6px 25px;
+      button{
+        padding: 5px 10px;
+        background-color: transparent;
+        color: white;
+        cursor: pointer;
+        border: none;
+      }
+}
+
 .cricket-buttons {
   display: flex;
   justify-content: space-evenly;
@@ -555,6 +570,10 @@ body{
   width: 100%; 
   display: flex;
   flex-direction: column;
+        .miss-button{
+          width: 40%;
+          margin-left: auto;
+        }
 }
 
 .score-row-v2 {

@@ -2,26 +2,17 @@
 import React, { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+import Scores from '@/lib/cricket-scores'
 
 interface Player {
    name: string
    legs: number
    points: number
+   scores: { [key: string]: number}
 }
 
 
 const Cricket = () => {
-
-   const scores = [
-      ['20', 'D20', 'T20'],
-      ['19', 'D19', 'T19'],
-      ['18', 'D18', 'T18'],
-      ['17', 'D17', 'T17'],
-      ['16', 'D16', 'T16'],
-      ['15', 'D15', 'T15'],
-      ['25', '50'],
-      ['Miss']
-   ]
 
    const searchParams = useSearchParams()
    // const gameWinType = searchParams.get('game-win-type')
@@ -32,6 +23,15 @@ const Cricket = () => {
       name: playerName,
       legs: 0,
       points: 0, 
+      scores: {
+         '20': 0,
+         '19': 0,
+         '18': 0,
+         '17': 0,
+         '16': 0,
+         '15': 0,
+         'Bull': 0,
+      }
        
    })))
    
@@ -42,7 +42,52 @@ const Cricket = () => {
    //State to track throws count for each player when using buttons
    const [currentPlayerThrowsCount, setCurrentPlayerThrowsCount] = useState<number>(0)
    //State to track current player throw value and display it in current throw section
-   const [currentPlayerThrows, setCurrentPlayerThrows] = useState<number[]>([])
+   const [currentPlayerThrows, setCurrentPlayerThrows] = useState<string[]>([])
+
+
+   //SCORE BUTTONS HANDLER:
+   const handleScoreButtonClick = (sector: string, label: string, increment: number) => {
+      const gamePlayers = [...players]
+      const currentPlayer = gamePlayers[currentPlayerIndex]
+      console.log('Before update:', currentPlayer.scores)
+      currentPlayer.scores[sector] +=  increment
+      console.log('After update:', currentPlayer.scores)
+
+    
+      if (currentPlayer.scores[sector] > 3) {
+         currentPlayer.scores[sector] = 3
+      }
+
+      setCurrentPlayerThrows(prevThrows => {
+         if (prevThrows.length < 3) {
+            
+            const newThrows = [...prevThrows, label]
+            setCurrentPlayerThrowsCount(currentPlayerThrowsCount + 1)
+   
+            
+            if (newThrows.length === 3) {
+               handleSwitchPlayer()
+               setCurrentPlayerThrowsCount(0) 
+               setCurrentPlayerThrows([]) 
+            }
+            return newThrows
+         } else {
+            return prevThrows 
+         }
+      })
+
+      setPlayers(gamePlayers)
+   }
+
+   //NEXT PLAYER HANDLER
+   const handleSwitchPlayer = () => {
+      /* Switch to another player: 
+         Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
+         after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
+      */
+      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
+      setCurrentPlayerIndex(nextPlayerIndex)
+   }
 
    return (    
       <div className='game-container'>
@@ -178,23 +223,74 @@ const Cricket = () => {
          
             {/*Score buttons:*/}
             {players.length === 2 ? (
-               <div className='cricket-score-buttons'>
-                  {scores.map((buttons, index) => (
-                     <div className='score-row' key={index}>
-                        <div className='player-score'>
+               <>
+                  <div className='cricket-score-buttons'>
+                     {Scores.map((buttons, index) => (
+                        <div className='score-row' key={index}>
+                           <div className='player-score'>
+                              <span>
+                                 {(() => {
+                                    const scoreValue = players[0].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
+                                    if (scoreValue === 0) {
+                                       return ''
+                                    } else if (scoreValue === 1) {
+                                       return 'I'
+                                    } else if (scoreValue === 2) {
+                                       return 'II'
+                                    } else if (scoreValue === 3) {
+                                       return 'V'
+                                    }
+                                 })()}
+                              </span>
+                              
+                           </div>
+                           <div className='cricket-buttons'>
+                              {buttons.map((label, i) => {
+                                 const isTriple = label.startsWith('T')
+                                 const isDouble = label.startsWith('D')
+                                 const sector = label === '25' || label === '50' ? 'Bull' : label.replace(/[^0-9]/g, '')
+                                 const increment = label === '25' ? 1 : label === '50' ? 2 : isTriple ? 3 : isDouble ? 2 : 1
+                                 const value = isTriple || isDouble ? parseInt(label.slice(1)) * increment : label === '50' ? 50 : parseInt(label) * increment
+                              
+                                 return (
+                                    <button 
+                                       key={i} 
+                                       data-sector={sector}
+                                       data-value={value} 
+                                       data-increment={increment}
+                                       onClick={() => handleScoreButtonClick(sector, label, increment)}
+                                    >
+                                       {label}
+                                    </button>
+                                 )
 
+                                 
+                              })}
+                           </div>
+                           <div className='player-score'>
+                              <span>
+                                 {(() => {
+                                    const scoreValue = players[1].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
+                                    if (scoreValue === 0) {
+                                       return ''
+                                    } else if (scoreValue === 1) {
+                                       return 'I'
+                                    } else if (scoreValue === 2) {
+                                       return 'II'
+                                    } else if (scoreValue === 3) {
+                                       return 'V'
+                                    }
+                                 })()}
+                              </span> 
+                           </div>
                         </div>
-                        <div className='cricket-buttons'>
-                           {buttons.map((label, i) => (
-                              <button key={i}>{label}</button>
-                           ))}
-                        </div>
-                        <div className='player-score'>
-
-                        </div>
-                     </div>
-                  ))}
-               </div>
+                        
+                     ))}
+                  </div>
+                  <div className="miss-button">
+                     <button>Miss</button>
+                  </div>
+               </>
 
             ) : (
                <>
@@ -207,9 +303,9 @@ const Cricket = () => {
                      ))}
                   </div>
                   
-                  {/* Score buttons dla >2 graczy */}
+                  {/* Score buttons for > 2 players */}
                   <div className="cricket-score-buttons-v2">
-                     {scores.map((buttons, index) => (
+                     {Scores.map((buttons, index) => (
                         <div className="score-row-v2" key={index}>
                            {/* Sekcja z player-score dla każdego gracza */}
                            <div className="player-scores-v2">
@@ -220,14 +316,31 @@ const Cricket = () => {
                               ))}
                            </div>
                            <div className="cricket-buttons-v2">
-                              {buttons.map((label, i) => (
-                                 <button key={i}>
-                                    {label}
-                                 </button>
-                              ))}
+                              {buttons.map((label, i) => {
+                                 const isTriple = label.startsWith('T')
+                                 const isDouble = label.startsWith('D')
+                                 const sector = label === '25' || label === '50' ? 'Bull' : label.replace(/[^0-9]/g, '')
+                                 const increment = label === '25' ? 1 : label === '50' ? 2 : isTriple ? 3 : isDouble ? 2 : 1
+                                 const value = isTriple || isDouble ? parseInt(label.slice(1)) * increment : label === '50' ? 50 : parseInt(label) * increment
+
+                                 return (
+                                    <button 
+                                       key={i}
+                                       data-sector={sector}
+                                       data-value={value} 
+                                       data-increment={increment}
+                                    >
+                                       {label}
+                                    </button>
+                                 )
+                              })}
                            </div>
                         </div>
                      ))}
+                     <div className="miss-button">
+                        <button>Miss</button>
+                     </div>
+                    
                   </div>
 
                </>
