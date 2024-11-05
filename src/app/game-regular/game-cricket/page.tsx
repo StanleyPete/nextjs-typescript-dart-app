@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Scores from '@/lib/cricket-scores'
 
@@ -13,7 +13,7 @@ interface Player {
 
 
 const Cricket = () => {
-
+   const router = useRouter()
    const searchParams = useSearchParams()
    // const gameWinType = searchParams.get('game-win-type')
    // const numberOfLegs = searchParams.get('number-of-legs')
@@ -79,6 +79,25 @@ const Cricket = () => {
       setPlayers(gamePlayers)
    }
 
+   //MISS BUTTON HANDLER
+   const handleMissButtonClick = () => {
+      setCurrentPlayerThrows(prevThrows => {
+         if (prevThrows.length < 3) {
+            const newThrows = [...prevThrows, '0']
+            setCurrentPlayerThrowsCount(currentPlayerThrowsCount + 1)
+   
+            if (newThrows.length === 3) {
+               handleSwitchPlayer() 
+               setCurrentPlayerThrowsCount(0)
+               setCurrentPlayerThrows([])
+            }
+            return newThrows
+         } else {
+            return prevThrows
+         }
+      })
+   }
+
    //NEXT PLAYER HANDLER
    const handleSwitchPlayer = () => {
       /* Switch to another player: 
@@ -88,6 +107,29 @@ const Cricket = () => {
       const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
       setCurrentPlayerIndex(nextPlayerIndex)
    }
+
+   //RESTART GAME HANDLER
+   const handleRestartGame = () => {
+      setPlayers(urlPlayers.map((playerName) => ({
+         name: playerName,
+         legs: 0,
+         points: 0,
+         scores: {
+            '20': 0,
+            '19': 0,
+            '18': 0,
+            '17': 0,
+            '16': 0,
+            '15': 0,
+            'Bull': 0,
+         }
+      })))
+      setCurrentPlayerIndex(0)
+      setStartLegPlayerIndex(0) 
+      setCurrentPlayerThrowsCount(0)
+      setCurrentPlayerThrows([]) 
+   }
+
 
    return (    
       <div className='game-container'>
@@ -238,7 +280,7 @@ const Cricket = () => {
                                     } else if (scoreValue === 2) {
                                        return 'II'
                                     } else if (scoreValue === 3) {
-                                       return 'V'
+                                       return <Image src='/completed.svg' alt='Completed icon' width={16} height={16} />
                                     }
                                  })()}
                               </span>
@@ -278,7 +320,7 @@ const Cricket = () => {
                                     } else if (scoreValue === 2) {
                                        return 'II'
                                     } else if (scoreValue === 3) {
-                                       return 'V'
+                                       return <Image src='/completed.svg' alt='Completed icon' width={16} height={16} />
                                     }
                                  })()}
                               </span> 
@@ -288,7 +330,7 @@ const Cricket = () => {
                      ))}
                   </div>
                   <div className="miss-button">
-                     <button>Miss</button>
+                     <button onClick={handleMissButtonClick}>Miss</button>
                   </div>
                </>
 
@@ -311,7 +353,18 @@ const Cricket = () => {
                            <div className="player-scores-v2">
                               {players.map((_, playerIndex) => (
                                  <div key={playerIndex} className="player-score-v2">
-
+                                    {(() => {
+                                       const scoreValue = players[playerIndex].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
+                                       if (scoreValue === 0) {
+                                          return ''
+                                       } else if (scoreValue === 1) {
+                                          return 'I'
+                                       } else if (scoreValue === 2) {
+                                          return 'II'
+                                       } else if (scoreValue === 3) {
+                                          return <Image src='/completed.svg' alt='Completed icon' width={16} height={16} />
+                                       }
+                                    })()}
                                  </div>
                               ))}
                            </div>
@@ -329,6 +382,7 @@ const Cricket = () => {
                                        data-sector={sector}
                                        data-value={value} 
                                        data-increment={increment}
+                                       onClick={() => handleScoreButtonClick(sector, label, increment)}
                                     >
                                        {label}
                                     </button>
@@ -338,7 +392,7 @@ const Cricket = () => {
                         </div>
                      ))}
                      <div className="miss-button">
-                        <button>Miss</button>
+                        <button onClick={handleMissButtonClick}>Miss</button>
                      </div>
                     
                   </div>
@@ -350,7 +404,7 @@ const Cricket = () => {
 
          <div className="settings-buttons">
             <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
-            <button className='restart-game'>Restart game</button>
+            <button className='restart-game' onClick={handleRestartGame}>Restart game</button>
          </div>
 
          

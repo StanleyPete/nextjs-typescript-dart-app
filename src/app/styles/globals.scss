@@ -511,7 +511,7 @@ body{
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  padding: 6px 25px;
+  padding: 6px 6px;
 }
 
 .score-row:nth-child(odd) {
@@ -548,7 +548,10 @@ body{
 }
 
 .player-score{
-  width:30%
+  width:30%;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
 }
 
 .players-row {
@@ -596,7 +599,10 @@ body{
 }
 
 .player-score-v2 {
-  flex: 1; 
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
   height: 100%; 
   background-color: transparent;
   border-right: 1px solid gray;
