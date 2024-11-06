@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Scores from '@/lib/cricket-scores'
@@ -9,6 +9,13 @@ interface Player {
    legs: number
    points: number
    scores: { [key: string]: number}
+}
+
+interface HistoryEntry {
+   historyPlayerIndex: number
+   historyPoints: number
+   historyScores: { [key: string]: number }
+   historyThrows: string[]
 }
 
 
@@ -35,6 +42,8 @@ const Cricket = () => {
        
    })))
    
+   //State to track history of moves
+   const [history, setHistory] = useState<HistoryEntry[]>([])
    //CurrentPlayerIndex state declared in order to keep players index who currently plays
    const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0)
    //State to track which player starts the leg
@@ -50,10 +59,21 @@ const Cricket = () => {
       const gamePlayers = [...players]
       const currentPlayer = gamePlayers[currentPlayerIndex]
       const prevScores = currentPlayer.scores[sector] 
+      const updatedThrowCount = currentPlayerThrowsCount + 1
+      const updatedPlayerThrows = [...currentPlayerThrows, label]
+
+      const newHistoryEntry: HistoryEntry = {
+         historyPlayerIndex: currentPlayerIndex,
+         historyPoints: currentPlayer.points, 
+         historyScores: { ...currentPlayer.scores },
+         historyThrows: [...currentPlayerThrows]
+      }
+      
       
       console.log('Before update:', currentPlayer.scores)
       currentPlayer.scores[sector] = Math.min(prevScores + increment, 3)
       console.log('After update:', currentPlayer.scores)
+      
       
 
       if (currentPlayer.scores[sector] === 3) {
@@ -64,27 +84,20 @@ const Cricket = () => {
             
          }
       }
-      
-      setCurrentPlayerThrows(prevThrows => {
-         if (prevThrows.length < 3) {
-            
-            const newThrows = [...prevThrows, label]
-            setCurrentPlayerThrowsCount(currentPlayerThrowsCount + 1)
-   
-            
-            if (newThrows.length === 3) {
-               handleSwitchPlayer()
-               setCurrentPlayerThrowsCount(0) 
-               setCurrentPlayerThrows([]) 
-            }
-            return newThrows
-         } else {
-            return prevThrows 
-         }
-      })
 
-      setPlayers(gamePlayers)
+      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
       
+      if(updatedThrowCount < 3){
+         setCurrentPlayerThrows(updatedPlayerThrows)
+         setCurrentPlayerThrowsCount(updatedThrowCount)
+      } else {
+         handleSwitchPlayer()
+         setCurrentPlayerThrowsCount(0) 
+         setCurrentPlayerThrows([]) 
+      }
+      
+      setPlayers(gamePlayers)
+
    }
 
    //MISS BUTTON HANDLER
@@ -116,6 +129,41 @@ const Cricket = () => {
       setCurrentPlayerIndex(nextPlayerIndex)
    }
 
+   //UNDO HANDLER:
+   const handleUndo = () => {
+      const lastEntry = history[history.length - 1]
+      const gamePlayers = [...players]
+
+      if(history.length === 0){
+         return
+      }
+      
+      if (currentPlayerThrowsCount !== 0) {
+         const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+         // Revert to previous state
+         currentPlayer.points = lastEntry.historyPoints
+         currentPlayer.scores = { ...lastEntry.historyScores }
+         setCurrentPlayerThrows(lastEntry.historyThrows)
+
+         // Update the state
+         setPlayers(gamePlayers)
+         setHistory(history.slice(0, history.length - 1)) // Remove the last move from history
+
+      } else if (currentPlayerThrowsCount === 0){
+         const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+         setCurrentPlayerIndex(lastEntry.historyPlayerIndex)
+         currentPlayer.points = lastEntry.historyPoints
+         currentPlayer.scores = { ...lastEntry.historyScores }
+         setCurrentPlayerThrows(lastEntry.historyThrows)
+
+         // Update the state
+         setPlayers(gamePlayers)
+         setHistory(history.slice(0, history.length - 1)) // Remove the last move from history
+      }
+
+      
+   }
+
    //RESTART GAME HANDLER
    const handleRestartGame = () => {
       setPlayers(urlPlayers.map((playerName) => ({
@@ -134,9 +182,14 @@ const Cricket = () => {
       })))
       setCurrentPlayerIndex(0)
       setStartLegPlayerIndex(0) 
+      setHistory([])
       setCurrentPlayerThrowsCount(0)
       setCurrentPlayerThrows([]) 
    }
+
+   useEffect(() => {
+      console.log(history)
+   }, [history])
 
 
    return (    
@@ -252,7 +305,7 @@ const Cricket = () => {
             <div className="throw-value-section">
 
                {/*Undo button:*/}
-               <button className="input-toggle">
+               <button className="input-toggle" onClick={handleUndo}>
                   Undo
                </button>
                
