@@ -15,8 +15,8 @@ interface Player {
 const Cricket = () => {
    const router = useRouter()
    const searchParams = useSearchParams()
-   // const gameWinType = searchParams.get('game-win-type')
-   // const numberOfLegs = searchParams.get('number-of-legs')
+   const gameWinType = searchParams.get('game-win-type')
+   const numberOfLegs = searchParams.get('number-of-legs')
    const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
    
    const [players, setPlayers] = useState<Player[]>(urlPlayers.map((playerName: string) => ({
@@ -46,18 +46,25 @@ const Cricket = () => {
 
 
    //SCORE BUTTONS HANDLER:
-   const handleScoreButtonClick = (sector: string, label: string, increment: number) => {
+   const handleScoreButtons = (sector: string, label: string, increment: number, value: number) => {
       const gamePlayers = [...players]
       const currentPlayer = gamePlayers[currentPlayerIndex]
+      const prevScores = currentPlayer.scores[sector] 
+      
       console.log('Before update:', currentPlayer.scores)
-      currentPlayer.scores[sector] +=  increment
+      currentPlayer.scores[sector] = Math.min(prevScores + increment, 3)
       console.log('After update:', currentPlayer.scores)
+      
 
-    
-      if (currentPlayer.scores[sector] > 3) {
-         currentPlayer.scores[sector] = 3
+      if (currentPlayer.scores[sector] === 3) {
+         const isAnyPlayerWhichDidNotCompleteSector = players.some(player => player.scores[sector] !== 3)
+   
+         if (isAnyPlayerWhichDidNotCompleteSector) {
+            currentPlayer.points += (prevScores + increment - currentPlayer.scores[sector]) * (value/increment)
+            
+         }
       }
-
+      
       setCurrentPlayerThrows(prevThrows => {
          if (prevThrows.length < 3) {
             
@@ -77,10 +84,11 @@ const Cricket = () => {
       })
 
       setPlayers(gamePlayers)
+      
    }
 
    //MISS BUTTON HANDLER
-   const handleMissButtonClick = () => {
+   const handleMissButton = () => {
       setCurrentPlayerThrows(prevThrows => {
          if (prevThrows.length < 3) {
             const newThrows = [...prevThrows, '0']
@@ -300,7 +308,7 @@ const Cricket = () => {
                                        data-sector={sector}
                                        data-value={value} 
                                        data-increment={increment}
-                                       onClick={() => handleScoreButtonClick(sector, label, increment)}
+                                       onClick={() => handleScoreButtons(sector, label, increment, value)}
                                     >
                                        {label}
                                     </button>
@@ -330,7 +338,7 @@ const Cricket = () => {
                      ))}
                   </div>
                   <div className="miss-button">
-                     <button onClick={handleMissButtonClick}>Miss</button>
+                     <button onClick={handleMissButton}>Miss</button>
                   </div>
                </>
 
@@ -382,7 +390,7 @@ const Cricket = () => {
                                        data-sector={sector}
                                        data-value={value} 
                                        data-increment={increment}
-                                       onClick={() => handleScoreButtonClick(sector, label, increment)}
+                                       onClick={() => handleScoreButtons(sector, label, increment, value)}
                                     >
                                        {label}
                                     </button>
@@ -392,7 +400,7 @@ const Cricket = () => {
                         </div>
                      ))}
                      <div className="miss-button">
-                        <button onClick={handleMissButtonClick}>Miss</button>
+                        <button onClick={handleMissButton}>Miss</button>
                      </div>
                     
                   </div>
