@@ -53,7 +53,7 @@ const Game = () => {
    //CurrentPlayerIndex state declared in order to keep players index who currently plays
    const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0)
    //State to track which player starts the leg
-   const [startLegPlayerIndex, setStartLegPlayerIndex] = useState<number>(0)
+   const [startPlayerIndex, setStartPlayerIndex] = useState<number>(0)
    //State to toggle between input and number buttons
    const [showNumberButtons, setShowNumberButtons] = useState<boolean>(false)
    //State to track total throws sum for current player when using buttons
@@ -96,8 +96,8 @@ const Game = () => {
    }
 
    //NEXT PLAYER WHO STARTS THE LEG HANDLER
-   const handleSwitchPlayerLeg = () => {
-      setStartLegPlayerIndex(prevIndex => (prevIndex + 1) % players.length)
+   const handleStartPlayerIndex = () => {
+      setStartPlayerIndex(prevIndex => (prevIndex + 1) % players.length)
    }
 
    //SOUND EFFECT HANDLER
@@ -189,10 +189,10 @@ const Game = () => {
          setPlayers(gamePlayers) 
 
          //Switching to next player who start the leg
-         handleSwitchPlayerLeg()
+         handleStartPlayerIndex()
 
          //Setting current player index:
-         setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
+         setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
 
          //End game check
          checkGameEndHandler()
@@ -325,10 +325,10 @@ const Game = () => {
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
 
             //Switching to next player who start the leg
-            handleSwitchPlayerLeg()
+            handleStartPlayerIndex()
 
             //Setting current player index:
-            setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
+            setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
 
             //Updating player's state
             setPlayers(gamePlayers) 
@@ -422,10 +422,10 @@ const Game = () => {
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
 
             //Switching to next player who start the leg
-            handleSwitchPlayerLeg()
+            handleStartPlayerIndex()
 
             //Setting current player index:
-            setCurrentPlayerIndex((startLegPlayerIndex + 1) % players.length)
+            setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
 
             //Checking game end
             checkGameEndHandler()
@@ -883,7 +883,7 @@ const Game = () => {
          <p className='current-player-throw'>
             <button className='sound-button' onClick={toggleSound}>
                <Image 
-                  src={isSoundEnabled ? '/sound-on.svg' : 'sound-off.svg'} 
+                  src={isSoundEnabled ? '/sound-on.svg' : '/sound-off.svg'} 
                   alt={isSoundEnabled ? 'Sound On' : 'Sound Off'} 
                   width={16} 
                   height={16} 

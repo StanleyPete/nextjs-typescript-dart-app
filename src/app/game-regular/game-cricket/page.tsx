@@ -41,18 +41,65 @@ const Cricket = () => {
       }
        
    })))
+
+
    
    //State to track history of moves
    const [history, setHistory] = useState<HistoryEntry[]>([])
    //CurrentPlayerIndex state declared in order to keep players index who currently plays
    const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0)
    //State to track which player starts the leg
-   const [startLegPlayerIndex, setStartLegPlayerIndex] = useState<number>(0)
+   const [startPlayerIndex, setStartPlayerIndex] = useState<number>(0)
    //State to track throws count for each player when using buttons
    const [currentPlayerThrowsCount, setCurrentPlayerThrowsCount] = useState<number>(0)
    //State to track current player throw value and display it in current throw section
    const [currentPlayerThrows, setCurrentPlayerThrows] = useState<string[]>([])
+   //State to track if all players have completed sector
+   const [completedSectors, setCompletedSectors] = useState<{ [key: string]: boolean }>({
+      '20': false,
+      '19': false,
+      '18': false,
+      '17': false,
+      '16': false,
+      '15': false,
+      'Bull': false,
+   })
+   //State to check if game ends
+   const [isGameEnd, setIsGameEnd] = useState<boolean>(false)
+   //State to set winner of the game
+   const [winner, setWinner] = useState<Player | null>(null)
+   //State to track if the sound is on/off
+   const [isSoundEnabled, setIsSoundEnabled] = useState<boolean>(true)
+   //State to track if initial sound message ('game is on') has been played
+   const [initialSoundPlayed, setInitialSoundPlayed] = useState<boolean>(false)
 
+   //NEXT PLAYER HANDLER
+   const handleSwitchPlayer = () => {
+      /* Switch to another player: 
+         Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
+         after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
+      */
+      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
+      setCurrentPlayerIndex(nextPlayerIndex)
+   }
+
+   //NEXT PLAYER WHO STARTS THE LEG HANDLER
+   const handleStartPlayerIndex = () => {
+      setStartPlayerIndex(prevIndex => (prevIndex + 1) % players.length)
+   }
+
+   //SOUND EFFECT HANDLER
+   const playSound = (fileName: string) => {
+      if(isSoundEnabled){
+         const audio = new Audio(`/sounds/${fileName}.mp3`)
+         audio.play().catch(error => console.log('Error:', error))
+      }
+   }
+
+   //SOUND TOGGLE HANDLER
+   const toggleSound = () => {
+      setIsSoundEnabled(prev => !prev)
+   }
 
    //SCORE BUTTONS HANDLER:
    const handleScoreButtons = (sector: string, label: string, increment: number, value: number) => {
@@ -69,21 +116,57 @@ const Cricket = () => {
          historyThrows: [...currentPlayerThrows]
       }
       
-      
-      console.log('Before update:', currentPlayer.scores)
       currentPlayer.scores[sector] = Math.min(prevScores + increment, 3)
-      console.log('After update:', currentPlayer.scores)
       
-      
-
       if (currentPlayer.scores[sector] === 3) {
-         const isAnyPlayerWhichDidNotCompleteSector = players.some(player => player.scores[sector] !== 3)
+         const isAnyPlayerWhichHaveNotCompletedSector = players.some(player => player.scores[sector] !== 3)
+
+         if(currentPlayer.scores[sector] === 3 && prevScores !== 3 && !isAnyPlayerWhichHaveNotCompletedSector){
+            playSound(`${sector}completedclosed`)
+            setCompletedSectors(prev => ({ ...prev, [sector]: true }))
+         } else if(currentPlayer.scores[sector] === 3 && prevScores !== 3){
+            playSound(`${sector}completed`)
+         }
    
-         if (isAnyPlayerWhichDidNotCompleteSector) {
+         if(isAnyPlayerWhichHaveNotCompletedSector) {
             currentPlayer.points += (prevScores + increment - currentPlayer.scores[sector]) * (value/increment)
             
          }
       }
+
+      //End leg scenario:
+      const currentPlayerHasCompletedAllSectors = Object.values(currentPlayer.scores).every(sector => sector === 3)
+      // const haveAllOtherPlayersCompletedAllSectors = players.every((player, index) => 
+      //    index !== currentPlayerIndex && Object.values(player.scores).some(score => score !== 3)
+      // )
+      const currentPlayerHasHighestPoints = currentPlayer.points === Math.max(...players.map(player => player.points))
+
+      if(currentPlayerHasCompletedAllSectors && currentPlayerHasHighestPoints){
+         currentPlayer.legs += 1
+
+         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+         players.forEach(player => {
+            player.points = 0
+            player.scores = {
+               '20': 0,
+               '19': 0,
+               '18': 0,
+               '17': 0,
+               '16': 0,
+               '15': 0,
+               'Bull': 0,
+            }
+         })
+
+         setPlayers(gamePlayers) 
+         handleStartPlayerIndex()
+         setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
+         setCurrentPlayerThrowsCount(0) 
+         setCurrentPlayerThrows([]) 
+         return
+      }
+      
 
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
       
@@ -102,31 +185,28 @@ const Cricket = () => {
 
    //MISS BUTTON HANDLER
    const handleMissButton = () => {
-      setCurrentPlayerThrows(prevThrows => {
-         if (prevThrows.length < 3) {
-            const newThrows = [...prevThrows, '0']
-            setCurrentPlayerThrowsCount(currentPlayerThrowsCount + 1)
-   
-            if (newThrows.length === 3) {
-               handleSwitchPlayer() 
-               setCurrentPlayerThrowsCount(0)
-               setCurrentPlayerThrows([])
-            }
-            return newThrows
-         } else {
-            return prevThrows
-         }
-      })
-   }
+      const gamePlayers = [...players]
+      const currentPlayer = gamePlayers[currentPlayerIndex]
+      const updatedThrowCount = currentPlayerThrowsCount + 1
+      const updatedPlayerThrows = [...currentPlayerThrows, '0']
+      
+      const newHistoryEntry: HistoryEntry = {
+         historyPlayerIndex: currentPlayerIndex,
+         historyPoints: currentPlayer.points, 
+         historyScores: { ...currentPlayer.scores },
+         historyThrows: [...currentPlayerThrows]
+      }
 
-   //NEXT PLAYER HANDLER
-   const handleSwitchPlayer = () => {
-      /* Switch to another player: 
-         Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
-         after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
-      */
-      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
-      setCurrentPlayerIndex(nextPlayerIndex)
+      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+
+      if(updatedThrowCount < 3){
+         setCurrentPlayerThrows(updatedPlayerThrows)
+         setCurrentPlayerThrowsCount(updatedThrowCount)
+      } else {
+         handleSwitchPlayer()
+         setCurrentPlayerThrowsCount(0) 
+         setCurrentPlayerThrows([]) 
+      }
    }
 
    //UNDO HANDLER:
@@ -145,6 +225,9 @@ const Cricket = () => {
          currentPlayer.scores = { ...lastEntry.historyScores }
          setCurrentPlayerThrows(lastEntry.historyThrows)
 
+         const updatedThrowCount = currentPlayerThrowsCount - 1
+         setCurrentPlayerThrowsCount(updatedThrowCount)
+
          // Update the state
          setPlayers(gamePlayers)
          setHistory(history.slice(0, history.length - 1)) // Remove the last move from history
@@ -159,9 +242,40 @@ const Cricket = () => {
          // Update the state
          setPlayers(gamePlayers)
          setHistory(history.slice(0, history.length - 1)) // Remove the last move from history
-      }
+      }  
+   }
 
-      
+   //GAME END HANDLER
+   const checkGameEndHandler = () => {
+      //Scenario when game type is set to best-of
+      if (gameWinType === 'best-of') {
+         //Sum of legs for all players
+         const totalLegs = players.reduce((acc, player) => acc + player.legs, 0)
+         
+         //Check if totalLegs for players equals to number-of-legs parameter
+         if (totalLegs === Number(numberOfLegs)) {
+            //Finding winner player
+            const maxLegs = Math.max(...players.map(player => player.legs))
+            const winner = players.find(player => player.legs === maxLegs) || null
+            setIsGameEnd(true)
+            setWinner(winner)
+            playSound('and-the-game')
+         } else {
+            playSound('and-the-leg')
+         }      
+      }
+      //Scenario when game type is set to first-to
+      else if (gameWinType === 'first-to') {
+         //Finding winner player
+         const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
+         if(winner){
+            setIsGameEnd(true)
+            setWinner(winner)
+            playSound('and-the-game')
+         } else {
+            playSound('and-the-leg')
+         }
+      }
    }
 
    //RESTART GAME HANDLER
@@ -181,15 +295,22 @@ const Cricket = () => {
          }
       })))
       setCurrentPlayerIndex(0)
-      setStartLegPlayerIndex(0) 
+      setStartPlayerIndex(0) 
       setHistory([])
       setCurrentPlayerThrowsCount(0)
       setCurrentPlayerThrows([]) 
    }
 
    useEffect(() => {
+      if(!initialSoundPlayed){
+         playSound('game-is-on')
+         setInitialSoundPlayed(true)
+      }
+
       console.log(history)
-   }, [history])
+      console.log(`CurrentPlayerThrowsCount: ${currentPlayerThrowsCount}`)
+
+   }, [history, currentPlayerThrowsCount, initialSoundPlayed])
 
 
    return (    
@@ -293,6 +414,15 @@ const Cricket = () => {
 
          {/*Current player throw paragraph:*/}
          <p className='current-player-throw'>
+            <button className='sound-button' onClick={toggleSound}>
+               <Image 
+                  src={isSoundEnabled ? '/sound-on.svg' : '/sound-off.svg'} 
+                  alt={isSoundEnabled ? 'Sound On' : 'Sound Off'} 
+                  width={16} 
+                  height={16} 
+               />
+               <span>{isSoundEnabled ? 'On' : 'Off'}</span>
+            </button>
             <span className='current-player-throw-message'>
                {`${players[currentPlayerIndex].name.toUpperCase()}'S TURN TO THROW!`}
             </span>
@@ -329,7 +459,7 @@ const Cricket = () => {
                <>
                   <div className='cricket-score-buttons'>
                      {Scores.map((buttons, index) => (
-                        <div className='score-row' key={index}>
+                        <div  className={`score-row-v2 ${completedSectors[buttons[0] === '25' ? 'Bull' : buttons[0]] ? 'completed-sector' : ''}`} key={index}>
                            <div className='player-score'>
                               <span>
                                  {(() => {
@@ -354,6 +484,7 @@ const Cricket = () => {
                                  const sector = label === '25' || label === '50' ? 'Bull' : label.replace(/[^0-9]/g, '')
                                  const increment = label === '25' ? 1 : label === '50' ? 2 : isTriple ? 3 : isDouble ? 2 : 1
                                  const value = isTriple || isDouble ? parseInt(label.slice(1)) * increment : label === '50' ? 50 : parseInt(label) * increment
+                                 const isSectorCompleted = completedSectors[sector]
                               
                                  return (
                                     <button 
@@ -361,7 +492,7 @@ const Cricket = () => {
                                        data-sector={sector}
                                        data-value={value} 
                                        data-increment={increment}
-                                       onClick={() => handleScoreButtons(sector, label, increment, value)}
+                                       onClick={isSectorCompleted ? () => {} : () => handleScoreButtons(sector, label, increment, value)}
                                     >
                                        {label}
                                     </button>
@@ -409,7 +540,7 @@ const Cricket = () => {
                   {/* Score buttons for > 2 players */}
                   <div className="cricket-score-buttons-v2">
                      {Scores.map((buttons, index) => (
-                        <div className="score-row-v2" key={index}>
+                        <div className={`score-row-v2 ${completedSectors[buttons[0] === '25' ? 'Bull' : buttons[0]] ? 'completed-sector' : ''}`} key={index}>
                            {/* Sekcja z player-score dla każdego gracza */}
                            <div className="player-scores-v2">
                               {players.map((_, playerIndex) => (
@@ -436,6 +567,7 @@ const Cricket = () => {
                                  const sector = label === '25' || label === '50' ? 'Bull' : label.replace(/[^0-9]/g, '')
                                  const increment = label === '25' ? 1 : label === '50' ? 2 : isTriple ? 3 : isDouble ? 2 : 1
                                  const value = isTriple || isDouble ? parseInt(label.slice(1)) * increment : label === '50' ? 50 : parseInt(label) * increment
+                                 const isSectorCompleted = completedSectors[sector]
 
                                  return (
                                     <button 
@@ -443,7 +575,7 @@ const Cricket = () => {
                                        data-sector={sector}
                                        data-value={value} 
                                        data-increment={increment}
-                                       onClick={() => handleScoreButtons(sector, label, increment, value)}
+                                       onClick={isSectorCompleted ? () => {} : () => handleScoreButtons(sector, label, increment, value)}
                                     >
                                        {label}
                                     </button>
