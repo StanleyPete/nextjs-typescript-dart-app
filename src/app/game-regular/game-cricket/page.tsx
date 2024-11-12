@@ -16,6 +16,7 @@ interface HistoryEntry {
    historyPoints: number
    historyScores: { [key: string]: number }
    historyThrows: string[]
+   historyLegs: number
 }
 
 
@@ -107,79 +108,95 @@ const Cricket = () => {
       const currentPlayer = gamePlayers[currentPlayerIndex]
       const prevScores = currentPlayer.scores[sector] 
       const updatedThrowCount = currentPlayerThrowsCount + 1
-      const updatedPlayerThrows = [...currentPlayerThrows, label]
-
-      const newHistoryEntry: HistoryEntry = {
-         historyPlayerIndex: currentPlayerIndex,
-         historyPoints: currentPlayer.points, 
-         historyScores: { ...currentPlayer.scores },
-         historyThrows: [...currentPlayerThrows]
-      }
       
-      currentPlayer.scores[sector] = Math.min(prevScores + increment, 3)
-      
-      if (currentPlayer.scores[sector] === 3) {
-         const isAnyPlayerWhichHaveNotCompletedSector = players.some(player => player.scores[sector] !== 3)
+      if(currentPlayerThrows.length === 3) {
+         return
+      } else {
+         const updatedPlayerThrows = [...currentPlayerThrows, label]
 
-         if(currentPlayer.scores[sector] === 3 && prevScores !== 3 && !isAnyPlayerWhichHaveNotCompletedSector){
-            playSound(`${sector}completedclosed`)
-            setCompletedSectors(prev => ({ ...prev, [sector]: true }))
-         } else if(currentPlayer.scores[sector] === 3 && prevScores !== 3){
-            playSound(`${sector}completed`)
+         const newHistoryEntry: HistoryEntry = {
+            historyPlayerIndex: currentPlayerIndex,
+            historyPoints: currentPlayer.points, 
+            historyScores: { ...currentPlayer.scores },
+            historyThrows: [...currentPlayerThrows],
+            historyLegs: currentPlayer.legs
+         }
+         
+         currentPlayer.scores[sector] = Math.min(prevScores + increment, 3)
+         
+         //End leg scenario:
+         // const haveAllOtherPlayersCompletedAllSectors = players.every((player, index) => 
+         //    index !== currentPlayerIndex && Object.values(player.scores).some(score => score !== 3)
+         // )
+         const currentPlayerHasCompletedAllSectors = Object.values(currentPlayer.scores).every(sector => sector === 3)
+         const currentPlayerHasHighestPoints = currentPlayer.points === Math.max(...players.map(player => player.points))
+   
+         if(currentPlayerHasCompletedAllSectors && currentPlayerHasHighestPoints){
+            currentPlayer.legs += 1
+            playSound('and-the-leg')
+   
+            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+   
+            players.forEach(player => {
+               player.points = 0
+               player.scores = {
+                  '20': 0,
+                  '19': 0,
+                  '18': 0,
+                  '17': 0,
+                  '16': 0,
+                  '15': 0,
+                  'Bull': 0,
+               }
+            })
+   
+            setPlayers(gamePlayers) 
+            handleStartPlayerIndex()
+            setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
+            setCurrentPlayerThrowsCount(0) 
+            setCurrentPlayerThrows([]) 
+            return
+         }
+         if (currentPlayer.scores[sector] === 3) {
+            const isAnyPlayerWhichHaveNotCompletedSector = players.some(player => player.scores[sector] !== 3)
+   
+            if(currentPlayer.scores[sector] === 3 && prevScores !== 3 && !isAnyPlayerWhichHaveNotCompletedSector){
+               playSound(`${sector}completedclosed`)
+               setCompletedSectors(prev => ({ ...prev, [sector]: true }))
+            } else if(currentPlayer.scores[sector] === 3 && prevScores !== 3){
+               playSound(`${sector}completed`)
+            }
+      
+            if(isAnyPlayerWhichHaveNotCompletedSector) {
+               currentPlayer.points += (prevScores + increment - currentPlayer.scores[sector]) * (value/increment)
+               
+            }
          }
    
-         if(isAnyPlayerWhichHaveNotCompletedSector) {
-            currentPlayer.points += (prevScores + increment - currentPlayer.scores[sector]) * (value/increment)
-            
-         }
-      }
-
-      //End leg scenario:
-      const currentPlayerHasCompletedAllSectors = Object.values(currentPlayer.scores).every(sector => sector === 3)
-      // const haveAllOtherPlayersCompletedAllSectors = players.every((player, index) => 
-      //    index !== currentPlayerIndex && Object.values(player.scores).some(score => score !== 3)
-      // )
-      const currentPlayerHasHighestPoints = currentPlayer.points === Math.max(...players.map(player => player.points))
-
-      if(currentPlayerHasCompletedAllSectors && currentPlayerHasHighestPoints){
-         currentPlayer.legs += 1
-
          setHistory(prevHistory => [...prevHistory, newHistoryEntry])
-
-         players.forEach(player => {
-            player.points = 0
-            player.scores = {
-               '20': 0,
-               '19': 0,
-               '18': 0,
-               '17': 0,
-               '16': 0,
-               '15': 0,
-               'Bull': 0,
+         
+         if(updatedThrowCount < 3){
+            setCurrentPlayerThrows(updatedPlayerThrows)
+            setCurrentPlayerThrowsCount(updatedThrowCount)
+         } else {
+            const newExtraHistoryEntry: HistoryEntry = {
+               historyPlayerIndex: currentPlayerIndex,
+               historyPoints: currentPlayer.points, 
+               historyScores: { ...currentPlayer.scores },
+               historyThrows: [...currentPlayerThrows, label],
+               historyLegs: currentPlayer.legs
             }
-         })
+            setHistory(prevHistory => [...prevHistory, newExtraHistoryEntry])
+            handleSwitchPlayer()
+            setCurrentPlayerThrowsCount(0) 
+            setCurrentPlayerThrows([]) 
+         }
+         
+         setPlayers(gamePlayers)
 
-         setPlayers(gamePlayers) 
-         handleStartPlayerIndex()
-         setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
-         setCurrentPlayerThrowsCount(0) 
-         setCurrentPlayerThrows([]) 
-         return
       }
-      
 
-      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
       
-      if(updatedThrowCount < 3){
-         setCurrentPlayerThrows(updatedPlayerThrows)
-         setCurrentPlayerThrowsCount(updatedThrowCount)
-      } else {
-         handleSwitchPlayer()
-         setCurrentPlayerThrowsCount(0) 
-         setCurrentPlayerThrows([]) 
-      }
-      
-      setPlayers(gamePlayers)
 
    }
 
@@ -194,7 +211,8 @@ const Cricket = () => {
          historyPlayerIndex: currentPlayerIndex,
          historyPoints: currentPlayer.points, 
          historyScores: { ...currentPlayer.scores },
-         historyThrows: [...currentPlayerThrows]
+         historyThrows: [...currentPlayerThrows,],
+         historyLegs: currentPlayer.legs
       }
 
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
@@ -203,6 +221,14 @@ const Cricket = () => {
          setCurrentPlayerThrows(updatedPlayerThrows)
          setCurrentPlayerThrowsCount(updatedThrowCount)
       } else {
+         const newExtraHistoryEntry: HistoryEntry = {
+            historyPlayerIndex: currentPlayerIndex,
+            historyPoints: currentPlayer.points, 
+            historyScores: { ...currentPlayer.scores },
+            historyThrows: [...currentPlayerThrows, '0'],
+            historyLegs: currentPlayer.legs
+         }
+         setHistory(prevHistory => [...prevHistory, newExtraHistoryEntry])
          handleSwitchPlayer()
          setCurrentPlayerThrowsCount(0) 
          setCurrentPlayerThrows([]) 
@@ -211,38 +237,46 @@ const Cricket = () => {
 
    //UNDO HANDLER:
    const handleUndo = () => {
-      const lastEntry = history[history.length - 1]
-      const gamePlayers = [...players]
-
       if(history.length === 0){
          return
       }
+
+      const lastEntry = history[history.length - 1]
+      const gamePlayers = [...players]
+      const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+
       
       if (currentPlayerThrowsCount !== 0) {
-         const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
-         // Revert to previous state
-         currentPlayer.points = lastEntry.historyPoints
-         currentPlayer.scores = { ...lastEntry.historyScores }
-         setCurrentPlayerThrows(lastEntry.historyThrows)
-
          const updatedThrowCount = currentPlayerThrowsCount - 1
          setCurrentPlayerThrowsCount(updatedThrowCount)
+         
+      } else if (currentPlayerThrowsCount === 0 && currentPlayer.legs > lastEntry.historyLegs){
+         currentPlayer.legs -= 1
+         setCurrentPlayerThrowsCount(lastEntry.historyThrows.length)
 
-         // Update the state
-         setPlayers(gamePlayers)
-         setHistory(history.slice(0, history.length - 1)) // Remove the last move from history
+         gamePlayers.forEach((player, index) => {
+            if (index !== lastEntry.historyPlayerIndex) {
+               const playerLastHistoryEntry = [...history]
+                  .reverse()
+                  .find(entry => entry.historyPlayerIndex === index)
+      
+               if (playerLastHistoryEntry) {
+                  player.points = playerLastHistoryEntry.historyPoints
+                  player.scores = { ...playerLastHistoryEntry.historyScores }
+               }
+            }
+         })
 
-      } else if (currentPlayerThrowsCount === 0){
-         const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
-         setCurrentPlayerIndex(lastEntry.historyPlayerIndex)
-         currentPlayer.points = lastEntry.historyPoints
-         currentPlayer.scores = { ...lastEntry.historyScores }
-         setCurrentPlayerThrows(lastEntry.historyThrows)
+      } else if( currentPlayerThrowsCount === 0) {
+         setCurrentPlayerThrowsCount(3)
+      }
 
-         // Update the state
-         setPlayers(gamePlayers)
-         setHistory(history.slice(0, history.length - 1)) // Remove the last move from history
-      }  
+      currentPlayer.points = lastEntry.historyPoints
+      currentPlayer.scores = { ...lastEntry.historyScores }
+      setCurrentPlayerIndex(lastEntry.historyPlayerIndex)
+      setCurrentPlayerThrows(lastEntry.historyThrows)
+      setPlayers(gamePlayers)
+      setHistory(history.slice(0, history.length - 1))
    }
 
    //GAME END HANDLER
@@ -309,8 +343,9 @@ const Cricket = () => {
 
       console.log(history)
       console.log(`CurrentPlayerThrowsCount: ${currentPlayerThrowsCount}`)
+      console.log(`CurrentPlayerThrows: ${currentPlayerThrows}`)
 
-   }, [history, currentPlayerThrowsCount, initialSoundPlayed])
+   }, [history, currentPlayerThrowsCount, currentPlayerThrows, initialSoundPlayed])
 
 
    return (    
