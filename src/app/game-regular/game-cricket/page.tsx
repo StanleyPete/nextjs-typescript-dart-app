@@ -28,6 +28,7 @@ const Cricket = () => {
    const numberOfLegs = searchParams.get('number-of-legs')
    const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
    
+   //State to track players results
    const [players, setPlayers] = useState<Player[]>(urlPlayers.map((playerName: string) => ({
       name: playerName,
       legs: 0,
@@ -43,8 +44,6 @@ const Cricket = () => {
       }
        
    })))
-
-
    //State to track history of moves
    const [history, setHistory] = useState<HistoryEntry[]>([])
    //CurrentPlayerIndex state declared in order to keep players index who currently plays
@@ -65,6 +64,10 @@ const Cricket = () => {
       '15': false,
       'Bull': false,
    })
+   //State to track if error occured
+   const [isError, setIsError] = useState<boolean>(false)
+   //State to set error message
+   const [errorMessage, setErrorMessage] = useState<string>('')
    //State to check if game ends
    const [isGameEnd, setIsGameEnd] = useState<boolean>(false)
    //State to set winner of the game
@@ -110,6 +113,8 @@ const Cricket = () => {
       const updatedThrowCount = currentPlayerThrowsCount + 1
       
       if(currentPlayerThrows.length === 3) {
+         setErrorMessage('You have already thrown three times! You can either undo last throw or submit the score')
+         setIsError(true)
          return
       } else {
          const updatedPlayerThrows = [...currentPlayerThrows, label]
@@ -126,15 +131,11 @@ const Cricket = () => {
          currentPlayer.scores[sector] = Math.min(prevScores + increment, 3)
          
          //End leg scenario:
-         // const haveAllOtherPlayersCompletedAllSectors = players.every((player, index) => 
-         //    index !== currentPlayerIndex && Object.values(player.scores).some(score => score !== 3)
-         // )
          const currentPlayerHasCompletedAllSectors = Object.values(currentPlayer.scores).every(sector => sector === 3)
          const currentPlayerHasHighestPoints = currentPlayer.points === Math.max(...players.map(player => player.points))
    
          if(currentPlayerHasCompletedAllSectors && currentPlayerHasHighestPoints){
             currentPlayer.legs += 1
-            playSound('and-the-leg')
    
             setHistory(prevHistory => [...prevHistory, newHistoryEntry])
    
@@ -150,12 +151,13 @@ const Cricket = () => {
                   'Bull': 0,
                }
             })
-   
+            
             setPlayers(gamePlayers) 
             handleStartPlayerIndex()
             setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
             setCurrentPlayerThrowsCount(0) 
             setCurrentPlayerThrows([]) 
+            checkGameEndHandler()
             return
          }
          if (currentPlayer.scores[sector] === 3) {
@@ -248,6 +250,8 @@ const Cricket = () => {
 
       //Scenario when undo button has been hit and currentPlayerThrowsCount === 3
       if(currentPlayerThrowsCount === 3){
+         setErrorMessage('You have already thrown three times! You can either undo last throw or submit the score')
+         setIsError(true)
          return
       }
 
@@ -340,7 +344,6 @@ const Cricket = () => {
          
          //Check if totalLegs for players equals to number-of-legs parameter
          if (totalLegs === Number(numberOfLegs)) {
-            //Finding winner player
             const maxLegs = Math.max(...players.map(player => player.legs))
             const winner = players.find(player => player.legs === maxLegs) || null
             setIsGameEnd(true)
@@ -352,7 +355,6 @@ const Cricket = () => {
       }
       //Scenario when game type is set to first-to
       else if (gameWinType === 'first-to') {
-         //Finding winner player
          const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
          if(winner){
             setIsGameEnd(true)
@@ -387,6 +389,11 @@ const Cricket = () => {
       setCurrentPlayerThrows([]) 
    }
 
+   //ERROR CLOSE HANDLER
+   const closeError = () => {
+      setIsError(false)
+   }
+
    useEffect(() => {
       if(!initialSoundPlayed){
          playSound('game-is-on')
@@ -416,7 +423,12 @@ const Cricket = () => {
                      {/*Player 1 header */}
                      <div className='current-player-name-legs'>
                         <div className='current-player-name'>
-                           <Image src={players[0].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                           <Image 
+                              src={players[0].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
+                              alt='User icon' 
+                              width={16} 
+                              height={16} 
+                           />
                            {players[0].name} 
                         </div>
                         <div className='player-legs'>
@@ -437,7 +449,12 @@ const Cricket = () => {
                      {/*Player 2 header */}
                      <div className='current-player-name-legs'>
                         <div className='current-player-name'>
-                           <Image src={players[1].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                           <Image 
+                              src={players[1].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
+                              alt='User icon' 
+                              width={16} 
+                              height={16} 
+                           />
                            {players[1].name} 
                         </div>
                         <div className='player-legs'>
@@ -464,7 +481,12 @@ const Cricket = () => {
                      {/*Current player header */}
                      <div className='current-player-name-legs'>
                         <div className='current-player-name'>
-                           <Image src='/game-user-throw.svg' alt='User icon' width={16} height={16} />
+                           <Image 
+                              src='/game-user-throw.svg' 
+                              alt='User icon' 
+                              width={16} 
+                              height={16} 
+                           />
                            {players[currentPlayerIndex].name} 
                         </div>
                         <div className='player-legs'>
@@ -485,7 +507,12 @@ const Cricket = () => {
                         <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
                            key={index}>
                            <div className='game-players-list-player-name'>
-                              <Image src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                              <Image 
+                                 src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
+                                 alt='User icon' 
+                                 width={16} 
+                                 height={16} 
+                              />
                               {player.name} 
                            </div>
                            <div className="game-players-list-stats">
@@ -522,7 +549,9 @@ const Cricket = () => {
             <div className="throw-value-section">
 
                {/*Undo button:*/}
-               <button className="input-toggle" onClick={handleUndo}>
+               <button 
+                  className="input-toggle" 
+                  onClick={handleUndo}>
                   Undo
                </button>
                
@@ -536,7 +565,9 @@ const Cricket = () => {
                </div>
 
                {/* Submit score button*/}
-               <button className='submit-score' onClick={handleSubmitScore}>
+               <button 
+                  className='submit-score' 
+                  onClick={handleSubmitScore}>
                   Submit Score
                </button>
             </div>
@@ -672,7 +703,10 @@ const Cricket = () => {
                         </div>
                      ))}
                      <div className="miss-button">
-                        <button onClick={handleMissButton}>Miss</button>
+                        <button 
+                           onClick={handleMissButton}>
+                              Miss
+                        </button>
                      </div>
                     
                   </div>
@@ -681,13 +715,74 @@ const Cricket = () => {
             )}
 
          </div>
-
-         <div className="settings-buttons">
-            <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
-            <button className='restart-game' onClick={handleRestartGame}>Restart game</button>
-         </div>
-
          
+         {/* Settings buttons*/}
+         <div className="settings-buttons">
+            <button 
+               className='go-back' 
+               onClick={() => router.back()}>
+                  Back to Settings
+            </button>
+            <button 
+               className='restart-game' 
+               onClick={handleRestartGame}>
+                  Restart game
+            </button>
+         </div>
+         
+         {/* Error/Game End overlay */}
+         {(isError || isGameEnd) && <div className="overlay"></div>}
+
+         {/* Error section */}
+         {isError && (
+            <div className="error">
+               <div className="error-content">
+                  <Image 
+                     src='/error.svg' 
+                     alt='Error icon' 
+                     width={100} 
+                     height={100} 
+                  />
+                  <p>{errorMessage}</p>
+                  <button 
+                     onClick={closeError}>
+                        OK
+                  </button>
+               </div>
+            </div>
+         )}
+
+         {/* End game pop-up */}
+         {isGameEnd && (
+            <div className='game-over-popup'>
+               <div className='game-over-popup-content'>
+                  <Image 
+                     src='/winner.svg' 
+                     alt='Winner image' 
+                     width={80} 
+                     height={80} 
+                  />
+                  <h3>Winner: {winner?.name}</h3>
+                  <button 
+                     className='play-again' 
+                     onClick={handleRestartGame}>
+                        Play Again
+                  </button>
+                  <button 
+                     className='go-back' 
+                     onClick={() => router.back()}>
+                        Back to Settings
+                  </button>
+                  <button 
+                     className='undo' 
+                     onClick={() => {
+                        handleUndo(); setIsGameEnd(false)}}>
+                        Undo
+                  </button>
+               </div>
+            </div>
+         )}
+        
       </div>
    )
 }

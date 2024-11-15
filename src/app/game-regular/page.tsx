@@ -751,13 +751,20 @@ const Game = () => {
 
                      {/*Player 1 header */}
                      <div className='current-player-name-legs'>
+
                         <div className='current-player-name'>
-                           <Image src={players[0].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                           <Image 
+                              src={players[0].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
+                              alt='User icon' 
+                              width={16} 
+                              height={16} 
+                           />
                            {players[0].name} 
                         </div>
                         <div className='player-legs'>
                            {players[0].legs}
                         </div>
+
                      </div>
 
                      {/*Player 1 points left*/}
@@ -787,13 +794,20 @@ const Game = () => {
 
                      {/*Player 2 header */}
                      <div className='current-player-name-legs'>
+
                         <div className='current-player-name'>
-                           <Image src={players[1].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                           <Image 
+                              src={players[1].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
+                              alt='User icon' 
+                              width={16} 
+                              height={16}
+                           />
                            {players[1].name} 
                         </div>
                         <div className='player-legs'>
                            {players[1].legs}
                         </div>
+
                      </div>
 
                      {/*Player 2 points left*/}
@@ -820,20 +834,29 @@ const Game = () => {
 
                </div>
             ) : (
+
                //View when players.length > 2:
                <>
+
                   {/*Current player section:*/}
                   <div className="current-player-section">
 
                      {/*Current player header */}
                      <div className='current-player-name-legs'>
+
                         <div className='current-player-name'>
-                           <Image src='/game-user-throw.svg' alt='User icon' width={16} height={16} />
+                           <Image 
+                              src='/game-user-throw.svg' 
+                              alt='User icon' 
+                              width={16} 
+                              height={16} 
+                           />
                            {players[currentPlayerIndex].name} 
                         </div>
                         <div className='player-legs'>
                            {players[currentPlayerIndex].legs}
                         </div>
+
                      </div>
 
                      {/*Current player points left */}
@@ -860,20 +883,37 @@ const Game = () => {
 
                   {/*Game player list:*/}
                   <div className='game-players-list'>
+
                      {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
-                        <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
-                           key={index}>
+
+                        <div 
+                           className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
+                           key={index}
+                        >
+
                            <div className='game-players-list-player-name'>
-                              <Image src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
+                              <Image 
+                                 src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
+                                 alt='User icon' 
+                                 width={16} 
+                                 height={16} 
+                              />
                               {player.name} 
                            </div>
+
                            <div className="game-players-list-stats">
-                              <div className='player-legs'>{player.legs}</div>
-                              <p>{player.pointsLeft}</p>
+                              <div className='player-legs'>
+                                 {player.legs}
+                              </div>
+                              <p>
+                                 {player.pointsLeft}
+                              </p>
                            </div>
                         </div>
+
                      ))}  
                   </div>
+
                </>
             )}
 
@@ -896,9 +936,11 @@ const Game = () => {
          </p>
 
          {/*Main score input section (input/buttons toggle, score preview, submit score button, score buttons ):*/}
-         <div className='score-section'>  
+         <div className='score-section'> 
+
             {/*Current throws section:*/}
             <div className="throw-value-section">
+
                {/* Toggle between input and number buttons */}
                <button 
                   className={`input-toggle ${showNumberButtons ? 'buttons-active' : 'input-active'}`}
@@ -939,9 +981,13 @@ const Game = () => {
                         onClick={() => {
                            const newValue = String(currentThrow).slice(0, -1)
                            setCurrentThrow(newValue ? Number(newValue) : 0)
-                        }}
-                     >
-                        <Image src='/backspace.svg' alt='User icon' width={24} height={24} />
+                        }}>
+                        <Image 
+                           src='/backspace.svg' 
+                           alt='Remove last throw icon' 
+                           width={24} 
+                           height={24} 
+                        />
                      </button>
                   </div>
                )}
@@ -970,8 +1016,7 @@ const Game = () => {
                      } else {
                         handleSubmitScoreButtons()
                      }
-                  }}
-               >
+                  }}>
                   Submit Score
                </button>
             </div>
@@ -982,8 +1027,7 @@ const Game = () => {
                   players[currentPlayerIndex].pointsLeft <= 40 && players[currentPlayerIndex].pointsLeft % 2 === 0 && (
                      <button 
                         onClick={() => setIsDoubleActive(!isDoubleActive)} 
-                        className={isDoubleActive ? 'active' : ''}
-                     >
+                        className={isDoubleActive ? 'active' : ''}>
                         Double
                      </button>
                   )
@@ -991,26 +1035,24 @@ const Game = () => {
                   <div className="multiplier-buttons">
                      <button 
                         onClick={() => setMultiplier(1)} 
-                        className={multiplier === 1 ? 'active' : ''}
-                     >
+                        className={multiplier === 1 ? 'active' : ''}>
                         Single
                      </button>
                      <button 
                         onClick={() => setMultiplier(2)} 
-                        className={multiplier === 2 ? 'active' : ''}
-                     >
+                        className={multiplier === 2 ? 'active' : ''}>
                         Double
                      </button>
                      <button 
                         onClick={() => setMultiplier(3)} 
-                        className={multiplier === 3 ? 'active' : ''}
-                     >
+                        className={multiplier === 3 ? 'active' : ''}>
                         Triple
                      </button>
                   </div>
                )}
             </div>
 
+            {/* Score buttons section*/}
             <div className="score-buttons-section">
                {!showNumberButtons ? (
                   <div className='score-input'>
@@ -1020,12 +1062,14 @@ const Game = () => {
                            key={i} 
                            onClick={() => {
                               const newValue = Number(`${currentThrow}${i+1}`)
-                              setCurrentThrow(newValue)
-                           }}>
+                              setCurrentThrow(newValue)}}>
                            {i+1}
                         </button>
                      ))}
-                     <button onClick={handleUndo}>Undo</button>
+                     <button 
+                        onClick={handleUndo}>
+                           Undo
+                     </button>
                      <button
                         onClick={() => {
                            const newValue = Number(`${currentThrow}${0}`)
@@ -1042,24 +1086,58 @@ const Game = () => {
                         const displayValue = multiplier > 1 ? baseValue * multiplier : null
 
                         return (
-                           <button key={baseValue} onClick={() => handleSubmitThrowButtons(baseValue)}>
-                              <span className="base-value">{baseValue}</span>
-                              {displayValue && <span className="multiplied-value">({displayValue})</span>}
+                           <button 
+                              key={baseValue} 
+                              onClick={() => handleSubmitThrowButtons(baseValue)}>
+                              <span 
+                                 className="base-value">
+                                 {baseValue}
+                              </span>
+                              {displayValue && 
+                                 <span 
+                                    className="multiplied-value">
+                                       ({displayValue})
+                                 </span>
+                              }
                            </button>
                         )
                      })}
 
-                     <button onClick={() => handleSubmitThrowButtons(multiplier === 2 ? 50 / 2 : multiplier === 3 ? 50 / 3 : 50)}>Bull (50)</button>
-                     <button onClick={() => handleSubmitThrowButtons(multiplier === 2 ? 25 / 2 : multiplier === 3 ? 25 / 3 : 25)}>Outer (25)</button>
-                     <button onClick={() => handleSubmitThrowButtons(0)}>Miss</button>
-                     <button onClick={handleUndo}>Undo</button>
+                     {/* Bull, Outer, Miss and Undo buttons */}
+                     <button 
+                        onClick={() => handleSubmitThrowButtons(multiplier === 2 ? 50 / 2 : multiplier === 3 ? 50 / 3 : 50)}>
+                           Bull (50)
+                     </button>
+                     <button 
+                        onClick={() => handleSubmitThrowButtons(multiplier === 2 ? 25 / 2 : multiplier === 3 ? 25 / 3 : 25)}>
+                           Outer (25)
+                     </button>
+                     <button 
+                        onClick={() => handleSubmitThrowButtons(0)}>
+                           Miss
+                     </button>
+                     <button 
+                        onClick={handleUndo}>
+                           Undo
+                     </button>
                   </div>
                )}  
             </div>
+
          </div>
+
+         {/* Settings buttons*/}
          <div className="settings-buttons">
-            <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
-            <button className='restart-game' onClick={handleRestartGame}>Restart game</button>
+            <button 
+               className='go-back' 
+               onClick={() => router.back()}>
+                  Back to Settings
+            </button>
+            <button 
+               className='restart-game' 
+               onClick={handleRestartGame}>
+                  Restart game
+            </button>
          </div>
          
          {/* Error/Game End overlay */}
@@ -1069,9 +1147,17 @@ const Game = () => {
          {isError && (
             <div className="error">
                <div className="error-content">
-                  <Image src='/error.svg' alt='Error icon' width={100} height={100} />
+                  <Image 
+                     src='/error.svg' 
+                     alt='Error icon' 
+                     width={100} 
+                     height={100} 
+                  />
                   <p>{errorMessage}</p>
-                  <button onClick={closeError}>OK</button>
+                  <button 
+                     onClick={closeError}>
+                        OK
+                  </button>
                </div>
             </div>
          )}
@@ -1080,14 +1166,33 @@ const Game = () => {
          {isGameEnd && (
             <div className='game-over-popup'>
                <div className='game-over-popup-content'>
-                  <Image src='/winner.svg' alt='Error icon' width={80} height={80} />
+                  <Image 
+                     src='/winner.svg' 
+                     alt='Winner icon' 
+                     width={80} 
+                     height={80} 
+                  />
                   <h3>Winner: {winner?.name}</h3>
-                  <button className='play-again' onClick={handleRestartGame}>Play Again</button>
-                  <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
-                  <button className='undo' onClick={() => {handleUndo(); setIsGameEnd(false)}}>Undo</button>
+                  <button 
+                     className='play-again' 
+                     onClick={handleRestartGame}>
+                        Play Again
+                  </button>
+                  <button 
+                     className='go-back' 
+                     onClick={() => router.back()}>
+                        Back to Settings
+                  </button>
+                  <button 
+                     className='undo' 
+                     onClick={() => {
+                        handleUndo(); setIsGameEnd(false)}}>
+                        Undo
+                  </button>
                </div>
             </div>
          )}
+
       </div>
    )
 }
