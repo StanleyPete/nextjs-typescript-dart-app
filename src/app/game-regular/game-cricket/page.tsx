@@ -17,6 +17,7 @@ interface HistoryEntry {
    historyScores: { [key: string]: number }
    historyThrows: string[]
    historyLegs: number
+   historyLastThrowSector: string
 }
 
 
@@ -44,7 +45,6 @@ const Cricket = () => {
    })))
 
 
-   
    //State to track history of moves
    const [history, setHistory] = useState<HistoryEntry[]>([])
    //CurrentPlayerIndex state declared in order to keep players index who currently plays
@@ -119,7 +119,8 @@ const Cricket = () => {
             historyPoints: currentPlayer.points, 
             historyScores: { ...currentPlayer.scores },
             historyThrows: [...currentPlayerThrows],
-            historyLegs: currentPlayer.legs
+            historyLegs: currentPlayer.legs,
+            historyLastThrowSector: sector
          }
          
          currentPlayer.scores[sector] = Math.min(prevScores + increment, 3)
@@ -184,7 +185,8 @@ const Cricket = () => {
                historyPoints: currentPlayer.points, 
                historyScores: { ...currentPlayer.scores },
                historyThrows: [...currentPlayerThrows, label],
-               historyLegs: currentPlayer.legs
+               historyLegs: currentPlayer.legs,
+               historyLastThrowSector: sector
             }
             setHistory(prevHistory => [...prevHistory, newExtraHistoryEntry])
             handleSwitchPlayer()
@@ -195,9 +197,37 @@ const Cricket = () => {
          setPlayers(gamePlayers)
 
       }
+   }
 
-      
+   //SUBMIT SCORE BUTTON HANDLER
+   const handleSubmitScore = () => {
+      const gamePlayers = [...players]
+      const currentPlayer = gamePlayers[currentPlayerIndex]
+      const newHistoryEntry: HistoryEntry = {
+         historyPlayerIndex: currentPlayerIndex,
+         historyPoints: currentPlayer.points, 
+         historyScores: { ...currentPlayer.scores },
+         historyThrows: [...currentPlayerThrows],
+         historyLegs: currentPlayer.legs,
+         historyLastThrowSector: ''
+      }
 
+      //Scenario when player missed all 3 throws and hits submit score button
+      if(currentPlayerThrowsCount === 0){
+         handleSwitchPlayer()
+         setCurrentPlayerThrowsCount(0) 
+         setCurrentPlayerThrows([]) 
+      } 
+      //Scenario when player has already thrown at least once, but NOT 3 times
+      else if (currentPlayerThrowsCount < 3){
+         const sector = currentPlayerThrows[currentPlayerThrows.length - 1] === '25' || currentPlayerThrows[currentPlayerThrows.length - 1] === '50' ? 'Bull' : currentPlayerThrows[currentPlayerThrows.length - 1].replace(/[^0-9]/g, '')
+         newHistoryEntry.historyLastThrowSector = sector
+      }
+
+      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+      handleSwitchPlayer()
+      setCurrentPlayerThrowsCount(0) 
+      setCurrentPlayerThrows([])
    }
 
    //MISS BUTTON HANDLER
@@ -211,28 +241,39 @@ const Cricket = () => {
          historyPlayerIndex: currentPlayerIndex,
          historyPoints: currentPlayer.points, 
          historyScores: { ...currentPlayer.scores },
-         historyThrows: [...currentPlayerThrows,],
-         historyLegs: currentPlayer.legs
+         historyThrows: [...currentPlayerThrows],
+         historyLegs: currentPlayer.legs,
+         historyLastThrowSector: ''
+      }
+
+      //Scenario when undo button has been hit and currentPlayerThrowsCount === 3
+      if(currentPlayerThrowsCount === 3){
+         return
       }
 
       setHistory(prevHistory => [...prevHistory, newHistoryEntry])
-
+      
+      //Scenario when player has not thrown 3 times yet
       if(updatedThrowCount < 3){
          setCurrentPlayerThrows(updatedPlayerThrows)
          setCurrentPlayerThrowsCount(updatedThrowCount)
-      } else {
+      } 
+      //Scenario when player has just thrown 3 times and missed
+      else {
          const newExtraHistoryEntry: HistoryEntry = {
             historyPlayerIndex: currentPlayerIndex,
             historyPoints: currentPlayer.points, 
             historyScores: { ...currentPlayer.scores },
             historyThrows: [...currentPlayerThrows, '0'],
-            historyLegs: currentPlayer.legs
+            historyLegs: currentPlayer.legs,
+            historyLastThrowSector: ''
          }
          setHistory(prevHistory => [...prevHistory, newExtraHistoryEntry])
          handleSwitchPlayer()
          setCurrentPlayerThrowsCount(0) 
          setCurrentPlayerThrows([]) 
       }
+      
    }
 
    //UNDO HANDLER:
@@ -244,13 +285,15 @@ const Cricket = () => {
       const lastEntry = history[history.length - 1]
       const gamePlayers = [...players]
       const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+      const sector = lastEntry.historyLastThrowSector
 
-      
+      //Scenario when player has already thrown at least once
       if (currentPlayerThrowsCount !== 0) {
          const updatedThrowCount = currentPlayerThrowsCount - 1
          setCurrentPlayerThrowsCount(updatedThrowCount)
-         
-      } else if (currentPlayerThrowsCount === 0 && currentPlayer.legs > lastEntry.historyLegs){
+      } 
+      //Scenario when previous player has just won leg
+      else if (currentPlayerThrowsCount === 0 && currentPlayer.legs > lastEntry.historyLegs){
          currentPlayer.legs -= 1
          setCurrentPlayerThrowsCount(lastEntry.historyThrows.length)
 
@@ -267,12 +310,21 @@ const Cricket = () => {
             }
          })
 
-      } else if( currentPlayerThrowsCount === 0) {
-         setCurrentPlayerThrowsCount(3)
+      }
+      //Scenario when player has not thrown yet 
+      else if( currentPlayerThrowsCount === 0) {
+         setCurrentPlayerThrowsCount(lastEntry.historyThrows.length)
       }
 
       currentPlayer.points = lastEntry.historyPoints
       currentPlayer.scores = { ...lastEntry.historyScores }
+
+      //Checking if undo caused change in completedSectors state
+      const isAnyPlayerWhichHaveNotCompletedSector = players.some(player => player.scores[sector] !== 3)
+      if(isAnyPlayerWhichHaveNotCompletedSector){
+         setCompletedSectors(prev => ({ ...prev, [sector]: false }))
+      }
+
       setCurrentPlayerIndex(lastEntry.historyPlayerIndex)
       setCurrentPlayerThrows(lastEntry.historyThrows)
       setPlayers(gamePlayers)
@@ -484,7 +536,7 @@ const Cricket = () => {
                </div>
 
                {/* Submit score button*/}
-               <button className='submit-score'>
+               <button className='submit-score' onClick={handleSubmitScore}>
                   Submit Score
                </button>
             </div>
