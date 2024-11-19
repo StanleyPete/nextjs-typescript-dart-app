@@ -21,6 +21,7 @@ interface Team {
 
 interface HistoryEntry {
    historyPlayerIndex: number
+   historyPlayerIndexInTeam: number
    historyPoints: number
    historyScores: { [key: string]: number }
    historyThrows: string[]
@@ -90,7 +91,7 @@ const Cricket = () => {
 
    //State to track history of moves
    const [history, setHistory] = useState<HistoryEntry[]>([])
-   //CurrentPlayerIndex state declared in order to keep players index who currently plays
+   //CurrentTeamIndex state declared in order to keep players index who currently plays
    const [currentTeamIndex, setCurrentTeamIndex] = useState<number>(0)
    //CurrentPlayerIndexInTeam state declared in order to keep player's index who is currently playing within team
    const [currentPlayerIndexInTeam, setCurrentPlayerIndexInTeam] = useState<number>(0)
@@ -171,6 +172,7 @@ const Cricket = () => {
 
          const newHistoryEntry: HistoryEntry = {
             historyPlayerIndex: currentTeamIndex,
+            historyPlayerIndexInTeam: currentPlayerIndexInTeam,
             historyPoints: currentTeam.points, 
             historyScores: { ...currentTeam.scores },
             historyThrows: [...currentPlayerThrows],
@@ -234,6 +236,7 @@ const Cricket = () => {
          } else {
             const newExtraHistoryEntry: HistoryEntry = {
                historyPlayerIndex: currentTeamIndex,
+               historyPlayerIndexInTeam: currentPlayerIndexInTeam,
                historyPoints: currentTeam.points, 
                historyScores: { ...currentTeam.scores },
                historyThrows: [...currentPlayerThrows, label],
@@ -257,6 +260,7 @@ const Cricket = () => {
       const currentTeam = gameTeams[currentTeamIndex]
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentTeamIndex,
+         historyPlayerIndexInTeam: currentPlayerIndexInTeam,
          historyPoints: currentTeam.points, 
          historyScores: { ...currentTeam.scores },
          historyThrows: [...currentPlayerThrows],
@@ -291,6 +295,7 @@ const Cricket = () => {
       
       const newHistoryEntry: HistoryEntry = {
          historyPlayerIndex: currentTeamIndex,
+         historyPlayerIndexInTeam: currentPlayerIndexInTeam,
          historyPoints: currentTeam.points, 
          historyScores: { ...currentTeam.scores },
          historyThrows: [...currentPlayerThrows],
@@ -316,6 +321,7 @@ const Cricket = () => {
       else {
          const newExtraHistoryEntry: HistoryEntry = {
             historyPlayerIndex: currentTeamIndex,
+            historyPlayerIndexInTeam: currentPlayerIndexInTeam,
             historyPoints: currentTeam.points, 
             historyScores: { ...currentTeam.scores },
             historyThrows: [...currentPlayerThrows, '0'],
@@ -380,6 +386,7 @@ const Cricket = () => {
       }
 
       setCurrentTeamIndex(lastEntry.historyPlayerIndex)
+      setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam)
       setCurrentPlayerThrows(lastEntry.historyThrows)
       setTeams(gameTeams)
       setHistory(history.slice(0, history.length - 1))
@@ -451,6 +458,7 @@ const Cricket = () => {
          }
       ])
       setCurrentTeamIndex(0)
+      setCurrentPlayerIndexInTeam(0)
       setStartLegTeamIndex(0) 
       setHistory([])
       setCurrentPlayerThrowsCount(0)
