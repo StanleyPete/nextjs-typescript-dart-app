@@ -824,25 +824,30 @@ const Game = () => {
                      </div>
                   </div>
 
-                  {/* Team 1, Player 1 header */}
-                  <div className='team-player'>
-                     <div className='team-player-name '>
-                        {players[0].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
-                        <Image src={players[0].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {players[0].name} 
+                  {/* Team 1 players */}
+                  {players.slice(0, 2).map((player, index) => (
+                     <div className='team-player' key={index}>
+                        <div className='team-player-name'>
+                           {player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (
+                              <Image 
+                                 src='/active-dot.svg' 
+                                 alt='Active dot icon' 
+                                 width={6} 
+                                 height={6} 
+                              />
+                           )}
+                           <Image
+                              src={player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'
+                              }
+                              alt='User icon'
+                              width={16}
+                              height={16}
+                           />
+                           {player.name}
+                        </div>
                      </div>
-                    
-                  </div>
+                  ))}
 
-                  {/* Team 1, Player 2 header */}
-                  <div className='team-player'>
-                     <div className='team-player-name '>
-                        {players[1].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
-                        <Image src={players[1].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {players[1].name} 
-                     </div>
-                    
-                  </div>
 
                   {/*Team 1 points left*/}
                   <p className='team-points-left'>
@@ -877,25 +882,29 @@ const Game = () => {
                      </div>
                   </div>
 
-                  {/* Team 2, Player 1 header */}
-                  <div className='team-player'>
-                     <div className='team-player-name '>
-                        {players[2].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
-                        <Image src={players[2].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {players[2].name} 
+                  {/* Team 2 players */}
+                  {players.slice(2, 4).map((player, index) => (
+                     <div className='team-player' key={index}>
+                        <div className='team-player-name'>
+                           {player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (
+                              <Image 
+                                 src='/active-dot.svg' 
+                                 alt='Active dot icon' 
+                                 width={6} 
+                                 height={6} 
+                              />
+                           )}
+                           <Image
+                              src={player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'
+                              }
+                              alt='User icon'
+                              width={16}
+                              height={16}
+                           />
+                           {player.name}
+                        </div>
                      </div>
-                    
-                  </div>
-
-                  {/* Team 2, Player 2 header */}
-                  <div className='team-player'>
-                     <div className='team-player-name '>
-                        {players[3].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}     
-                        <Image src={players[3].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {players[3].name} 
-                     </div>
-                    
-                  </div>
+                  ))}
 
                   {/*Team 2 points left*/}
                   <p className='team-points-left'>
@@ -936,7 +945,7 @@ const Game = () => {
                <span>{isSoundEnabled ? 'On' : 'Off'}</span>
             </button>
             <span className='current-player-throw-message'>
-               {`${players[currentPlayerIndex].name.toUpperCase()}'S TURN TO THROW!`}
+               {`${teams[currentTeamIndex].members[currentPlayerIndexInTeam].name.toUpperCase()}'S TURN TO THROW!`}
             </span>
          </p>
 

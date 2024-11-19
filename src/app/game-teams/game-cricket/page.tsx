@@ -380,7 +380,7 @@ const Cricket = () => {
       currentTeam.scores = { ...lastEntry.historyScores }
 
       //Checking if undo caused change in completedSectors state
-      const isAnyPlayerWhichHaveNotCompletedSector = players.some(player => player.scores[sector] !== 3)
+      const isAnyPlayerWhichHaveNotCompletedSector = teams.some(team => team.scores[sector] !== 3)
       if(isAnyPlayerWhichHaveNotCompletedSector){
          setCompletedSectors(prev => ({ ...prev, [sector]: false }))
       }
@@ -397,12 +397,12 @@ const Cricket = () => {
       //Scenario when game type is set to best-of
       if (gameWinType === 'best-of') {
          //Sum of legs for all players
-         const totalLegs = teams.reduce((acc, player) => acc + player.legs, 0)
+         const totalLegs = teams.reduce((acc, team) => acc + team.legs, 0)
          
          //Check if totalLegs for players equals to number-of-legs parameter
          if (totalLegs === Number(numberOfLegs)) {
-            const maxLegs = Math.max(...teams.map(player => player.legs))
-            const winner = teams.find(player => player.legs === maxLegs) || null
+            const maxLegs = Math.max(...teams.map(team => team.legs))
+            const winner = teams.find(team => team.legs === maxLegs) || null
             setIsGameEnd(true)
             setWinner(winner)
             playSound('and-the-game')
@@ -412,7 +412,7 @@ const Cricket = () => {
       }
       //Scenario when game type is set to first-to
       else if (gameWinType === 'first-to') {
-         const winner = teams.find(player => player.legs === Number(numberOfLegs)) || null
+         const winner = teams.find(team => team.legs === Number(numberOfLegs)) || null
          if(winner){
             setIsGameEnd(true)
             setWinner(winner)
@@ -502,25 +502,28 @@ const Cricket = () => {
                      </div>
                   </div>
 
-                  {/* Team 1, Player 1 header */}
-                  <div className='team-player'>
-                     <div className='team-player-name '>
-                        {players[0].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
-                        <Image src={players[0].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {players[0].name} 
+                  {/* Team 1 players */}
+                  {players.slice(0, 2).map((player, index) => (
+                     <div className='team-player' key={index}>
+                        <div className='team-player-name'>
+                           {player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (
+                              <Image 
+                                 src='/active-dot.svg' 
+                                 alt='Active dot icon' 
+                                 width={6} 
+                                 height={6} 
+                              />
+                           )}
+                           <Image
+                              src={player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'}
+                              alt='User icon'
+                              width={16}
+                              height={16}
+                           />
+                           {player.name}
+                        </div>
                      </div>
-                  
-                  </div>
-
-                  {/* Team 1, Player 2 header */}
-                  <div className='team-player'>
-                     <div className='team-player-name '>
-                        {players[1].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
-                        <Image src={players[1].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {players[1].name} 
-                     </div>
-                  
-                  </div>
+                  ))}
 
                   {/*Team 1 points left*/}
                   <p className='team-points-left'>
@@ -540,25 +543,28 @@ const Cricket = () => {
                      </div>
                   </div>
 
-                  {/* Team 2, Player 1 header */}
-                  <div className='team-player'>
-                     <div className='team-player-name '>
-                        {players[2].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}
-                        <Image src={players[2].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {players[2].name} 
+                  {/* Team 2 players */}
+                  {players.slice(2, 4).map((player, index) => (
+                     <div className='team-player' key={index}>
+                        <div className='team-player-name'>
+                           {player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (
+                              <Image 
+                                 src='/active-dot.svg' 
+                                 alt='Active dot icon' 
+                                 width={6} 
+                                 height={6} 
+                              />
+                           )}
+                           <Image
+                              src={player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'}
+                              alt='User icon'
+                              width={16}
+                              height={16}
+                           />
+                           {player.name}
+                        </div>
                      </div>
-                  
-                  </div>
-
-                  {/* Team 2, Player 2 header */}
-                  <div className='team-player'>
-                     <div className='team-player-name '>
-                        {players[3].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (<Image src='/active-dot.svg' alt='Active dot icon' width={10} height={10} />)}     
-                        <Image src={players[3].name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'} alt='User icon' width={16} height={16} />
-                        {players[3].name} 
-                     </div>
-                  
-                  </div>
+                  ))}
 
                   {/*Team 2 points left*/}
                   <p className='team-points-left'>
@@ -582,7 +588,7 @@ const Cricket = () => {
                <span>{isSoundEnabled ? 'On' : 'Off'}</span>
             </button>
             <span className='current-player-throw-message'>
-               {`${players[currentTeamIndex].name.toUpperCase()}'S TURN TO THROW!`}
+               {`${teams[currentTeamIndex].members[currentPlayerIndexInTeam].name.toUpperCase()}'S TURN TO THROW!`}
             </span>
          </p>
 
