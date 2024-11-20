@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import checkoutArray from '@/lib/checkout-table'
+import GamePlayersSectionRegular from '@/components/GamePlayersSectionRegular'
+import CurrentPlayerThrowParagraph from '@/components/CurrentPlayerThrowParagraph'
 
 interface Player {
    name: string
@@ -738,202 +739,17 @@ const Game = () => {
 
    return (
       <div className='game-container'>
-
-         {/*Game players section:*/}
-         <div className="game-players-section">
-
-            {/*Two players preview:*/}
-            {players.length === 2 ? (
-               <div className='two-players-preview'>
-
-                  {/*Player 1: */}
-                  <div className={`current-player-section ${currentPlayerIndex === 0 ? 'current-active-player' : ''}`}>
-
-                     {/*Player 1 header */}
-                     <div className='current-player-name-legs'>
-
-                        <div className='current-player-name'>
-                           <Image 
-                              src={players[0].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
-                              alt='User icon' 
-                              width={16} 
-                              height={16} 
-                           />
-                           {players[0].name} 
-                        </div>
-                        <div className='player-legs'>
-                           {players[0].legs}
-                        </div>
-
-                     </div>
-
-                     {/*Player 1 points left*/}
-                     <p className='current-player-points-left'>
-                        {players[0].pointsLeft}
-                     </p>
-
-                     {/*Player 1 checkout options*/}
-                     {players[0].pointsLeft <= 170 && (
-                        <p className='checkout-options'>{checkoutArray[players[0].pointsLeft - 2]}</p>
-                     )}
-
-                     {/*Player 1 stats*/}
-                     <div className='current-player-stats'>
-                        3-DART AVERAGE: 
-                        <p>{players[0].average.toFixed(2)}</p>
-                     </div>
-                     <div className='current-player-stats'>
-                        LAST SCORE: 
-                        <p>{players[0].lastScore}</p>
-                     </div>
-
-                  </div>
-
-                  {/*Player 2: */}
-                  <div className={`current-player-section ${currentPlayerIndex === 1 ? 'current-active-player' : ''}`}>
-
-                     {/*Player 2 header */}
-                     <div className='current-player-name-legs'>
-
-                        <div className='current-player-name'>
-                           <Image 
-                              src={players[1].name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
-                              alt='User icon' 
-                              width={16} 
-                              height={16}
-                           />
-                           {players[1].name} 
-                        </div>
-                        <div className='player-legs'>
-                           {players[1].legs}
-                        </div>
-
-                     </div>
-
-                     {/*Player 2 points left*/}
-                     <p className='current-player-points-left'>
-                        {players[1].pointsLeft}
-                     </p>
-
-                     {/*Player 2 checkout options*/}
-                     {players[1].pointsLeft <= 170 && (
-                        <p className='checkout-options'>{checkoutArray[players[1].pointsLeft - 2]}</p>
-                     )}
-
-                     {/*Player 2 checkout options*/}
-                     <div className='current-player-stats'>
-                        3-DART AVERAGE: 
-                        <p>{players[1].average.toFixed(2)}</p>
-                     </div>
-                     <div className='current-player-stats'>
-                        LAST SCORE: 
-                        <p>{players[1].lastScore}</p>
-                     </div>
-
-                  </div>
-
-               </div>
-            ) : (
-
-               //View when players.length > 2:
-               <>
-
-                  {/*Current player section:*/}
-                  <div className="current-player-section">
-
-                     {/*Current player header */}
-                     <div className='current-player-name-legs'>
-
-                        <div className='current-player-name'>
-                           <Image 
-                              src='/game-user-throw.svg' 
-                              alt='User icon' 
-                              width={16} 
-                              height={16} 
-                           />
-                           {players[currentPlayerIndex].name} 
-                        </div>
-                        <div className='player-legs'>
-                           {players[currentPlayerIndex].legs}
-                        </div>
-
-                     </div>
-
-                     {/*Current player points left */}
-                     <p className='current-player-points-left'>
-                        {players[currentPlayerIndex].pointsLeft}
-                     </p>
-
-                     {/*Current player checkout options */}
-                     {players[currentPlayerIndex].pointsLeft <= 170 && (
-                        <p className='checkout-options'>{checkoutArray[players[currentPlayerIndex].pointsLeft - 2]}</p>
-                     )}
-
-                     {/*Current player stats */}
-                     <div className='current-player-stats'>
-                        3-DART AVERAGE: 
-                        <p>{players[currentPlayerIndex].average.toFixed(2)}</p>
-                     </div>
-                     <div className='current-player-stats'>
-                        LAST SCORE: 
-                        <p>{players[currentPlayerIndex].lastScore}</p>
-                     </div>
-
-                  </div>
-
-                  {/*Game player list:*/}
-                  <div className='game-players-list'>
-
-                     {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
-
-                        <div 
-                           className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
-                           key={index}
-                        >
-
-                           <div className='game-players-list-player-name'>
-                              <Image 
-                                 src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
-                                 alt='User icon' 
-                                 width={16} 
-                                 height={16} 
-                              />
-                              {player.name} 
-                           </div>
-
-                           <div className="game-players-list-stats">
-                              <div className='player-legs'>
-                                 {player.legs}
-                              </div>
-                              <p>
-                                 {player.pointsLeft}
-                              </p>
-                           </div>
-                        </div>
-
-                     ))}  
-                  </div>
-
-               </>
-            )}
-
-         </div>
+         {/*Game players section component */}
+         <GamePlayersSectionRegular 
+            players={players} 
+            currentPlayerIndex={currentPlayerIndex} 
+         />
            
-         {/*Current player throw paragraph:*/}
-         <p className='current-player-throw'>
-            <button className='sound-button' onClick={toggleSound}>
-               <Image 
-                  src={isSoundEnabled ? '/sound-on.svg' : '/sound-off.svg'} 
-                  alt={isSoundEnabled ? 'Sound On' : 'Sound Off'} 
-                  width={16} 
-                  height={16} 
-               />
-               <span>{isSoundEnabled ? 'On' : 'Off'}</span>
-            </button>
-            <span className='current-player-throw-message'>
-               {`${players[currentPlayerIndex].name.toUpperCase()}'S TURN TO THROW!`}
-            </span>
-         </p>
+         <CurrentPlayerThrowParagraph
+            isSoundEnabled={isSoundEnabled}
+            toggleSound={toggleSound}
+            currentPlayerName={players[currentPlayerIndex].name}
+         />
 
          {/*Main score input section (input/buttons toggle, score preview, submit score button, score buttons ):*/}
          <div className='score-section'> 
