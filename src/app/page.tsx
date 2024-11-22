@@ -5,17 +5,15 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/store'
 import { setGameType, setPlayerNames, setGameMode, setGameWin, setNumberOfLegs, setError } from './redux/slices/gameSettingsSlice'
 import ErrorPopUp from '@/components/ErrorPopUp'
-import GameSettingsTeamsSection from '@/components/GameSettingsTeamsSection'
+import PlayerNamesInput from '@/components/game-settings/PlayerNamesInput'
+import TeamsPlayerInput from '@/components/game-settings/TeamsPlayerNamesInput'
 import Link from 'next/link'
-import Image from 'next/image'
 import './styles/home.scss'
 
 const Home = () => {
+   
    const dispatch = useDispatch()
    const { gameType, playerNames, gameMode, gameWin, numberOfLegs} = useSelector((state: RootState) => state.game)
-
-   //Max number of players
-   const maxPlayers = 4
    
    //Game type handler
    const handleGameTypeChange = (type: 'regular' | 'teams' | 'online') => {
@@ -25,25 +23,6 @@ const Home = () => {
       } else if (type === 'regular') {
          dispatch(setPlayerNames(['', '']))
       }
-   }
-
-   //Player name update handler
-   const handleNameChange = (index: number, value: string) => {
-      const newNames = [...playerNames]
-      newNames[index] = value
-      dispatch(setPlayerNames(newNames))
-   }
-   
-   //Add new player handler
-   const addPlayerInput = () => {
-      dispatch(setPlayerNames([...playerNames, '']))
-   }
-
-   //Remove player handler
-   const removePlayerInput = (index: number) => {
-      const newNames = [...playerNames]
-      newNames.splice(index, 1)
-      dispatch(setPlayerNames(newNames))
    }
 
    //Validate player names
@@ -119,74 +98,22 @@ const Home = () => {
          {
             // Player names input section for regular game type
             gameType === 'regular' ? (
-               <div className='players-section main-form'>
-                  <p className='players header'>{playerNames.length === 1 ? `${playerNames.length} Player:` : `${playerNames.length} Players:`}</p>
-                  {playerNames.map((name, index) => (
-                     <div className='player-input' key={index}>
-                        {/* Player name input */}
-                        <input
-                           type="text"
-                           className={index === 0 ? 'full-width' : ''}
-                           id={`player-${index}`}
-                           value={name}
-                           placeholder={`Player ${index + 1} name`}
-                           onChange={(event) => handleNameChange(index, event.target.value)}
-                        />
-                        {/* Button to remove player */}
-                        {playerNames.length > 1 && index > 0 && (
-                           <button 
-                              className="remove-player-button" 
-                              onClick={() => removePlayerInput(index)}
-                           >
-                              <Image 
-                                 src='/minus.svg' 
-                                 alt='Remove player icon' 
-                                 width={22} 
-                                 height={22} 
-                              />
-                           </button>
-                        )}
-                     </div>
-                  ))}
-
-                  {/* Button to add a new player - displayed when players number < 4 players */}
-                  {playerNames.length < maxPlayers && (
-                     <button 
-                        onClick={addPlayerInput} 
-                        className={'add-player-button'}
-                     >
-                        <Image 
-                           src='/plus.svg' 
-                           alt='Add player icon' 
-                           width={16} 
-                           height={16} 
-                        />
-                        <span>Add new player</span>
-                     </button>
-                  )}
-               </div>
-            
+               <PlayerNamesInput maxPlayers={4} />
             ) : 
                //Player names input section for teams game type
                gameType === 'teams' ? (
                   <div className='players-section main-form team-section'>
-
                      {/* Team 1 */}
-                     <GameSettingsTeamsSection 
-                        teamIndex={0} 
-                        playerIndexes={[0, 1]} 
-                     />
-
+                     <TeamsPlayerInput teamIndex={0} playerIndexes={[0, 1]} />
                      {/* Team 2 */}
-                     <GameSettingsTeamsSection 
-                        teamIndex={1} 
-                        playerIndexes={[2, 3]} 
-                     />
+                     <TeamsPlayerInput teamIndex={1} playerIndexes={[2, 3]} />
                   </div>
 
                ) : gameType === 'online' ? (
                   <div>Test</div>
-               ) : null }
+               ) : null 
+
+         }
          
          {/* GAME MODE SECTION */}
          <div className='game-mode main-form'>

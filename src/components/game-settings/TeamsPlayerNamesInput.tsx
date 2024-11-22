@@ -1,15 +1,16 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store'
-import { setPlayerNames } from '../app/redux/slices/gameSettingsSlice'
+import { setPlayerNames } from '../../app/redux/slices/gameSettingsSlice'
 import Image from 'next/image'
 
-interface TeamSectionProps {
+interface TeamsPlayerInput {
   teamIndex: number
   playerIndexes: number[]
 }
 
-const GameSettingsTeamsSection = ({ teamIndex, playerIndexes }: TeamSectionProps) => {
+const TeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInput) => {
+   
    const dispatch = useDispatch()
    const { playerNames } = useSelector((state: RootState) => state.game)
 
@@ -21,6 +22,7 @@ const GameSettingsTeamsSection = ({ teamIndex, playerIndexes }: TeamSectionProps
 
    return (
       <div className={`team-${teamIndex + 1}-section`}>
+
          <div className="team-header-image">
             <Image
                src={`/team-${teamIndex + 1}-icon.svg`}
@@ -30,6 +32,7 @@ const GameSettingsTeamsSection = ({ teamIndex, playerIndexes }: TeamSectionProps
             />
             <p className={`team-${teamIndex + 1} header`}>Team {teamIndex + 1}:</p>
          </div>
+
          <div className="team-player-input">
             {playerIndexes.map((index) => (
                <input
@@ -41,8 +44,9 @@ const GameSettingsTeamsSection = ({ teamIndex, playerIndexes }: TeamSectionProps
                />
             ))}
          </div>
+
       </div>
    )
 }
 
-export default GameSettingsTeamsSection
+export default TeamsPlayerNamesInput
