@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './styles/globals.scss'
 import  localFont  from 'next/font/local'
+import ReduxProvider from '@/ReduxProvider'
 
 
 const exoRegular = localFont({
@@ -17,12 +18,14 @@ export const metadata: Metadata = {
 export default function RootLayout({
    children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
    return (
       <html lang="en">
          <body className={`${exoRegular.variable}`}>
-            {children}
+            <ReduxProvider>
+               {children}
+            </ReduxProvider>
          </body>
       </html>
    )

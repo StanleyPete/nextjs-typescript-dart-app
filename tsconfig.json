@@ -18,7 +18,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/store": ["./src/app/redux/store.ts"], 
+      "@/ReduxProvider": ["./src/app/redux/ReduxProvider.tsx"],
+
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/lib/checkout-table.js"],
