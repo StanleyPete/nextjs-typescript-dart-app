@@ -1,86 +1,69 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { 
+   setPlayers, 
+   setHistory, 
+   setCurrentThrow, 
+   setCurrentPlayerIndex, 
+   setStartPlayerIndex, 
+   setShowNumberButtons, 
+   setThrowValueSum, 
+   setCurrentPlayerThrowsCount, 
+   setCurrentPlayerThrows, 
+   setMultiplier, 
+   setIsError, 
+   setErrorMessage, 
+   setIsDoubleActive, 
+   setIsGameEnd, 
+   setWinner, 
+   setInitialSoundPlayed, 
+   setIsSoundEnabled 
+} from '@/redux/slices/gameRegularSlice'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import GamePlayersSectionRegular from '@/components/GamePlayersSectionRegular'
 import CurrentPlayerThrowParagraph from '@/components/CurrentPlayerThrowParagraph'
 
-interface Player {
-   name: string
-   legs: number
-   pointsLeft: number
-   lastScore: number
-   totalThrows: number
-   totalAttempts: number
-   average: number
-   isInputPreffered: boolean
-}
-
-interface HistoryEntry {
-   historyPlayerIndex: number
-   historyPointsLeft: number
-   historyLastScore: number
-   historyTotalThrows: number
-   historyLastAverage: number
-   historyTotalAttempts: number
-}
 
 const Game = () => {
+   const dispatch = useDispatch()
    const router = useRouter()
-   const searchParams = useSearchParams()
-   
-   //Declaring gameMode, gameWinType, numberOfLegs and players based on URL
-   const gameMode = searchParams.get('mode')
-   const gameWinType = searchParams.get('game-win-type')
-   const numberOfLegs = searchParams.get('number-of-legs')
-   const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
 
-   //Players state declared with initial values in order to keep and update pointsLeft, lastScore, totalThrows, totalAttempts, average:
-   const [players, setPlayers] = useState<Player[]>(urlPlayers.map((playerName: string) => ({
-      name: playerName,
-      pointsLeft: Number(gameMode), // Initial pointsLeft sent via URL
-      legs: 0,
-      lastScore: 0,
-      totalThrows: 0,
-      totalAttempts: 0, 
-      average: 0,
-      isInputPreffered: true   
-   })))
+   // const currentState = useSelector((state: RootState) => state.gameRegular)
+   // console.log(currentState)
+ 
+   //Game settings states destructured:
+   const { 
+      playerNames, 
+      gameMode, 
+      gameWin, 
+      numberOfLegs 
+   } = useSelector((state: RootState) => state.gameSettings)
+   
+   //Game regular states destructured:
+   const { 
+      players, 
+      history, 
+      currentThrow, 
+      currentPlayerIndex, 
+      startPlayerIndex, 
+      showNumberButtons, 
+      throwValueSum, 
+      currentPlayerThrowsCount, 
+      currentPlayerThrows, 
+      multiplier, 
+      isError, 
+      errorMessage, 
+      isDoubleActive, 
+      isGameEnd, 
+      winner, 
+      isSoundEnabled, 
+      initialSoundPlayed 
+   } = useSelector((state: RootState) => state.gameRegular)
 
-   //State to track history of moves
-   const [history, setHistory] = useState<HistoryEntry[]>([])
-   //CurrentThrow state declared in order to temporarily keep score filled in the score input
-   const [currentThrow, setCurrentThrow] = useState<number>(0)
-   //CurrentPlayerIndex state declared in order to keep players index who currently plays
-   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0)
-   //State to track which player starts the leg
-   const [startPlayerIndex, setStartPlayerIndex] = useState<number>(0)
-   //State to toggle between input and number buttons
-   const [showNumberButtons, setShowNumberButtons] = useState<boolean>(false)
-   //State to track total throws sum for current player when using buttons
-   const [throwValueSum, setThrowValueSum] = useState<number>(0)
-   //State to track throws count for each player when using buttons
-   const [currentPlayerThrowsCount, setCurrentPlayerThrowsCount] = useState<number>(0)
-   //State to track current player throw value and display it in current throw section
-   const [currentPlayerThrows, setCurrentPlayerThrows] = useState<number[]>([])
-   //State to set multiplier for buttons (single, double, triple)
-   const [multiplier, setMultiplier] = useState<number>(1)
-   //State to track if error occured
-   const [isError, setIsError] = useState<boolean>(false)
-   //State to set error message
-   const [errorMessage, setErrorMessage] = useState<string>('')
-   //State to turn on double points for input handler
-   const [isDoubleActive, setIsDoubleActive] = useState<boolean>(false)
-   //State to check if game ends
-   const [isGameEnd, setIsGameEnd] = useState<boolean>(false)
-   //State to set winner of the game
-   const [winner, setWinner] = useState<Player | null>(null)
-   //State to track if the sound is on/off
-   const [isSoundEnabled, setIsSoundEnabled] = useState<boolean>(true)
-   //State to track if initial sound message ('game is on') has been played
-   const [initialSoundPlayed, setInitialSoundPlayed] = useState<boolean>(false)
-   
-   
+ 
    //SCORE INPUT HANDLER
    const handleThrowChange = (value: string) => {
       setCurrentThrow(Number(value))
@@ -662,7 +645,7 @@ const Game = () => {
    //GAME END HANDLER
    const checkGameEndHandler = () => {
       //Scenario when game type is set to best-of
-      if (gameWinType === 'best-of') {
+      if (gameWin === 'best-of') {
          //Sum of legs for all players
          const totalLegs = players.reduce((acc, player) => acc + player.legs, 0)
          
@@ -679,7 +662,7 @@ const Game = () => {
          }      
       }
       //Scenario when game type is set to first-to
-      else if (gameWinType === 'first-to') {
+      else if (gameWin === 'first-to') {
          //Finding winner player
          const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
          if(winner){
@@ -694,7 +677,7 @@ const Game = () => {
    
    //RESTART GAME HANDLER
    const handleRestartGame = () => {
-      setPlayers(urlPlayers.map((playerName: string) => ({
+      setPlayers(playersFromGameSettingsSlice.map((playerName: string) => ({
          name: playerName,
          pointsLeft: Number(gameMode),
          legs: 0,
@@ -721,21 +704,7 @@ const Game = () => {
       setIsError(false)
    }
 
-   useEffect(() => {
-      if (players[currentPlayerIndex].isInputPreffered) {
-         setShowNumberButtons(false)
-      } else {
-         setShowNumberButtons(true)
-      }
-
-      if(!initialSoundPlayed){
-         playSound('game-is-on')
-         setInitialSoundPlayed(true)
-      }
-
-      console.log(history)
-      console.log(players)
-   }, [players, history, players[currentPlayerIndex].isInputPreffered, currentPlayerIndex, initialSoundPlayed])
+   
 
    return (
       <div className='game-container'>

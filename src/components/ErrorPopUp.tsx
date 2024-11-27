@@ -1,12 +1,12 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Image from 'next/image'
-import { RootState } from '@/store'
-import { setError } from '../app/redux/slices/gameSettingsSlice'
+import { RootState } from '@/redux/store'
+import { setError } from '../redux/slices/gameSettingsSlice'
 
 const ErrorPopUp = () => {
    const dispatch = useDispatch()
-   const { isError, errorMessage } = useSelector((state: RootState) => state.game.error)
+   const { isError, errorMessage } = useSelector((state: RootState) => state.gameSettings.error)
 
    //Close error handler
    const closeError = () => {

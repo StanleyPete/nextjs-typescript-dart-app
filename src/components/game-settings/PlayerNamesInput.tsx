@@ -1,16 +1,16 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '@/store'
-import { setPlayerNames } from '../../app/redux/slices/gameSettingsSlice'
+import { RootState } from '@/redux/store'
+import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
 import Image from 'next/image'
 
 interface PlayerNamesInputProps {
   maxPlayers: number
 }
 
-const PlayerNamesInput: React.FC<PlayerNamesInputProps> = ({ maxPlayers }) => {
+const PlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
    const dispatch = useDispatch()
-   const playerNames = useSelector((state: RootState) => state.game.playerNames)
+   const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
 
    const handleNameChange = (index: number, value: string) => {
       const newNames = [...playerNames]

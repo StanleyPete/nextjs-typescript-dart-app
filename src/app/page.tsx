@@ -2,8 +2,16 @@
 
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '@/store'
-import { setGameType, setPlayerNames, setGameMode, setGameWin, setNumberOfLegs, setError } from './redux/slices/gameSettingsSlice'
+import { RootState, addGameRegularReducer } from '@/redux/store'
+import { 
+   setGameType, 
+   setPlayerNames, 
+   setGameMode, 
+   setGameWin, 
+   setNumberOfLegs, 
+   setError 
+} from '../redux/slices/gameSettingsSlice'
+import { initializePlayers } from '../redux/slices/gameRegularSlice'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import PlayerNamesInput from '@/components/game-settings/PlayerNamesInput'
 import TeamsPlayerInput from '@/components/game-settings/TeamsPlayerNamesInput'
@@ -11,9 +19,16 @@ import Link from 'next/link'
 import './styles/home.scss'
 
 const Home = () => {
-   
+
    const dispatch = useDispatch()
-   const { gameType, playerNames, gameMode, gameWin, numberOfLegs} = useSelector((state: RootState) => state.game)
+   
+   const { 
+      gameType, 
+      playerNames, 
+      gameMode, 
+      gameWin, 
+      numberOfLegs
+   } = useSelector((state: RootState) => state.gameSettings)
    
    //Game type handler
    const handleGameTypeChange = (type: 'regular' | 'teams' | 'online') => {
@@ -57,23 +72,28 @@ const Home = () => {
    const handleLegsChange = (legs: number) => {
       dispatch(setNumberOfLegs(legs))
    }
-   
-   // Preparing players data and generating URL
-   const playersJson = encodeURIComponent(JSON.stringify(playerNames))
 
+   //Game start handler
+   const handleGameStart = (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (!validatePlayerNames()) {
+         event.preventDefault()
+         return
+      }
+      addGameRegularReducer()
+      dispatch(initializePlayers({ playerNames, gameMode }))
+   }
+   
+   //Preparing URL
    const gameFolders = {
       regular: 'game-regular',
       teams: 'game-teams',
       online: 'game-online'
    }
-
    const gameFolder = gameFolders[gameType]
-
    const isCricketMode = gameMode === 'Cricket'
-
    const gameUrl = isCricketMode 
-      ? `/${gameFolder}/game-cricket?game-win-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}` 
-      : `/${gameFolder}?mode=${gameMode}&game-win-type=${gameWin}&players=${playersJson}&number-of-legs=${numberOfLegs}`
+      ? `/${gameFolder}/game-cricket` 
+      : `/${gameFolder}`
    
    return (
       <div className='main-container form'>
@@ -168,12 +188,7 @@ const Home = () => {
             <Link href={gameUrl}>
                <button 
                   className='game-start-button' 
-                  onClick={(event) => {
-                     if(!validatePlayerNames()){
-                        event.preventDefault()
-                        return
-                     }
-                  }}
+                  onClick={handleGameStart}
                >
                   To the game!
                </button>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '@/store'
-import { setPlayerNames } from '../../app/redux/slices/gameSettingsSlice'
+import { RootState } from '@/redux/store'
+import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
 import Image from 'next/image'
 
 interface TeamsPlayerInput {
@@ -10,9 +10,9 @@ interface TeamsPlayerInput {
 }
 
 const TeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInput) => {
-   
+
    const dispatch = useDispatch()
-   const { playerNames } = useSelector((state: RootState) => state.game)
+   const { playerNames } = useSelector((state: RootState) => state.gameSettings)
 
    const handleNameChange = (index: number, value: string) => {
       const newNames = [...playerNames]

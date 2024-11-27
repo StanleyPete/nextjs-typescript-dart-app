@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './styles/globals.scss'
 import  localFont  from 'next/font/local'
-import ReduxProvider from '@/ReduxProvider'
+import ReduxProvider from '@/redux/ReduxProvider'
 
 
 const exoRegular = localFont({

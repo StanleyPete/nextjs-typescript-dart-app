@@ -19,8 +19,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/store": ["./src/app/redux/store.ts"], 
-      "@/ReduxProvider": ["./src/app/redux/ReduxProvider.tsx"],
+      "@/store": ["./src/redux/store.ts"], 
+      "@/ReduxProvider": ["./src/redux/ReduxProvider.tsx"],
 
     }
   },

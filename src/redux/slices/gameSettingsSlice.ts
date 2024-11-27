@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-interface GameSettingsState {
+export interface GameSettingsState {
   gameType: 'regular' | 'teams' | 'online'
   playerNames: string[]
   gameMode: number | string;
@@ -30,7 +30,7 @@ interface ErrorState {
  }
 
 const gameSettingsSlice = createSlice({
-   name: 'game',
+   name: 'gameSettings',
    initialState,
    reducers: {
       setGameType: (state, action: PayloadAction<'regular' | 'teams' | 'online'>) => {
