@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-interface Player {
+export interface Player {
    name: string
    legs: number
    pointsLeft: number
@@ -11,7 +11,7 @@ interface Player {
    isInputPreffered: boolean
 }
 
-interface HistoryEntry {
+export interface HistoryEntry {
    historyPlayerIndex: number
    historyPointsLeft: number
    historyLastScore: number

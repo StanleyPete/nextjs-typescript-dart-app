@@ -1,10 +1,12 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { 
+   Player,
    setPlayers, 
-   setHistory, 
+   setHistory,
+   HistoryEntry, 
    setCurrentThrow, 
    setCurrentPlayerIndex, 
    setStartPlayerIndex, 
@@ -31,17 +33,13 @@ const Game = () => {
    const dispatch = useDispatch()
    const router = useRouter()
 
-   // const currentState = useSelector((state: RootState) => state.gameRegular)
-   // console.log(currentState)
- 
    //Game settings states destructured:
-   const { 
-      playerNames, 
+   const {  
       gameMode, 
       gameWin, 
       numberOfLegs 
    } = useSelector((state: RootState) => state.gameSettings)
-   
+
    //Game regular states destructured:
    const { 
       players, 
@@ -62,11 +60,10 @@ const Game = () => {
       isSoundEnabled, 
       initialSoundPlayed 
    } = useSelector((state: RootState) => state.gameRegular)
-
- 
+  
    //SCORE INPUT HANDLER
    const handleThrowChange = (value: string) => {
-      setCurrentThrow(Number(value))
+      dispatch(setCurrentThrow(Number(value)))
    }
    
    //NEXT PLAYER HANDLER
@@ -76,45 +73,46 @@ const Game = () => {
          after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
       */
       const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
-      setCurrentPlayerIndex(nextPlayerIndex)
+      dispatch(setCurrentPlayerIndex(nextPlayerIndex))
    }
 
    //NEXT PLAYER WHO STARTS THE LEG HANDLER
    const handleStartPlayerIndex = () => {
-      setStartPlayerIndex(prevIndex => (prevIndex + 1) % players.length)
+      const nextStartPlayerIndex = (startPlayerIndex + 1) % players.length
+      dispatch(setStartPlayerIndex(nextStartPlayerIndex))
    }
 
    //SOUND EFFECT HANDLER
-   const playSound = (fileName: string) => {
-      if(isSoundEnabled){
+   const playSound = useCallback((fileName: string) => {
+      if(isSoundEnabled) {
          const audio = new Audio(`/sounds/${fileName}.mp3`)
          audio.play().catch(error => console.log('Error:', error))
       }
-   }
+   }, [isSoundEnabled])
 
    //SOUND TOGGLE HANDLER
    const toggleSound = () => {
-      setIsSoundEnabled(prev => !prev)
+      dispatch(setIsSoundEnabled(!isSoundEnabled))
    }
 
    //SUBMIT SCORE HANDLER FOR INPUT
    const handleSubmitThrowInput = (inputMultiplier: number) => {
       const invalidScores = [163, 166, 169, 172, 173, 175, 176, 178, 179]
-      const gamePlayers = [...players]
+      const gamePlayers = JSON.parse(JSON.stringify(players))
       const currentPlayer = gamePlayers[currentPlayerIndex]
-      
+     
       //Error hanlder (currentThrow over 180)
       if(currentThrow > 180){
-         setErrorMessage('Score higher than 180 is not possible')
-         setIsError(true)
-         setCurrentThrow(0)
+         dispatch(setErrorMessage('Score higher than 180 is not possible'))
+         dispatch(setIsError(true))
+         dispatch(setCurrentThrow(0))
          return
       }
 
       if(invalidScores.includes(currentThrow)){
-         setErrorMessage(`${currentThrow} is not possible`)
-         setIsError(true)
-         setCurrentThrow(0)
+         dispatch(setErrorMessage(`${currentThrow} is not possible`))
+         dispatch(setIsError(true))
+         dispatch(setCurrentThrow(0))
          return
       }
 
@@ -134,8 +132,8 @@ const Game = () => {
       //End leg scenario
       if(isDoubleActive && currentPlayer.pointsLeft === 0) {
          // Additional history entries created if leg ends in order to properly Undo handler usage 
-         const newHistoryEntries = players
-            .map((player, index) => {
+         const newHistoryEntries = gamePlayers
+            .map((player: Player, index: number) => {
                if (index === currentPlayerIndex) {
                   return null //NewHistoryEntry not created for currentPlayerIndex!
                }
@@ -148,16 +146,13 @@ const Game = () => {
                   historyTotalAttempts: player.totalAttempts 
                }
             })
-            .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
-
-         //Updating history with additional history entries
-         setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
+            .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentPlayerIndex (null)
          
          //Updating legs for current player
          currentPlayer.legs += 1
          
          //Updating game stats for new leg (for each player)
-         players.forEach(player => {
+         gamePlayers.forEach((player: Player) => {
             player.pointsLeft = Number(gameMode)
             player.lastScore = 0
             player.totalThrows = 0
@@ -167,25 +162,25 @@ const Game = () => {
          })
 
          //Updating history state with currentPlayerIndex
-         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+         dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
 
          //Upadating player's state
-         setPlayers(gamePlayers) 
+         dispatch(setPlayers(gamePlayers)) 
 
          //Switching to next player who start the leg
          handleStartPlayerIndex()
 
          //Setting current player index:
-         setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
+         dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
 
          //End game check
-         checkGameEndHandler()
+         checkGameEndHandler(gamePlayers)
 
          //Resetting isDoubleActive state
-         setIsDoubleActive(false)
+         dispatch(setIsDoubleActive(false))
 
          //Resetting input value
-         setCurrentThrow(0)
+         dispatch(setCurrentThrow(0))
          
          return
       }
@@ -203,10 +198,10 @@ const Game = () => {
          currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
 
          //Updating history state
-         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+         dispatch(setHistory([...history, newHistoryEntry]))
 
          //Upadating player's state
-         setPlayers(gamePlayers)
+         dispatch(setPlayers(gamePlayers))
 
          //Sound effect
          playSound('no-score')
@@ -215,7 +210,7 @@ const Game = () => {
          handleSwitchPlayer()
 
          //Resetting input value
-         setCurrentThrow(0)
+         dispatch(setCurrentThrow(0))
 
          return
       }
@@ -228,10 +223,10 @@ const Game = () => {
       currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
       
       //Updating history state
-      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+      dispatch(setHistory([...history, newHistoryEntry]))
       
       //Upadating player's state
-      setPlayers(gamePlayers)
+      dispatch(setPlayers(gamePlayers))
 
       //Sound effect
       if (currentThrow === 0) {
@@ -244,12 +239,12 @@ const Game = () => {
       handleSwitchPlayer()
      
       //Resetting input value
-      setCurrentThrow(0)
+      dispatch(setCurrentThrow(0))
    }
 
    //SUBMIT SCORE HANDLER FOR BUTTONS
    const handleSubmitThrowButtons = (throwValue: number) => {
-      const gamePlayers = [...players]
+      const gamePlayers = JSON.parse(JSON.stringify(players))
       const currentPlayer = gamePlayers[currentPlayerIndex]
       const multiplierThrowValue = throwValue * multiplier
       
@@ -273,8 +268,8 @@ const Game = () => {
 
          //End leg scenario when player has NOT thrown 3 times yet, multiplier === 2 and pointsLeft === 0
          if(multiplier === 2 && currentPlayer.pointsLeft === 0){
-            const newHistoryEntries = players
-               .map((player, index) => {
+            const newHistoryEntries = gamePlayers
+               .map((player: Player, index: number) => {
                   if (index === currentPlayerIndex) {
                      return null //NewHistoryEntry not created for currentPlayerIndex
                   }
@@ -287,16 +282,13 @@ const Game = () => {
                      historyTotalAttempts: player.totalAttempts 
                   }
                })
-               .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
+               .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentPlayerIndex (null)
 
-            //Updating history with additional history entries
-            setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
-            
             //Updating legs
             currentPlayer.legs += 1 
 
             //Updating game stats for new leg (for each player)
-            players.forEach(player => {
+            gamePlayers.forEach((player: Player) => {
                player.pointsLeft = Number(gameMode)
                player.lastScore = 0
                player.totalThrows = 0
@@ -306,27 +298,26 @@ const Game = () => {
             })
             
             //Updating history state
-            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
 
             //Switching to next player who start the leg
             handleStartPlayerIndex()
 
             //Setting current player index:
-            setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
+            dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
 
             //Updating player's state
-            setPlayers(gamePlayers) 
+            dispatch(setPlayers(gamePlayers))
 
             //Checking game end
-            checkGameEndHandler()
+            checkGameEndHandler(gamePlayers)
 
             //Resetting states
-            setThrowValueSum(0)
-            setCurrentPlayerThrowsCount(0)
-            setCurrentPlayerThrows([])
-            setCurrentThrow(0)
-            setCurrentThrow(0)
-
+            dispatch(setThrowValueSum(0))
+            dispatch(setCurrentPlayerThrowsCount(0))
+            dispatch(setCurrentPlayerThrows([]))
+            dispatch(setCurrentThrow(0))
+           
             return
          }
 
@@ -337,7 +328,7 @@ const Game = () => {
             currentPlayer.totalThrows -= throwValueSum
             currentPlayer.totalAttempts += 1
             currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
-            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            dispatch(setHistory([...history, newHistoryEntry]))
 
             //Sound effect:
             playSound('no-score')
@@ -346,24 +337,22 @@ const Game = () => {
             handleSwitchPlayer()
 
             //Resetting states
-            setCurrentThrow(0)
-            setThrowValueSum(0)
-            setCurrentPlayerThrowsCount(0)
-            setCurrentPlayerThrows([])
-            setCurrentThrow(0)
+            dispatch(setThrowValueSum(0))
+            dispatch(setCurrentPlayerThrowsCount(0))
+            dispatch(setCurrentPlayerThrows([]))
+            dispatch(setCurrentThrow(0))
 
-            //Updating players state
-            setPlayers(gamePlayers) 
+            dispatch(setPlayers(gamePlayers))
 
             return
          }
 
          //Updating totalThrows, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount (currentThrow in case player would like to switch input method)
          currentPlayer.totalThrows += multiplierThrowValue
-         setThrowValueSum(prevSum => prevSum + multiplierThrowValue)
-         setCurrentPlayerThrows(prevThrows => [...prevThrows, multiplierThrowValue].slice(-3))
-         setCurrentPlayerThrowsCount(updatedThrowCount)
-         setCurrentThrow(0)
+         dispatch(setThrowValueSum(throwValueSum + multiplierThrowValue))
+         dispatch(setCurrentPlayerThrows([...currentPlayerThrows, multiplierThrowValue].slice(-3)))
+         dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
+         dispatch(setCurrentThrow(0))
       } 
       //Scenario when players has thrown already 3 times
       else {
@@ -372,8 +361,8 @@ const Game = () => {
          
          //End leg scenario when player has thrown already 3 times, multiplier === 2 and pointsLeft === 0
          if(multiplier === 2 && currentPlayer.pointsLeft === 0){
-            const newHistoryEntries = players
-               .map((player, index) => {
+            const newHistoryEntries = gamePlayers
+               .map((player: Player, index: number) => {
                   if (index === currentPlayerIndex) {
                      return null //NewHistoryEntry not created for currentPlayerIndex
                   }
@@ -386,14 +375,12 @@ const Game = () => {
                      historyTotalAttempts: player.totalAttempts 
                   }
                })
-               .filter(entry => entry !== null) //Skipping currentPlayerIndex (null)
+               .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentPlayerIndex (null)
 
-            //Updating history with additional history entries
-            setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
             currentPlayer.legs += 1 
 
             //Updating game stats for new leg (for each player)
-            players.forEach(player => {
+            gamePlayers.forEach((player: Player) => {
                player.pointsLeft = Number(gameMode)
                player.lastScore = 0
                player.totalThrows = 0
@@ -403,24 +390,23 @@ const Game = () => {
             })
             
             //Updating history state
-            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
 
             //Switching to next player who start the leg
             handleStartPlayerIndex()
 
             //Setting current player index:
-            setCurrentPlayerIndex((startPlayerIndex + 1) % players.length)
+            dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
 
             //Checking game end
-            checkGameEndHandler()
+            checkGameEndHandler(gamePlayers)
 
             //Resetting states
-            setThrowValueSum(0)
-            setCurrentPlayerThrowsCount(0)
-            setCurrentPlayerThrows([])
-            setCurrentThrow(0)
-            setCurrentThrow(0)
-            setPlayers(gamePlayers) 
+            dispatch(setThrowValueSum(0))
+            dispatch(setCurrentPlayerThrowsCount(0))
+            dispatch(setCurrentPlayerThrows([]))
+            dispatch(setCurrentThrow(0))
+            dispatch(setPlayers(gamePlayers))
             return
          }
 
@@ -431,14 +417,14 @@ const Game = () => {
             currentPlayer.totalThrows -= throwValueSum
             currentPlayer.totalAttempts += 1
             currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
-            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            dispatch(setHistory([...history, newHistoryEntry]))
             playSound('no-score')
             handleSwitchPlayer()
-            setThrowValueSum(0)
-            setCurrentPlayerThrowsCount(0)
-            setCurrentPlayerThrows([])
-            setCurrentThrow(0)
-            setPlayers(gamePlayers) 
+            dispatch(setThrowValueSum(0))
+            dispatch(setCurrentPlayerThrowsCount(0))
+            dispatch(setCurrentPlayerThrows([]))
+            dispatch(setCurrentThrow(0))
+            dispatch(setPlayers(gamePlayers))
             return
          }
 
@@ -449,23 +435,23 @@ const Game = () => {
          currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
          
          //Updating history state
-         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+         dispatch(setHistory([...history, newHistoryEntry]))
 
          //Sound effect:
          playSound((throwValueSum + multiplierThrowValue).toString())
 
          //Resetting states:
-         setThrowValueSum(0)
-         setCurrentPlayerThrowsCount(0)
-         setCurrentPlayerThrows([])
-         setCurrentThrow(0)
+         dispatch(setThrowValueSum(0))
+         dispatch(setCurrentPlayerThrowsCount(0))
+         dispatch(setCurrentPlayerThrows([]))
+         dispatch(setCurrentThrow(0))
          
          //Switching to the next player
          handleSwitchPlayer()
       }
 
       //Updating  player's state
-      setPlayers(gamePlayers)
+      dispatch(setPlayers(gamePlayers))
    }
 
    //SUBMIT SCORE HANDLER FOR BUTTONS 
@@ -473,7 +459,7 @@ const Game = () => {
       (for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value)
    */
    const handleSubmitScoreButtons = () => {
-      const updatedPlayers = [...players]
+      const updatedPlayers = JSON.parse(JSON.stringify(players))
       const currentPlayer = updatedPlayers[currentPlayerIndex]
 
       const throwSum = currentPlayerThrows.reduce((acc, throwValue) => acc + throwValue, 0)
@@ -496,7 +482,7 @@ const Game = () => {
       currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
 
       //Updating history state
-      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+      dispatch(setHistory([...history, newHistoryEntry]))
 
       //Sound-effect
       if(throwSum === 0){
@@ -506,22 +492,22 @@ const Game = () => {
       }
       
       //Resetting states
-      setThrowValueSum(0)
-      setCurrentPlayerThrows([]) 
-      setCurrentPlayerThrowsCount(0)
-      setCurrentThrow(0)
+      dispatch(setThrowValueSum(0))
+      dispatch(setCurrentPlayerThrows([]))
+      dispatch(setCurrentPlayerThrowsCount(0))
+      dispatch(setCurrentThrow(0))
 
       //Switching to the next player
       handleSwitchPlayer()
       
       //Updating player's state
-      setPlayers(updatedPlayers)
+      dispatch(setPlayers(updatedPlayers))
    }
    
    //UNDO HANDLER
    const handleUndo = () => {
       const lastEntry = history[history.length - 1]
-      const gamePlayers = [...players]
+      const gamePlayers = JSON.parse(JSON.stringify(players))
 
       //Scenario when players have just finished previous leg
       if(history.length !== 0 && lastEntry.historyTotalThrows === Number(gameMode)){
@@ -530,7 +516,7 @@ const Game = () => {
          currentPlayer.legs -= 1
 
          //Updating game stats for each player
-         gamePlayers.forEach((player, index) => {
+         gamePlayers.forEach((player: Player, index: number) => {
             const playerHistory = [...history].reverse().find(entry => entry.historyPlayerIndex === index)
             if (playerHistory) {
                player.pointsLeft = playerHistory.historyPointsLeft
@@ -542,13 +528,13 @@ const Game = () => {
          })
 
          //Setting currentPlayerIndex to the last player who played in the history
-         setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+         dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex)) 
 
          //Removing last history entries (inlcuding additional entries created when player finished leg)
-         setHistory(prevHistory => prevHistory.slice(0, prevHistory.length - gamePlayers.length))
+         dispatch(setHistory(history.slice(0, history.length - gamePlayers.length)))
 
          //Updating players state
-         setPlayers(gamePlayers) 
+         dispatch(setPlayers(gamePlayers)) 
 
          return
       }
@@ -567,10 +553,10 @@ const Game = () => {
          currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
          
          //Setting currentPlayerIndex to the last player who played in the history
-         setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+         dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex)) 
          
          //Removing last history entry
-         setHistory(prevHistory => prevHistory.slice(0, -1))
+         dispatch(setHistory(history.slice(0, -1)))
       }
       
       //Undo handler for buttons
@@ -586,14 +572,15 @@ const Game = () => {
             //Updating pointsLeft, totalThrows and throwValueSum
             currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
             currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
-            setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
+            const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+            dispatch(setThrowValueSum(updatedThrowValueSum))
             
             //Removing last available throw from temporary variable
             updatedThrows.pop()
             
             //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
-            setCurrentPlayerThrows(updatedThrows)
-            setCurrentPlayerThrowsCount(updatedThrowCount)
+            dispatch(setCurrentPlayerThrows(updatedThrows))
+            dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
          } 
          //SCENARIO 2: Empty history
          else if (history.length === 0){
@@ -611,10 +598,10 @@ const Game = () => {
             currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
             
             //Removing last history entry
-            setHistory(prevHistory => prevHistory.slice(0, -1))
+            dispatch(setHistory(history.slice(0, -1)))
             
             //Setting currentPlayerIndex to the last player who played in the history
-            setCurrentPlayerIndex(lastEntry.historyPlayerIndex) 
+            dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex))
          }
          //SCENARIO 4: History availble and currentPlayer has already thrown at least once 
          else {
@@ -627,35 +614,36 @@ const Game = () => {
             //Updating pointsLeft, totalThrows and throwValueSum
             currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
             currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
-            setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
+            const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+            dispatch(setThrowValueSum(updatedThrowValueSum))
             
             //Removing last available throw from temporary variable
             updatedThrows.pop()
    
             //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
-            setCurrentPlayerThrows(updatedThrows)
-            setCurrentPlayerThrowsCount(updatedThrowCount)
+            dispatch(setCurrentPlayerThrows(updatedThrows))
+            dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
          }
       }
       
       //Updating players state
-      setPlayers(gamePlayers) 
+      dispatch(setPlayers(gamePlayers)) 
    }
 
    //GAME END HANDLER
-   const checkGameEndHandler = () => {
+   const checkGameEndHandler = (gamePlayers: Player[]) => {
       //Scenario when game type is set to best-of
       if (gameWin === 'best-of') {
          //Sum of legs for all players
-         const totalLegs = players.reduce((acc, player) => acc + player.legs, 0)
+         const totalLegs = gamePlayers.reduce((acc: number, player: Player) => acc + player.legs, 0)
          
          //Check if totalLegs for players equals to number-of-legs parameter
          if (totalLegs === Number(numberOfLegs)) {
             //Finding winner player
-            const maxLegs = Math.max(...players.map(player => player.legs))
-            const winner = players.find(player => player.legs === maxLegs) || null
-            setIsGameEnd(true)
-            setWinner(winner)
+            const maxLegs = Math.max(...gamePlayers.map((player: Player) => player.legs))
+            const winner = gamePlayers.find((player: Player) => player.legs === maxLegs) || null
+            dispatch(setIsGameEnd(true))
+            dispatch(setWinner(winner))
             playSound('and-the-game')
          } else {
             playSound('and-the-leg')
@@ -664,10 +652,11 @@ const Game = () => {
       //Scenario when game type is set to first-to
       else if (gameWin === 'first-to') {
          //Finding winner player
-         const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
+         const winner = gamePlayers.find((player: Player) => player.legs === Number(numberOfLegs)) || null
+         console.log(winner)
          if(winner){
-            setIsGameEnd(true)
-            setWinner(winner)
+            dispatch(setIsGameEnd(true))
+            dispatch(setWinner(winner))
             playSound('and-the-game')
          } else {
             playSound('and-the-leg')
@@ -677,32 +666,52 @@ const Game = () => {
    
    //RESTART GAME HANDLER
    const handleRestartGame = () => {
-      setPlayers(playersFromGameSettingsSlice.map((playerName: string) => ({
-         name: playerName,
-         pointsLeft: Number(gameMode),
+      const gamePlayers = players.map(player => ({
+         ...player, 
+         pointsLeft: Number(gameMode),  
          legs: 0,
          lastScore: 0, 
          totalThrows: 0,
          totalAttempts: 0,  
          average: 0,
-         isInputPreffered: true    
-      })))
-      setCurrentPlayerIndex(0) 
-      setCurrentThrow(0) 
-      setHistory([]) 
-      setThrowValueSum(0) 
-      setCurrentPlayerThrowsCount(0) 
+         isInputPreffered: true, 
+      }))
+
+      dispatch(setPlayers(gamePlayers))
+
+      dispatch(setCurrentPlayerIndex(0)) 
+      dispatch(setCurrentThrow(0)) 
+      dispatch(setHistory([])) 
+      dispatch(setThrowValueSum(0)) 
+      dispatch(setCurrentPlayerThrowsCount(0)) 
 
       if(isGameEnd){
-         setIsGameEnd(false)
-         setWinner(null)
+         dispatch(setIsGameEnd(false))
+         dispatch(setWinner(null))
       }
    }
 
    //ERROR CLOSE HANDLER
    const closeError = () => {
-      setIsError(false)
+      dispatch(setIsError(false))
    }
+
+   useEffect(() => {
+      const isInputPreferred = players[currentPlayerIndex].isInputPreffered
+      if (isInputPreferred) {
+         dispatch(setShowNumberButtons(false))
+      } else {
+         dispatch(setShowNumberButtons(true))
+      }
+
+      if(!initialSoundPlayed){
+         playSound('game-is-on')
+         dispatch(setInitialSoundPlayed(true))
+      }
+
+      console.log('History: ', history)
+      console.log('Players: ', players)
+   }, [players, history, currentPlayerIndex, initialSoundPlayed, dispatch, playSound])
 
    
 
@@ -731,7 +740,7 @@ const Game = () => {
                   className={`input-toggle ${showNumberButtons ? 'buttons-active' : 'input-active'}`}
                   onClick={() => {
                      //Resetting values when toggle button clicked
-                     const gamePlayers = [...players]
+                     const gamePlayers = JSON.parse(JSON.stringify(players))
                      const currentPlayer = gamePlayers[currentPlayerIndex]
                      if (currentPlayerThrowsCount > 0) {
                   
@@ -740,15 +749,15 @@ const Game = () => {
                         currentPlayer.totalThrows -= throwValueSum
                   
                         //Resetting throwValueSum, currentPlayerThrows and currentPlayersThrowsCount states
-                        setThrowValueSum(0)
-                        setCurrentPlayerThrows([])
-                        setCurrentPlayerThrowsCount(0)         
+                        dispatch(setThrowValueSum(0))
+                        dispatch(setCurrentPlayerThrows([]))
+                        dispatch(setCurrentPlayerThrowsCount(0))         
                      }
                      
                      //Switching isInputPreffered
                      currentPlayer.isInputPreffered = !currentPlayer.isInputPreffered
                      //Updating player's state
-                     setPlayers(gamePlayers)    
+                     dispatch(setPlayers(gamePlayers))    
                   }}>
                   {showNumberButtons ? 'Input' : 'Buttons'}
                </button>
@@ -765,7 +774,7 @@ const Game = () => {
                         className='remove-last'
                         onClick={() => {
                            const newValue = String(currentThrow).slice(0, -1)
-                           setCurrentThrow(newValue ? Number(newValue) : 0)
+                           dispatch(setCurrentThrow(newValue ? Number(newValue) : 0))
                         }}>
                         <Image 
                            src='/backspace.svg' 
@@ -811,7 +820,7 @@ const Game = () => {
                {!showNumberButtons ? (
                   players[currentPlayerIndex].pointsLeft <= 40 && players[currentPlayerIndex].pointsLeft % 2 === 0 && (
                      <button 
-                        onClick={() => setIsDoubleActive(!isDoubleActive)} 
+                        onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 
                         className={isDoubleActive ? 'active' : ''}>
                         Double
                      </button>
@@ -819,17 +828,17 @@ const Game = () => {
                ) : (
                   <div className="multiplier-buttons">
                      <button 
-                        onClick={() => setMultiplier(1)} 
+                        onClick={() => dispatch(setMultiplier(1))} 
                         className={multiplier === 1 ? 'active' : ''}>
                         Single
                      </button>
                      <button 
-                        onClick={() => setMultiplier(2)} 
+                        onClick={() => dispatch(setMultiplier(2))} 
                         className={multiplier === 2 ? 'active' : ''}>
                         Double
                      </button>
                      <button 
-                        onClick={() => setMultiplier(3)} 
+                        onClick={() => dispatch(setMultiplier(3))} 
                         className={multiplier === 3 ? 'active' : ''}>
                         Triple
                      </button>
@@ -847,7 +856,7 @@ const Game = () => {
                            key={i} 
                            onClick={() => {
                               const newValue = Number(`${currentThrow}${i+1}`)
-                              setCurrentThrow(newValue)}}>
+                              dispatch(setCurrentThrow(newValue))}}>
                            {i+1}
                         </button>
                      ))}
@@ -858,7 +867,7 @@ const Game = () => {
                      <button
                         onClick={() => {
                            const newValue = Number(`${currentThrow}${0}`)
-                           setCurrentThrow(newValue)
+                           dispatch(setCurrentThrow(newValue))
                         }}>
                            0
                      </button>
@@ -971,7 +980,7 @@ const Game = () => {
                   <button 
                      className='undo' 
                      onClick={() => {
-                        handleUndo(); setIsGameEnd(false)}}>
+                        handleUndo(); dispatch(setIsGameEnd(false))}}>
                         Undo
                   </button>
                </div>
