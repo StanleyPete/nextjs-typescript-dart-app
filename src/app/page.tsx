@@ -1,33 +1,36 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect }from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState, addGameRegularReducer } from '@/redux/store'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { RootState, addGameRegularReducer, resetReducer } from '@/redux/store'
+import { initializePlayers } from '../redux/slices/gameRegularSlice'
+import ErrorPopUp from '@/components/ErrorPopUp'
+import PlayerNamesInput from '@/components/game-settings/PlayerNamesInput'
+import TeamsPlayerInput from '@/components/game-settings/TeamsPlayerNamesInput'
+import './styles/home.scss'
 import { 
    setGameType, 
    setPlayerNames, 
    setGameMode, 
    setGameWin, 
-   setNumberOfLegs, 
+   setNumberOfLegs,
+   setIsFirstLoad, 
    setError 
 } from '../redux/slices/gameSettingsSlice'
-import { initializePlayers } from '../redux/slices/gameRegularSlice'
-import ErrorPopUp from '@/components/ErrorPopUp'
-import PlayerNamesInput from '@/components/game-settings/PlayerNamesInput'
-import TeamsPlayerInput from '@/components/game-settings/TeamsPlayerNamesInput'
-import Link from 'next/link'
-import './styles/home.scss'
 
 const Home = () => {
-
    const dispatch = useDispatch()
+   const pathname = usePathname()
    
    const { 
       gameType, 
       playerNames, 
       gameMode, 
       gameWin, 
-      numberOfLegs
+      numberOfLegs, 
+      isFirstLoad
    } = useSelector((state: RootState) => state.gameSettings)
    
    //Game type handler
@@ -94,6 +97,18 @@ const Home = () => {
    const gameUrl = isCricketMode 
       ? `/${gameFolder}/game-cricket` 
       : `/${gameFolder}`
+
+ 
+   useEffect(() => {
+      if(isFirstLoad){
+         dispatch(setIsFirstLoad(false))
+         // console.log('Game Settings useEffect (isFirstLoad set to false completed')
+      } else if (!isFirstLoad && pathname === '/'){
+         resetReducer()
+         // console.log('Game Settings useEffect (resetReducer completed')
+      }
+   }, [pathname])
+   
    
    return (
       <div className='main-container form'>

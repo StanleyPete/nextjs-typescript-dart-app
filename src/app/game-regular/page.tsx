@@ -1,7 +1,15 @@
 'use client'
+
 import React, { useEffect, useCallback } from 'react'
+import Image from 'next/image'
+import GamePlayersSectionRegular from '@/components/game-regular/GamePlayersSectionRegular'
+import CurrentPlayerThrowParagraph from '@/components/CurrentPlayerThrowParagraph'
+import SettingsButtons from '@/components/SettingsButtons'
+import ErrorPopUp from '@/components/ErrorPopUp'
+import GameEndPopUp from '@/components/GameEndPopUp'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { setError } from '@/redux/slices/gameSettingsSlice'
 import { 
    Player,
    setPlayers, 
@@ -15,23 +23,17 @@ import {
    setCurrentPlayerThrowsCount, 
    setCurrentPlayerThrows, 
    setMultiplier, 
-   setIsError, 
-   setErrorMessage, 
    setIsDoubleActive, 
    setIsGameEnd, 
    setWinner, 
    setInitialSoundPlayed, 
-   setIsSoundEnabled 
 } from '@/redux/slices/gameRegularSlice'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import GamePlayersSectionRegular from '@/components/GamePlayersSectionRegular'
-import CurrentPlayerThrowParagraph from '@/components/CurrentPlayerThrowParagraph'
 
 
 const Game = () => {
+
    const dispatch = useDispatch()
-   const router = useRouter()
+ 
 
    //Game settings states destructured:
    const {  
@@ -52,11 +54,7 @@ const Game = () => {
       currentPlayerThrowsCount, 
       currentPlayerThrows, 
       multiplier, 
-      isError, 
-      errorMessage, 
       isDoubleActive, 
-      isGameEnd, 
-      winner, 
       isSoundEnabled, 
       initialSoundPlayed 
    } = useSelector((state: RootState) => state.gameRegular)
@@ -90,10 +88,7 @@ const Game = () => {
       }
    }, [isSoundEnabled])
 
-   //SOUND TOGGLE HANDLER
-   const toggleSound = () => {
-      dispatch(setIsSoundEnabled(!isSoundEnabled))
-   }
+ 
 
    //SUBMIT SCORE HANDLER FOR INPUT
    const handleSubmitThrowInput = (inputMultiplier: number) => {
@@ -103,15 +98,13 @@ const Game = () => {
      
       //Error hanlder (currentThrow over 180)
       if(currentThrow > 180){
-         dispatch(setErrorMessage('Score higher than 180 is not possible'))
-         dispatch(setIsError(true))
+         dispatch(setError({ isError: true, errorMessage: 'Score higher than 180 is not possible' }))
          dispatch(setCurrentThrow(0))
          return
       }
 
       if(invalidScores.includes(currentThrow)){
-         dispatch(setErrorMessage(`${currentThrow} is not possible`))
-         dispatch(setIsError(true))
+         dispatch(setError({ isError: true, errorMessage: `${currentThrow} is not possible` }))
          dispatch(setCurrentThrow(0))
          return
       }
@@ -663,39 +656,10 @@ const Game = () => {
          }
       }
    }
+
    
-   //RESTART GAME HANDLER
-   const handleRestartGame = () => {
-      const gamePlayers = players.map(player => ({
-         ...player, 
-         pointsLeft: Number(gameMode),  
-         legs: 0,
-         lastScore: 0, 
-         totalThrows: 0,
-         totalAttempts: 0,  
-         average: 0,
-         isInputPreffered: true, 
-      }))
 
-      dispatch(setPlayers(gamePlayers))
-
-      dispatch(setCurrentPlayerIndex(0)) 
-      dispatch(setCurrentThrow(0)) 
-      dispatch(setHistory([])) 
-      dispatch(setThrowValueSum(0)) 
-      dispatch(setCurrentPlayerThrowsCount(0)) 
-
-      if(isGameEnd){
-         dispatch(setIsGameEnd(false))
-         dispatch(setWinner(null))
-      }
-   }
-
-   //ERROR CLOSE HANDLER
-   const closeError = () => {
-      dispatch(setIsError(false))
-   }
-
+  
    useEffect(() => {
       const isInputPreferred = players[currentPlayerIndex].isInputPreffered
       if (isInputPreferred) {
@@ -717,17 +681,12 @@ const Game = () => {
 
    return (
       <div className='game-container'>
+
          {/*Game players section component */}
-         <GamePlayersSectionRegular 
-            players={players} 
-            currentPlayerIndex={currentPlayerIndex} 
-         />
-           
-         <CurrentPlayerThrowParagraph
-            isSoundEnabled={isSoundEnabled}
-            toggleSound={toggleSound}
-            currentPlayerName={players[currentPlayerIndex].name}
-         />
+         <GamePlayersSectionRegular />
+         
+         {/*Current player throw paragraph component */}
+         <CurrentPlayerThrowParagraph />
 
          {/*Main score input section (input/buttons toggle, score preview, submit score button, score buttons ):*/}
          <div className='score-section'> 
@@ -921,71 +880,13 @@ const Game = () => {
          </div>
 
          {/* Settings buttons*/}
-         <div className="settings-buttons">
-            <button 
-               className='go-back' 
-               onClick={() => router.back()}>
-                  Back to Settings
-            </button>
-            <button 
-               className='restart-game' 
-               onClick={handleRestartGame}>
-                  Restart game
-            </button>
-         </div>
+         <SettingsButtons />
          
-         {/* Error/Game End overlay */}
-         {(isError || isGameEnd) && <div className="overlay"></div>}
-
          {/* Error section */}
-         {isError && (
-            <div className="error">
-               <div className="error-content">
-                  <Image 
-                     src='/error.svg' 
-                     alt='Error icon' 
-                     width={100} 
-                     height={100} 
-                  />
-                  <p>{errorMessage}</p>
-                  <button 
-                     onClick={closeError}>
-                        OK
-                  </button>
-               </div>
-            </div>
-         )}
+         <ErrorPopUp />
 
          {/* End game pop-up */}
-         {isGameEnd && (
-            <div className='game-over-popup'>
-               <div className='game-over-popup-content'>
-                  <Image 
-                     src='/winner.svg' 
-                     alt='Winner icon' 
-                     width={80} 
-                     height={80} 
-                  />
-                  <h3>Winner: {winner?.name}</h3>
-                  <button 
-                     className='play-again' 
-                     onClick={handleRestartGame}>
-                        Play Again
-                  </button>
-                  <button 
-                     className='go-back' 
-                     onClick={() => router.back()}>
-                        Back to Settings
-                  </button>
-                  <button 
-                     className='undo' 
-                     onClick={() => {
-                        handleUndo(); dispatch(setIsGameEnd(false))}}>
-                        Undo
-                  </button>
-               </div>
-            </div>
-         )}
+         <GameEndPopUp />
 
       </div>
    )

@@ -5,7 +5,9 @@ import { RootState } from '@/redux/store'
 import { setError } from '../redux/slices/gameSettingsSlice'
 
 const ErrorPopUp = () => {
+
    const dispatch = useDispatch()
+   
    const { isError, errorMessage } = useSelector((state: RootState) => state.gameSettings.error)
 
    //Close error handler
@@ -13,23 +15,23 @@ const ErrorPopUp = () => {
       dispatch(setError({ isError: false, errorMessage: '' })) 
    }
 
-   if (!isError) return null 
-
    return (
-      <div className="overlay">
-         <div className="error">
-            <div className="error-content">
-               <Image 
-                  src='/error.svg' 
-                  alt='Error icon' 
-                  width={100} 
-                  height={100} 
-               />
-               <p>{errorMessage}</p>
-               <button onClick={closeError}>OK</button>
+      isError && (
+         <div className="overlay">
+            <div className="error">
+               <div className="error-content">
+                  <Image 
+                     src='/error.svg' 
+                     alt='Error icon' 
+                     width={100} 
+                     height={100} 
+                  />
+                  <p>{errorMessage}</p>
+                  <button onClick={closeError}>OK</button>
+               </div>
             </div>
          </div>
-      </div>
+      )
    )
 }
 

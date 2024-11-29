@@ -1,0 +1,146 @@
+import { AppDispatch } from '@/redux/store'
+import {
+   setCurrentPlayerIndex,
+   setHistory,
+   setPlayers,
+   setThrowValueSum,
+   setCurrentPlayerThrows,
+   setCurrentPlayerThrowsCount,
+   Player,
+   HistoryEntry
+} from '@/redux/slices/gameRegularSlice'
+  
+export const handleUndo = (
+   dispatch: AppDispatch,
+   history: HistoryEntry[],
+   players: Player[],
+   gameMode: number | string,
+   showNumberButtons: boolean,
+   currentPlayerThrowsCount: number,
+   currentPlayerThrows: number[],
+   currentPlayerIndex: number,
+   throwValueSum: number
+) => {
+   const lastEntry = history[history.length - 1]
+   const gamePlayers = JSON.parse(JSON.stringify(players))
+
+   //Scenario when players have just finished previous leg
+   if(history.length !== 0 && lastEntry.historyTotalThrows === Number(gameMode)){
+      const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+
+      currentPlayer.legs -= 1
+
+      //Updating game stats for each player
+      gamePlayers.forEach((player: Player, index: number) => {
+         const playerHistory = [...history].reverse().find(entry => entry.historyPlayerIndex === index)
+         if (playerHistory) {
+            player.pointsLeft = playerHistory.historyPointsLeft
+            player.lastScore = playerHistory.historyLastScore
+            player.totalThrows = playerHistory.historyTotalThrows === Number(gameMode) ? playerHistory.historyTotalThrows - playerHistory.historyLastScore : playerHistory.historyTotalThrows
+            player.totalAttempts = playerHistory.historyTotalAttempts
+            player.average = playerHistory.historyLastAverage
+         }
+      })
+
+      //Setting currentPlayerIndex to the last player who played in the history
+      dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex)) 
+
+      //Removing last history entries (inlcuding additional entries created when player finished leg)
+      dispatch(setHistory(history.slice(0, history.length - gamePlayers.length)))
+
+      //Updating players state
+      dispatch(setPlayers(gamePlayers)) 
+
+      return
+   }
+    
+   //Undo handler for input
+   if(!showNumberButtons){
+      if(history.length === 0) return
+       
+      const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+
+      //Restoring pointsLeft, lastScore, average, totalAttempts, totalThrows
+      currentPlayer.totalThrows -= currentPlayer.lastScore
+      currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
+      currentPlayer.lastScore = lastEntry.historyLastScore
+      currentPlayer.average = lastEntry.historyLastAverage
+      currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
+       
+      //Setting currentPlayerIndex to the last player who played in the history
+      dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex)) 
+       
+      //Removing last history entry
+      dispatch(setHistory(history.slice(0, -1)))
+   }
+    
+   //Undo handler for buttons
+   if(showNumberButtons){
+      //SCENARIO 1: Empty history, currentPlayerThrowCount !== 0
+      if(history.length === 0 && currentPlayerThrowsCount !== 0){
+         const currentPlayer = gamePlayers[currentPlayerIndex]
+          
+         //Temporary variables with updated throw count and throws array
+         const updatedThrowCount = currentPlayerThrowsCount - 1
+         const updatedThrows = [...currentPlayerThrows]
+          
+         //Updating pointsLeft, totalThrows and throwValueSum
+         currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
+         currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
+         const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+         dispatch(setThrowValueSum(updatedThrowValueSum))
+          
+         //Removing last available throw from temporary variable
+         updatedThrows.pop()
+          
+         //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
+         dispatch(setCurrentPlayerThrows(updatedThrows))
+         dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
+      } 
+      //SCENARIO 2: Empty history
+      else if (history.length === 0){
+         return
+      } 
+      //SCENARIO 3: History available and no currentPlayerThrowsCount
+      else if (history.length !== 0 && currentPlayerThrowsCount === 0){
+         const currentPlayer = gamePlayers[lastEntry.historyPlayerIndex]
+          
+         //Restoring pointsLeft, lastScore, average
+         currentPlayer.pointsLeft = lastEntry.historyPointsLeft 
+         currentPlayer.lastScore = lastEntry.historyLastScore
+         currentPlayer.average = lastEntry.historyLastAverage
+         currentPlayer.totalThrows = lastEntry.historyTotalThrows
+         currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
+          
+         //Removing last history entry
+         dispatch(setHistory(history.slice(0, -1)))
+          
+         //Setting currentPlayerIndex to the last player who played in the history
+         dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex))
+      }
+      //SCENARIO 4: History availble and currentPlayer has already thrown at least once 
+      else {
+         const currentPlayer = gamePlayers[currentPlayerIndex]
+          
+         //Temporary variables with updated throw count and throws array
+         const updatedThrowCount = currentPlayerThrowsCount - 1
+         const updatedThrows = [...currentPlayerThrows]
+          
+         //Updating pointsLeft, totalThrows and throwValueSum
+         currentPlayer.pointsLeft += updatedThrows[updatedThrows.length -1]
+         currentPlayer.totalThrows -= updatedThrows[updatedThrows.length -1]
+         const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+         dispatch(setThrowValueSum(updatedThrowValueSum))
+          
+         //Removing last available throw from temporary variable
+         updatedThrows.pop()
+ 
+         //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
+         dispatch(setCurrentPlayerThrows(updatedThrows))
+         dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
+      }
+   }
+    
+   //Updating players state
+   dispatch(setPlayers(gamePlayers)) 
+}

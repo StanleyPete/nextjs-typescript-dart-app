@@ -25,6 +25,16 @@ export const addGameRegularReducer = () => {
    })
 
    store.replaceReducer(rootReducer)
+   // console.log('addGameRegularReducer function completed')
+}
+
+export const resetReducer = () => {
+   rootReducer = combineReducers({
+      gameSettings: gameSettingsReducer,
+   })
+
+   store.replaceReducer(rootReducer)
+   // console.log('resetReducer function completed')
 }
 
 

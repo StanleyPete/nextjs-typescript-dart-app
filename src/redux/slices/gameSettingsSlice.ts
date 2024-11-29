@@ -6,6 +6,7 @@ export interface GameSettingsState {
   gameMode: number | string;
   gameWin: 'best-of' | 'first-to'
   numberOfLegs: number
+  isFirstLoad: boolean,
   error: {
    isError: boolean
    errorMessage: string
@@ -18,6 +19,7 @@ const initialState: GameSettingsState = {
    gameMode: 501,
    gameWin: 'best-of',
    numberOfLegs: 3,
+   isFirstLoad: true,
    error: {
       isError: false,
       errorMessage: ''
@@ -48,11 +50,14 @@ const gameSettingsSlice = createSlice({
       setNumberOfLegs(state, action: PayloadAction<number>) {
          state.numberOfLegs = action.payload
       },
+      setIsFirstLoad: (state, action: PayloadAction<boolean>) => {
+         state.isFirstLoad = action.payload
+      },
       setError: (state, action: PayloadAction<ErrorState>) => {
          state.error = action.payload
       }
    },
 })
 
-export const { setGameType, setPlayerNames, setGameMode, setGameWin, setNumberOfLegs, setError } = gameSettingsSlice.actions
+export const { setGameType, setPlayerNames, setGameMode, setGameWin, setNumberOfLegs, setIsFirstLoad, setError } = gameSettingsSlice.actions
 export default gameSettingsSlice.reducer

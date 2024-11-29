@@ -1,22 +1,16 @@
 import React from 'react'
 import Image from 'next/image'
 import checkoutArray from '@/lib/checkout-table'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
 
-interface Player {
-    name: string
-    legs: number
-    pointsLeft: number
-    lastScore: number
-    average: number
-    isInputPreffered: boolean
-}
-  
-interface GamePlayersSectionRegularProps {
-    players: Player[]
-    currentPlayerIndex: number
-}
+const GamePlayersSectionRegular = () => {
+   
+   const { 
+      players, 
+      currentPlayerIndex, 
+   } = useSelector((state: RootState) => state.gameRegular)
 
-const GamePlayersSectionRegular: React.FC<GamePlayersSectionRegularProps> = ({ players, currentPlayerIndex }) => {
    return (
       <div className="game-players-section">
 

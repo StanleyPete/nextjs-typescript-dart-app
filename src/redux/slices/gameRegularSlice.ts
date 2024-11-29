@@ -31,8 +31,6 @@ export interface GameRegularState {
    currentPlayerThrowsCount: number
    currentPlayerThrows: number[]
    multiplier: number
-   isError: boolean
-   errorMessage: string
    isDoubleActive: boolean
    isGameEnd: boolean
    winner: Player | null
@@ -51,8 +49,6 @@ const initialState: GameRegularState = {
    currentPlayerThrowsCount: 0,
    currentPlayerThrows: [],
    multiplier: 1,
-   isError: false,
-   errorMessage: '',
    isDoubleActive: false,
    isGameEnd: false,
    winner: null,
@@ -107,12 +103,6 @@ const gameRegularSlice = createSlice({
       setMultiplier(state, action: PayloadAction<number>) {
          state.multiplier = action.payload
       },
-      setIsError(state, action: PayloadAction<boolean>) {
-         state.isError = action.payload
-      },
-      setErrorMessage(state, action: PayloadAction<string>) {
-         state.errorMessage = action.payload
-      },
       setIsDoubleActive(state, action: PayloadAction<boolean>) {
          state.isDoubleActive = action.payload
       },
@@ -143,8 +133,6 @@ export const {
    setCurrentPlayerThrowsCount,
    setCurrentPlayerThrows,
    setMultiplier,
-   setIsError,
-   setErrorMessage,
    setIsDoubleActive,
    setIsGameEnd,
    setWinner,

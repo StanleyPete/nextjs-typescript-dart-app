@@ -1,17 +1,28 @@
 import React from 'react'
 import Image from 'next/image'
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from '@/redux/store'
+import {
+   setIsSoundEnabled
+} from '@/redux/slices/gameRegularSlice'
 
-interface CurrentPlayerThrowParagraphProps {
-   isSoundEnabled: boolean
-   toggleSound: () => void
-   currentPlayerName: string
-}
 
-const CurrentPlayerThrowParagraph: React.FC<CurrentPlayerThrowParagraphProps> = ({
-   isSoundEnabled,
-   toggleSound,
-   currentPlayerName,
-}) => {
+const CurrentPlayerThrowParagraph = () => {
+
+   const dispatch = useDispatch()
+
+   const { 
+      players, 
+      currentPlayerIndex,
+      isSoundEnabled 
+   } = useSelector((state: RootState) => state.gameRegular)
+   const currentPlayerName = players[currentPlayerIndex].name
+
+   //SOUND TOGGLE HANDLER
+   const toggleSound = () => {
+      dispatch(setIsSoundEnabled(!isSoundEnabled))
+   }
+   
    return (
       //CURRENT PLAYER THROW PARAGRAPH
       <p className="current-player-throw">
