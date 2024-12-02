@@ -8,7 +8,6 @@ import { handleRestartGame } from '@/lib/handleRestartGame'
 
 
 const SettingsButtons = () => {
-
    const dispatch = useDispatch()
    const router = useRouter()
 

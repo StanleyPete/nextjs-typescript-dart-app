@@ -1,6 +1,8 @@
 import React from 'react'
 import { handleUndo } from '@/lib/handleUndo'
 import { playSound } from '@/lib/playSound'
+import { handleSwitchPlayer } from '@/lib/handleSwitchPlayer'
+import { handleSwitchStartPlayerIndex } from '@/lib/handleSwitchStartPlayerIndex'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { 
@@ -9,8 +11,7 @@ import {
    setHistory,
    HistoryEntry, 
    setCurrentThrow, 
-   setCurrentPlayerIndex, 
-   setStartPlayerIndex,  
+   setCurrentPlayerIndex,  
    setThrowValueSum, 
    setCurrentPlayerThrowsCount, 
    setCurrentPlayerThrows, 
@@ -39,22 +40,6 @@ const NumberButtons = () => {
       multiplier, 
       isSoundEnabled, 
    } = useSelector((state: RootState) => state.gameRegular)
-
-   //NEXT PLAYER HANDLER
-   const handleSwitchPlayer = () => {
-      /* Switch to another player: 
-       Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
-       after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
-    */
-      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
-      dispatch(setCurrentPlayerIndex(nextPlayerIndex))
-   }
-
-   //NEXT PLAYER WHO STARTS THE LEG HANDLER
-   const handleStartPlayerIndex = () => {
-      const nextStartPlayerIndex = (startPlayerIndex + 1) % players.length
-      dispatch(setStartPlayerIndex(nextStartPlayerIndex))
-   }
 
    //SUBMIT SCORE HANDLER FOR NUMBER BUTTONS
    const handleSubmitThrowButtons = (throwValue: number) => {
@@ -115,7 +100,7 @@ const NumberButtons = () => {
             dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
 
             //Switching to next player who start the leg
-            handleStartPlayerIndex()
+            handleSwitchStartPlayerIndex(startPlayerIndex, players, dispatch)
 
             //Setting current player index:
             dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
@@ -148,7 +133,7 @@ const NumberButtons = () => {
             playSound('no-score', isSoundEnabled)
 
             //Switching to the next player:
-            handleSwitchPlayer()
+            handleSwitchPlayer(currentPlayerIndex, players, dispatch)
 
             //Resetting states
             dispatch(setThrowValueSum(0))
@@ -207,7 +192,7 @@ const NumberButtons = () => {
             dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
 
             //Switching to next player who start the leg
-            handleStartPlayerIndex()
+            handleSwitchStartPlayerIndex(startPlayerIndex, players, dispatch)
 
             //Setting current player index:
             dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
@@ -233,7 +218,7 @@ const NumberButtons = () => {
             currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
             dispatch(setHistory([...history, newHistoryEntry]))
             playSound('no-score', isSoundEnabled)
-            handleSwitchPlayer()
+            handleSwitchPlayer(currentPlayerIndex, players, dispatch)
             dispatch(setThrowValueSum(0))
             dispatch(setCurrentPlayerThrowsCount(0))
             dispatch(setCurrentPlayerThrows([]))
@@ -261,7 +246,7 @@ const NumberButtons = () => {
          dispatch(setCurrentThrow(0))
        
          //Switching to the next player
-         handleSwitchPlayer()
+         handleSwitchPlayer(currentPlayerIndex, players, dispatch)
       }
 
       //Updating  player's state

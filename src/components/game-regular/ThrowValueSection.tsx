@@ -1,5 +1,8 @@
 import React from 'react'
 import Image from 'next/image'
+import { playSound } from '@/lib/playSound'
+import { handleSwitchPlayer } from '@/lib/handleSwitchPlayer'
+import { handleSwitchStartPlayerIndex } from '@/lib/handleSwitchStartPlayerIndex'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
@@ -9,8 +12,7 @@ import {
    setHistory,
    HistoryEntry, 
    setCurrentThrow, 
-   setCurrentPlayerIndex, 
-   setStartPlayerIndex,  
+   setCurrentPlayerIndex,   
    setThrowValueSum, 
    setCurrentPlayerThrowsCount, 
    setCurrentPlayerThrows, 
@@ -19,7 +21,6 @@ import {
    setIsGameEnd, 
    setWinner, 
 } from '@/redux/slices/gameRegularSlice'
-import { playSound } from '@/lib/playSound'
 
 const ThrowValueSection = () => {
    const dispatch = useDispatch()
@@ -48,22 +49,6 @@ const ThrowValueSection = () => {
    //SCORE INPUT HANDLER
    const handleThrowChange = (value: string) => {
       dispatch(setCurrentThrow(Number(value)))
-   }
-
-   //NEXT PLAYER HANDLER
-   const handleSwitchPlayer = () => {
-      /* Switch to another player: 
-       Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 
-       after increasing currentPlayerIndex by 1, 4%4 === 0 which is first player's index
-    */
-      const nextPlayerIndex = (currentPlayerIndex + 1) % players.length
-      dispatch(setCurrentPlayerIndex(nextPlayerIndex))
-   }
-
-   //NEXT PLAYER WHO STARTS THE LEG HANDLER
-   const handleStartPlayerIndex = () => {
-      const nextStartPlayerIndex = (startPlayerIndex + 1) % players.length
-      dispatch(setStartPlayerIndex(nextStartPlayerIndex))
    }
 
    //SUBMIT SCORE HANDLER FOR INPUT
@@ -137,7 +122,7 @@ const ThrowValueSection = () => {
          dispatch(setPlayers(gamePlayers)) 
 
          //Switching to next player who start the leg
-         handleStartPlayerIndex()
+         handleSwitchStartPlayerIndex(startPlayerIndex, players, dispatch)
 
          //Setting current player index:
          dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
@@ -176,7 +161,7 @@ const ThrowValueSection = () => {
          playSound('no-score', isSoundEnabled)
 
          //Switching to the next player
-         handleSwitchPlayer()
+         handleSwitchPlayer(currentPlayerIndex, players, dispatch)
 
          //Resetting input value
          dispatch(setCurrentThrow(0))
@@ -205,7 +190,7 @@ const ThrowValueSection = () => {
       }
     
       //Switching to the next player
-      handleSwitchPlayer()
+      handleSwitchPlayer(currentPlayerIndex, players, dispatch)
    
       //Resetting input value
       dispatch(setCurrentThrow(0))
@@ -256,7 +241,7 @@ const ThrowValueSection = () => {
       dispatch(setCurrentThrow(0))
 
       //Switching to the next player
-      handleSwitchPlayer()
+      handleSwitchPlayer(currentPlayerIndex, players, dispatch)
     
       //Updating player's state
       dispatch(setPlayers(updatedPlayers))
