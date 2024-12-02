@@ -1,15 +1,15 @@
 'use client'
 
 import React, { useEffect }from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import './styles/home.scss'
+import ErrorPopUp from '@/components/ErrorPopUp'
+import GameRegularPlayerNamesInput from '@/components/game-settings/GameRegularPlayerNamesInput'
+import GameTeamsPlayerNamesInput from '@/components/game-settings/GameTeamsPlayerNamesInput'
+import { useSelector, useDispatch } from 'react-redux'
 import { RootState, addGameRegularReducer, resetReducer } from '@/redux/store'
 import { initializePlayers } from '../redux/slices/gameRegularSlice'
-import ErrorPopUp from '@/components/ErrorPopUp'
-import PlayerNamesInput from '@/components/game-settings/PlayerNamesInput'
-import TeamsPlayerInput from '@/components/game-settings/TeamsPlayerNamesInput'
-import './styles/home.scss'
 import { 
    setGameType, 
    setPlayerNames, 
@@ -133,15 +133,15 @@ const Home = () => {
          {
             // Player names input section for regular game type
             gameType === 'regular' ? (
-               <PlayerNamesInput maxPlayers={4} />
+               <GameRegularPlayerNamesInput maxPlayers={4} />
             ) : 
                //Player names input section for teams game type
                gameType === 'teams' ? (
                   <div className='players-section main-form team-section'>
                      {/* Team 1 */}
-                     <TeamsPlayerInput teamIndex={0} playerIndexes={[0, 1]} />
+                     <GameTeamsPlayerNamesInput teamIndex={0} playerIndexes={[0, 1]} />
                      {/* Team 2 */}
-                     <TeamsPlayerInput teamIndex={1} playerIndexes={[2, 3]} />
+                     <GameTeamsPlayerNamesInput teamIndex={1} playerIndexes={[2, 3]} />
                   </div>
 
                ) : gameType === 'online' ? (

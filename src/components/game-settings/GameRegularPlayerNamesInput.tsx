@@ -8,7 +8,7 @@ interface PlayerNamesInputProps {
   maxPlayers: number
 }
 
-const PlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
+const GameRegularPlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
    const dispatch = useDispatch()
    const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
 
@@ -78,4 +78,4 @@ const PlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
    )
 }
 
-export default PlayerNamesInput
+export default GameRegularPlayerNamesInput

@@ -4,7 +4,7 @@ import checkoutArray from '@/lib/checkout-table'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 
-const GamePlayersSectionRegular = () => {
+const GameRegularPlayersSection = () => {
    
    const { 
       players, 
@@ -159,4 +159,4 @@ const GamePlayersSectionRegular = () => {
    )
 }
 
-export default GamePlayersSectionRegular
+export default GameRegularPlayersSection

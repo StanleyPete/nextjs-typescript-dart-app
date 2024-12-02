@@ -1,11 +1,11 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { handleRestartGame } from '@/lib/handleRestartGame'
+import { handleUndo } from '@/lib/handleUndo'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setIsGameEnd } from '@/redux/slices/gameRegularSlice'
-import { handleRestartGame } from '@/lib/handleRestartGame'
-import { handleUndo } from '@/lib/handleUndo'
 
 
 const GameEndPopUp = () => {
