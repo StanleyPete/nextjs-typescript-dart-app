@@ -5,14 +5,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import { RootState } from '@/redux/store'
 import { handleRestartGame } from '@/lib/handleRestartGame'
+import { initializePlayers } from '../redux/slices/gameRegularSlice'
 
 
 const SettingsButtons = () => {
    const dispatch = useDispatch()
    const router = useRouter()
 
-   const { players, isGameEnd } = useSelector((state: RootState) => state.gameRegular)
-   const { gameMode } = useSelector((state: RootState) => state.gameSettings)
+   const { isGameEnd } = useSelector((state: RootState) => state.gameRegular)
+   const { gameMode, playerNames } = useSelector((state: RootState) => state.gameSettings)
 
    return (
       <div className="settings-buttons">
@@ -26,7 +27,7 @@ const SettingsButtons = () => {
          <button 
             className="restart-game" 
             onClick={() => {
-               handleRestartGame(dispatch, players, gameMode, isGameEnd)
+               handleRestartGame(dispatch, playerNames, gameMode, isGameEnd, initializePlayers)
             }}>
         Restart game
          </button>

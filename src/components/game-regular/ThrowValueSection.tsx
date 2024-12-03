@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { playSound } from '@/lib/playSound'
 import { handleSwitchPlayer } from '@/lib/handleSwitchPlayer'
 import { handleSwitchStartPlayerIndex } from '@/lib/handleSwitchStartPlayerIndex'
+import { checkGameEndHandler } from '@/lib/checkGameEndHandler'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
@@ -17,9 +18,7 @@ import {
    setCurrentPlayerThrowsCount, 
    setCurrentPlayerThrows, 
    setMultiplier, 
-   setIsDoubleActive, 
-   setIsGameEnd, 
-   setWinner, 
+   setIsDoubleActive,  
 } from '@/redux/slices/gameRegularSlice'
 
 const ThrowValueSection = () => {
@@ -128,7 +127,7 @@ const ThrowValueSection = () => {
          dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
 
          //End game check
-         checkGameEndHandler(gamePlayers)
+         checkGameEndHandler(gamePlayers, gameWin, numberOfLegs, isSoundEnabled, dispatch)
 
          //Resetting isDoubleActive state
          dispatch(setIsDoubleActive(false))
@@ -247,40 +246,6 @@ const ThrowValueSection = () => {
       dispatch(setPlayers(updatedPlayers))
    }
 
-   //GAME END HANDLER
-   const checkGameEndHandler = (gamePlayers: Player[]) => {
-      //Scenario when game type is set to best-of
-      if (gameWin === 'best-of') {
-         //Sum of legs for all players
-         const totalLegs = gamePlayers.reduce((acc: number, player: Player) => acc + player.legs, 0)
-       
-         //Check if totalLegs for players equals to number-of-legs parameter
-         if (totalLegs === Number(numberOfLegs)) {
-            //Finding winner player
-            const maxLegs = Math.max(...gamePlayers.map((player: Player) => player.legs))
-            const winner = gamePlayers.find((player: Player) => player.legs === maxLegs) || null
-            dispatch(setIsGameEnd(true))
-            dispatch(setWinner(winner))
-            playSound('and-the-game', isSoundEnabled)
-         } else {
-            playSound('and-the-leg', isSoundEnabled)
-         }      
-      }
-      //Scenario when game type is set to first-to
-      else if (gameWin === 'first-to') {
-         //Finding winner player
-         const winner = gamePlayers.find((player: Player) => player.legs === Number(numberOfLegs)) || null
-         console.log(winner)
-         if(winner){
-            dispatch(setIsGameEnd(true))
-            dispatch(setWinner(winner))
-            playSound('and-the-game', isSoundEnabled)
-         } else {
-            playSound('and-the-leg', isSoundEnabled)
-         }
-      }
-   }
- 
 
    return (
       <> 

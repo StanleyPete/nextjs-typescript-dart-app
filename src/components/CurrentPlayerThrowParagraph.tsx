@@ -2,29 +2,57 @@ import React from 'react'
 import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import {
-   setIsSoundEnabled
-} from '@/redux/slices/gameRegularSlice'
+import { setIsSoundEnabled as setGameRegularSoundEnabled } from '@/redux/slices/gameRegularSlice'
+import { setIsSoundEnabled as setGameRegularTeamsSoundEnabled } from '@/redux/slices/gameRegularTeamsSlice'
 
+interface CurrentPlayerThrowParagraphProps {
+   context: 'gameRegular' | 'gameRegularTeams'
+}
 
-const CurrentPlayerThrowParagraph = () => {
-
+const CurrentPlayerThrowParagraph: React.FC<CurrentPlayerThrowParagraphProps>  = ({ context }) => {
    const dispatch = useDispatch()
 
    const { 
-      players, 
-      currentPlayerIndex,
+      playersOrTeams, 
+      index,
       isSoundEnabled 
-   } = useSelector((state: RootState) => state.gameRegular)
-   const currentPlayerName = players[currentPlayerIndex].name
+   } = useSelector((state: RootState) => {
+      if (context === 'gameRegular') {
+         return {
+            playersOrTeams: state.gameRegular.players,
+            index: state.gameRegular.currentPlayerIndex,
+            isSoundEnabled: state.gameRegular.isSoundEnabled, 
+         }
+      }
 
-   //SOUND TOGGLE HANDLER
+      if (context === 'gameRegularTeams') {
+         return {
+            playersOrTeams: state.gameRegularTeams.teams[state.gameRegularTeams.currentTeamIndex].members,
+            index: state.gameRegularTeams.currentPlayerIndexInTeam,
+            isSoundEnabled: state.gameRegularTeams.isSoundEnabled,
+      
+         }
+      }
+
+      return { 
+         playersOrTeams: [], 
+         index: 0, 
+         isSoundEnabled: true 
+      }
+   })
+   
+   const currentPlayerOrTeam = playersOrTeams[index].name
+
+   //Sound toggle handler
    const toggleSound = () => {
-      dispatch(setIsSoundEnabled(!isSoundEnabled))
+      if(context === 'gameRegular'){
+         dispatch(setGameRegularSoundEnabled(!isSoundEnabled))
+      } else {
+         dispatch(setGameRegularTeamsSoundEnabled(!isSoundEnabled))
+      }
    }
    
    return (
-      //CURRENT PLAYER THROW PARAGRAPH
       <p className="current-player-throw">
 
          {/* Button to toggle sound */}
@@ -40,7 +68,7 @@ const CurrentPlayerThrowParagraph = () => {
 
          {/* Current player's turn message */}
          <span className="current-player-throw-message">
-            {`${currentPlayerName.toUpperCase()}'S TURN TO THROW!`}
+            {`${currentPlayerOrTeam.toUpperCase()}'S TURN TO THROW!`}
          </span>
          
       </p>

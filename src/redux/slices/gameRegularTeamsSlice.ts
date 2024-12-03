@@ -2,6 +2,11 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface Player {
    name: string
+}
+
+export interface Team {
+   name: string
+   members: Player[]
    legs: number
    pointsLeft: number
    lastScore: number
@@ -12,7 +17,8 @@ export interface Player {
 }
 
 export interface HistoryEntry {
-   historyPlayerIndex: number
+   historyTeamIndex: number
+   historyPlayerIndexInTeam: number
    historyPointsLeft: number
    historyLastScore: number
    historyTotalThrows: number
@@ -20,12 +26,14 @@ export interface HistoryEntry {
    historyTotalAttempts: number
 }
 
-export interface GameRegularState {
-   players: Player[]
+export interface GameRegularTeamsState {
+   teams: Team[]
    history: HistoryEntry[]
    currentThrow: number
    currentPlayerIndex: number
-   startPlayerIndex: number
+   currentTeamIndex: number
+   currentPlayerIndexInTeam: number
+   startTeamIndex: number
    showNumberButtons: boolean
    throwValueSum: number
    currentPlayerThrowsCount: number
@@ -33,17 +41,19 @@ export interface GameRegularState {
    multiplier: number
    isDoubleActive: boolean
    isGameEnd: boolean
-   winner: Player | null
+   winner: Team | null
    isSoundEnabled: boolean
    initialSoundPlayed: boolean
 }
 
-const initialState: GameRegularState = {
-   players: [],
+const initialState: GameRegularTeamsState = {
+   teams: [],
    history: [],
    currentThrow: 0,
    currentPlayerIndex: 0,
-   startPlayerIndex: 0,
+   currentTeamIndex: 0,
+   currentPlayerIndexInTeam: 0,
+   startTeamIndex: 0,
    showNumberButtons: false,
    throwValueSum: 0,
    currentPlayerThrowsCount: 0,
@@ -56,27 +66,44 @@ const initialState: GameRegularState = {
    initialSoundPlayed: false,
 }
 
-export type InitializePlayersType = (payload: { playerNames: string[]; gameMode: number | string }) => PayloadAction<{ playerNames: string[]; gameMode: number | string }>
-
-const gameRegularSlice = createSlice({
-   name: 'gameRegular',
+const gameRegularTeamsSlice = createSlice({
+   name: 'gameRegularTeams',
    initialState,
    reducers: {
-      initializePlayers(state, action: PayloadAction<{ playerNames: string[]; gameMode: number | string}>) {
+      initializeTeams(state, action: PayloadAction<{ playerNames: string[]; gameMode: number | string}>) {
          const gameModeNumber = typeof action.payload.gameMode === 'string' ? Number(action.payload.gameMode) : action.payload.gameMode
-         state.players = action.payload.playerNames.map((name) => ({
+
+         const players: Player[] = action.payload.playerNames.map((name) => ({
             name,
-            pointsLeft: gameModeNumber,
-            legs: 0,
-            lastScore: 0,
-            totalThrows: 0,
-            totalAttempts: 0,
-            average: 0,
-            isInputPreffered: true,
          }))
+
+         state.teams = [
+            {
+               name: 'Team 1',
+               members: players.slice(0, 2),
+               legs: 0,
+               pointsLeft: gameModeNumber,
+               lastScore: 0,
+               totalThrows: 0,
+               totalAttempts: 0,
+               average: 0,
+               isInputPreffered: true,
+            },
+            {
+               name: 'Team 2',
+               members: players.slice(2, 4), // Kolejne 2 osoby to drużyna 2
+               legs: 0,
+               pointsLeft: gameModeNumber,
+               lastScore: 0,
+               totalThrows: 0,
+               totalAttempts: 0,
+               average: 0,
+               isInputPreffered: true,
+            },
+         ]
       },
-      setPlayers(state, action: PayloadAction<Player[]>) {
-         state.players = action.payload
+      setTeams(state, action: PayloadAction<Team[]>) {
+         state.teams = action.payload
       },
       setHistory(state, action: PayloadAction<HistoryEntry[]>) {
          state.history = action.payload
@@ -87,8 +114,14 @@ const gameRegularSlice = createSlice({
       setCurrentPlayerIndex(state, action: PayloadAction<number>) {
          state.currentPlayerIndex = action.payload
       },
-      setStartPlayerIndex(state, action: PayloadAction<number>) {
-         state.startPlayerIndex = action.payload
+      setCurrentTeamIndex(state, action: PayloadAction<number>) {
+         state.currentTeamIndex = action.payload
+      },
+      setCurrentPlayerIndexInTeam(state, action: PayloadAction<number>) {
+         state.currentPlayerIndexInTeam = action.payload
+      },
+      setStartTeamIndex(state, action: PayloadAction<number>) {
+         state.startTeamIndex = action.payload
       },
       setShowNumberButtons(state, action: PayloadAction<boolean>) {
          state.showNumberButtons = action.payload
@@ -111,7 +144,7 @@ const gameRegularSlice = createSlice({
       setIsGameEnd(state, action: PayloadAction<boolean>) {
          state.isGameEnd = action.payload
       },
-      setWinner(state, action: PayloadAction<Player | null>) {
+      setWinner(state, action: PayloadAction<Team | null>) {
          state.winner = action.payload
       },
       setIsSoundEnabled(state, action: PayloadAction<boolean>) {
@@ -124,12 +157,14 @@ const gameRegularSlice = createSlice({
 })
 
 export const {
-   initializePlayers,
-   setPlayers,
+   initializeTeams,
+   setTeams,
    setHistory,
    setCurrentThrow,
    setCurrentPlayerIndex,
-   setStartPlayerIndex,
+   setCurrentTeamIndex,
+   setCurrentPlayerIndexInTeam,
+   setStartTeamIndex,
    setShowNumberButtons,
    setThrowValueSum,
    setCurrentPlayerThrowsCount,
@@ -140,6 +175,6 @@ export const {
    setWinner,
    setIsSoundEnabled,
    setInitialSoundPlayed,
-} = gameRegularSlice.actions
+} = gameRegularTeamsSlice.actions
 
-export default gameRegularSlice.reducer
+export default gameRegularTeamsSlice.reducer

@@ -1,120 +1,67 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import checkoutArray from '@/lib/checkout-table'
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from '@/redux/store'
+import ErrorPopUp from '@/components/ErrorPopUp'
+// import GameEndPopUp from '@/components/GameEndPopUp'
+import { setError } from '@/redux/slices/gameSettingsSlice'
+import { initializeTeams } from '@/redux/slices/gameRegularTeamsSlice'
+import { 
+   Team,
+   setTeams,
+   setHistory,
+   HistoryEntry,
+   setCurrentThrow,
+   setCurrentTeamIndex,
+   setCurrentPlayerIndexInTeam,
+   setStartTeamIndex,
+   setShowNumberButtons,
+   setThrowValueSum,
+   setCurrentPlayerThrowsCount,
+   setCurrentPlayerThrows,
+   setMultiplier,
+   setIsDoubleActive,
+   setIsGameEnd,
+   setWinner,
+   setInitialSoundPlayed,
+} from '@/redux/slices/gameRegularTeamsSlice'
+import CurrentPlayerThrowParagraph from '@/components/CurrentPlayerThrowParagraph'
 
-interface Player {
-   name: string
-   lastScore: number
-   totalThrows: number
-   totalAttempts: number
-   average: number   
-}
 
-interface Team {
-   name: string
-   members: Player[]
-   pointsLeft: number
-   lastScore: number
-   legs: number
-   totalThrows: number
-   totalAttempts: number
-   average: number
-   isInputPreffered: boolean
-}
-
-interface HistoryEntry {
-   historyTeamIndex: number
-   historyPlayerIndexInTeam: number
-   historyPointsLeft: number
-   historyLastScore: number
-   historyTotalThrows: number
-   historyLastAverage: number
-   historyTotalAttempts: number
-}
-
-const Game = () => {
+const GameTeams = () => {
+   const dispatch = useDispatch()
    const router = useRouter()
-   const searchParams = useSearchParams()
+   const context = 'gameRegularTeams'
    
-   //Declaring gameMode, gameWinType, numberOfLegs and players based on URL
-   const gameMode = searchParams.get('mode')
-   const gameWinType = searchParams.get('game-win-type')
-   const numberOfLegs = searchParams.get('number-of-legs')
-   const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
+   const {
+      playerNames,  
+      gameMode,
+      numberOfLegs,
+      gameWin 
+   } = useSelector((state: RootState) => state.gameSettings)
 
-   //Players state:
-   const [players, setPlayers] = useState<Player[]>(urlPlayers.map((playerName: string) => ({
-      name: playerName,
-      lastScore: 0,
-      totalThrows: 0,
-      totalAttempts: 0, 
-      average: 0,
-   })))
+   const { 
+      teams, 
+      history,
+      currentThrow,
+      currentTeamIndex,
+      currentPlayerIndexInTeam,
+      startTeamIndex,
+      showNumberButtons,
+      throwValueSum,
+      currentPlayerThrowsCount,
+      currentPlayerThrows,
+      multiplier,
+      isDoubleActive,
+      isGameEnd,
+      isSoundEnabled, 
+      initialSoundPlayed 
+   } = useSelector((state: RootState) => state.gameRegularTeams)
+    
 
-   // Teams state:
-   const [teams, setTeams] = useState<Team[]>([
-      { 
-         name: 'Team 1', 
-         members: players.slice(0, 2), 
-         legs: 0, 
-         pointsLeft: Number(gameMode),
-         lastScore: 0,
-         totalThrows: 0,
-         totalAttempts: 0,
-         average: 0,
-         isInputPreffered: true
-      },
-      { 
-         name: 'Team 2', 
-         members: players.slice(2, 4), 
-         legs: 0, 
-         pointsLeft: Number(gameMode),
-         lastScore: 0,
-         totalThrows: 0,
-         totalAttempts: 0,
-         average: 0,
-         isInputPreffered: true
-      }
-   ])
-
-   //State to track history of moves
-   const [history, setHistory] = useState<HistoryEntry[]>([])
-   //CurrentThrow state declared in order to temporarily keep score filled in the score input
-   const [currentThrow, setCurrentThrow] = useState<number>(0)
-   //CurrentPlayerIndex state declared in order to keep players index who currently plays
-   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0)
-   //CurrentTeamIndex state declared in order to keep team's index which is currently playing
-   const [currentTeamIndex, setCurrentTeamIndex] = useState<number>(0)
-   //CurrentPlayerIndexInTeam state declared in order to keep player's index who is currently playing within team
-   const [currentPlayerIndexInTeam, setCurrentPlayerIndexInTeam] = useState<number>(0)
-   //State to track which team starts the leg
-   const [startLegTeamIndex, setStartLegTeamIndex] = useState<number>(0)
-   //State to toggle between input and number buttons
-   const [showNumberButtons, setShowNumberButtons] = useState<boolean>(false)
-   //State to track total throws sum for current player when using buttons
-   const [throwValueSum, setThrowValueSum] = useState<number>(0)
-   //State to track throws count for each player when using buttons
-   const [currentPlayerThrowsCount, setCurrentPlayerThrowsCount] = useState<number>(0)
-   //State to track current team throw value and display it in current throw section
-   const [currentPlayerThrows, setCurrentPlayerThrows] = useState<number[]>([])
-   //State to set multiplier for buttons (single, double, triple)
-   const [multiplier, setMultiplier] = useState<number>(1)
-   //State to track if error occured
-   const [isError, setIsError] = useState<boolean>(false)
-   //State to set error message
-   const [errorMessage, setErrorMessage] = useState<string>('')
-   //State to turn on double points for input handler
-   const [isDoubleActive, setIsDoubleActive] = useState<boolean>(false)
-   //State to check if game ends
-   const [isGameEnd, setIsGameEnd] = useState<boolean>(false)
-   //State to set winner of the game
-   const [winner, setWinner] = useState<Player | null>(null)
-   //State to track if the sound is on/off
-   const [isSoundEnabled, setIsSoundEnabled] = useState<boolean>(true)
-   //State to track if initial sound message ('game is on') has been played
-   const [initialSoundPlayed, setInitialSoundPlayed] = useState<boolean>(false)
    
    //SCORE INPUT HANDLER
    const handleThrowChange = (value: string) => {
@@ -124,21 +71,26 @@ const Game = () => {
    //NEXT TEAM HANDLER
    const handleSwitchTeam = () => {
       /* Switch to another team: 
-         Example: If there are 2 teams and currentTeamIndex === 1 (last player's turn), 
-         after increasing currentPlayerIndex by 1, 2%2 === 0 which is first teams's index
+            Example: If there are 2 teams and currentTeamIndex === 1 (last player's turn), 
+            after increasing currentPlayerIndex by 1, 2%2 === 0 which is first teams's index
       */
       const nextTeamIndex = (currentTeamIndex + 1) % teams.length
-      setCurrentTeamIndex(nextTeamIndex)
+      dispatch(setCurrentTeamIndex(nextTeamIndex))
       
-      //Switching to next player within team:
-      if (nextTeamIndex === 0) { 
-         setCurrentPlayerIndexInTeam((prevIndex) => (prevIndex + 1) % teams[0].members.length)
+      /* Switch to another player within team: 
+            There are only two teams and two players in each team. When player 1 (team 1) throws, the function switches currentTeamIndex. When player 2 (team 2) throws nextTeamIndex === 0, what triggers updating curretPlayerIndexInTeam state
+      */
+      const updatedPlayerIndexInTeam = (currentPlayerIndexInTeam + 1) % teams[0].members.length
+      if(nextTeamIndex === 0) {
+         dispatch(setCurrentPlayerIndexInTeam(updatedPlayerIndexInTeam))
       }
+
    }
 
    //NEXT TEAM WHICH STARTS THE LEG HANDLER
    const handleSwitchTeamWhoStartsLeg = () => {
-      setStartLegTeamIndex(prevIndex => (prevIndex + 1) % teams.length)
+      const nextStartTeamIndex = (startTeamIndex + 1) % teams.length
+      dispatch(setStartTeamIndex(nextStartTeamIndex))
    }
 
    //SOUND EFFECT HANDLER
@@ -149,29 +101,24 @@ const Game = () => {
       }
    }
 
-   //SOUND TOGGLE HANDLER
-   const toggleSound = () => {
-      setIsSoundEnabled(prev => !prev)
-   }
+
 
    //SUBMIT SCORE HANDLER FOR INPUT
    const handleSubmitThrowInput = (inputMultiplier: number) => {
       const invalidScores = [163, 166, 169, 172, 173, 175, 176, 178, 179]
-      const gameTeams = [...teams]
+      const gameTeams = JSON.parse(JSON.stringify(teams))
       const currentTeam = gameTeams[currentTeamIndex]
       
       //Error hanlder (currentThrow over 180)
       if(currentThrow > 180){
-         setErrorMessage('Score higher than 180 is not possible')
-         setIsError(true)
-         setCurrentThrow(0)
+         dispatch(setError({ isError: true, errorMessage: 'Score higher than 180 is not possible' }))
+         dispatch(setCurrentThrow(0))
          return
       }
 
       if(invalidScores.includes(currentThrow)){
-         setErrorMessage(`${currentThrow} is not possible`)
-         setIsError(true)
-         setCurrentThrow(0)
+         dispatch(setError({ isError: true, errorMessage: `${currentThrow} is not possible` }))
+         dispatch(setCurrentThrow(0))
          return
       }
 
@@ -192,8 +139,8 @@ const Game = () => {
       //End leg scenario
       if(isDoubleActive && currentTeam.pointsLeft === 0) {
          // Additional history entries created if leg ends in order to properly use Undo handler
-         const newHistoryEntries = teams
-            .map((team, index) => {
+         const newHistoryEntries = gameTeams
+            .map((team: Team, index: number) => {
                if (index === currentTeamIndex) {
                   return null //NewHistoryEntry not created for currentTeamIndex!
                }
@@ -207,16 +154,13 @@ const Game = () => {
                   historyTotalAttempts: team.totalAttempts 
                }
             })
-            .filter(entry => entry !== null) //Skipping currentTeamIndex (null)
+            .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentTeamIndex (null)
 
-         //Updating history with additional history entries
-         setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
-         
          //Updating legs for current team
          currentTeam.legs += 1
          
          //Updating game stats for new leg (for each team)
-         teams.forEach(team => {
+         gameTeams.forEach((team: Team) => {
             team.pointsLeft = Number(gameMode)
             team.lastScore = 0
             team.totalThrows = 0
@@ -226,25 +170,25 @@ const Game = () => {
          })
 
          //Updating history state with currentTeamIndex
-         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+         dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
 
          //Upadating team's state
-         setTeams(gameTeams) 
+         dispatch(setTeams(gameTeams)) 
 
          //Switching to the next team which starts the leg
          handleSwitchTeamWhoStartsLeg()
 
          //Setting current player index:
-         setCurrentTeamIndex((startLegTeamIndex + 1) % teams.length)
+         dispatch(setCurrentTeamIndex((startTeamIndex + 1) % teams.length))
 
          //End game check
-         checkGameEndHandler()
+         checkGameEndHandler(gameTeams)
 
          //Resetting isDoubleActive state
-         setIsDoubleActive(false)
+         dispatch(setIsDoubleActive(false))
  
          //Resetting input value
-         setCurrentThrow(0)
+         dispatch(setCurrentThrow(0))
          
          return
       }
@@ -262,10 +206,10 @@ const Game = () => {
          currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
 
          //Updating history state
-         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+         dispatch(setHistory([...history, newHistoryEntry]))
 
          //Upadating team's state
-         setTeams(gameTeams)
+         dispatch(setTeams(gameTeams))
 
          //Sound effect
          playSound('no-score')
@@ -274,7 +218,7 @@ const Game = () => {
          handleSwitchTeam()
 
          //Resetting input value
-         setCurrentThrow(0)
+         dispatch(setCurrentThrow(0))
 
          return
       }
@@ -287,10 +231,10 @@ const Game = () => {
       currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
       
       //Updating history state
-      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+      dispatch(setHistory([...history, newHistoryEntry]))
       
       //Upadating teams's state
-      setTeams(gameTeams)
+      dispatch(setTeams(gameTeams))
 
       //Sound effect
       if (currentThrow === 0) {
@@ -303,12 +247,12 @@ const Game = () => {
       handleSwitchTeam()
      
       //Resetting input value
-      setCurrentThrow(0)
+      dispatch(setCurrentThrow(0))
    }
 
    //SUBMIT SCORE HANDLER FOR BUTTONS
    const handleSubmitThrowButtons = (throwValue: number) => {
-      const gameTeams = [...teams]
+      const gameTeams = JSON.parse(JSON.stringify(teams))
       const currentTeam = gameTeams[currentTeamIndex]
       const multiplierThrowValue = throwValue * multiplier
       
@@ -333,8 +277,8 @@ const Game = () => {
 
          //End leg scenario when player has NOT thrown 3 times yet, multiplier === 2 and pointsLeft === 0
          if(multiplier === 2 && currentTeam.pointsLeft === 0){
-            const newHistoryEntries = teams
-               .map((team, index) => {
+            const newHistoryEntries = gameTeams
+               .map((team: Team, index: number) => {
                   if (index === currentTeamIndex) {
                      return null //NewHistoryEntry not created for currentTeamIndex
                   }
@@ -348,16 +292,13 @@ const Game = () => {
                      historyTotalAttempts: team.totalAttempts 
                   }
                })
-               .filter(entry => entry !== null) //Skipping currentTeamIndex (null)
+               .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentTeamIndex (null)
 
-            //Updating history with additional history entries
-            setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
-            
             //Updating legs
             currentTeam.legs += 1 
 
             //Updating game stats for new leg (for each team)
-            teams.forEach(team => {
+            gameTeams.forEach((team: Team) => {
                team.pointsLeft = Number(gameMode)
                team.lastScore = 0
                team.totalThrows = 0
@@ -367,26 +308,26 @@ const Game = () => {
             })
             
             //Updating history state
-            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
 
             //Switching to the next team which starts the leg
             handleSwitchTeamWhoStartsLeg()
 
             //Setting current team index:
-            setCurrentTeamIndex((startLegTeamIndex + 1) % teams.length)
+            dispatch(setCurrentTeamIndex((startTeamIndex + 1) % teams.length))
 
             //Updating team's state
-            setTeams(gameTeams) 
+            dispatch(setTeams(gameTeams)) 
 
             //Checking game end
-            checkGameEndHandler()
+            checkGameEndHandler(gameTeams)
 
             //Resetting states
-            setThrowValueSum(0)
-            setCurrentPlayerThrowsCount(0)
-            setCurrentPlayerThrows([])
-            setCurrentThrow(0)
-            setCurrentThrow(0)
+            dispatch(setThrowValueSum(0))
+            dispatch(setCurrentPlayerThrowsCount(0))
+            dispatch(setCurrentPlayerThrows([]))
+            dispatch(setCurrentThrow(0))
+            dispatch(setCurrentThrow(0))
 
             return
          }
@@ -400,7 +341,7 @@ const Game = () => {
             currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
 
             //Updating history state
-            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            dispatch(setHistory([...history, newHistoryEntry]))
 
             //Sound effect:
             playSound('no-score')
@@ -409,24 +350,24 @@ const Game = () => {
             handleSwitchTeam()
 
             //Resetting states
-            setCurrentThrow(0)
-            setThrowValueSum(0)
-            setCurrentPlayerThrowsCount(0)
-            setCurrentPlayerThrows([])
-            setCurrentThrow(0)
+            dispatch(setCurrentThrow(0))
+            dispatch(setThrowValueSum(0))
+            dispatch(setCurrentPlayerThrowsCount(0))
+            dispatch(setCurrentPlayerThrows([]))
+            dispatch(setCurrentThrow(0))
 
             //Updating team's state
-            setTeams(gameTeams)
+            dispatch(setTeams(gameTeams))
 
             return
          }
 
          //Updating totalThrows, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount (currentThrow in case player would like to switch input method)
          currentTeam.totalThrows += multiplierThrowValue
-         setThrowValueSum(prevSum => prevSum + multiplierThrowValue)
-         setCurrentPlayerThrows(prevThrows => [...prevThrows, multiplierThrowValue].slice(-3))
-         setCurrentPlayerThrowsCount(updatedThrowCount)
-         setCurrentThrow(0)
+         dispatch(setThrowValueSum(throwValueSum + multiplierThrowValue))
+         dispatch(setCurrentPlayerThrows([...currentPlayerThrows, multiplierThrowValue].slice(-3)))
+         dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
+         dispatch(setCurrentThrow(0))
       } 
       //Scenario when players has thrown already 3 times
       else {
@@ -435,8 +376,8 @@ const Game = () => {
          
          //End leg scenario when player has thrown already 3 times, multiplier === 2 and pointsLeft === 0
          if(multiplier === 2 && currentTeam.pointsLeft === 0){
-            const newHistoryEntries = teams
-               .map((team, index) => {
+            const newHistoryEntries = gameTeams
+               .map((team: Team, index: number) => {
                   if (index === currentTeamIndex) {
                      return null //NewHistoryEntry not created for currentTeamIndex
                   }
@@ -450,16 +391,13 @@ const Game = () => {
                      historyTotalAttempts: team.totalAttempts 
                   }
                })
-               .filter(entry => entry !== null) //Skipping currentTeamIndex (null)
-
-            //Updating history with additional history entries
-            setHistory(prevHistory => [...prevHistory, ...newHistoryEntries])
+               .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentTeamIndex (null)
 
             //Updating legs:
             currentTeam.legs += 1 
 
             //Updating game stats for new leg (for each player)
-            teams.forEach(team => {
+            gameTeams.forEach((team: Team) => {
                team.pointsLeft = Number(gameMode)
                team.lastScore = 0
                team.totalThrows = 0
@@ -469,26 +407,25 @@ const Game = () => {
             })
             
             //Updating history state
-            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
 
             //Switching to next team which starts the leg
             handleSwitchTeamWhoStartsLeg()
 
             //Setting current team index:
-            setCurrentTeamIndex((startLegTeamIndex + 1) % teams.length)
+            dispatch(setCurrentTeamIndex((startTeamIndex + 1) % teams.length))
 
             //Checking game end
-            checkGameEndHandler()
+            checkGameEndHandler(gameTeams)
 
             //Resetting states
-            setThrowValueSum(0)
-            setCurrentPlayerThrowsCount(0)
-            setCurrentPlayerThrows([])
-            setCurrentThrow(0)
-            setCurrentThrow(0)
+            dispatch(setThrowValueSum(0))
+            dispatch(setCurrentPlayerThrowsCount(0))
+            dispatch(setCurrentPlayerThrows([]))
+            dispatch(setCurrentThrow(0))
 
             //Updating team's state
-            setTeams(gameTeams) 
+            dispatch(setTeams(gameTeams)) 
 
             return
          }
@@ -500,14 +437,14 @@ const Game = () => {
             currentTeam.totalThrows -= throwValueSum
             currentTeam.totalAttempts += 1
             currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
-            setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+            dispatch(setHistory([...history, newHistoryEntry]))
             playSound('no-score')
             handleSwitchTeam()
-            setThrowValueSum(0)
-            setCurrentPlayerThrowsCount(0)
-            setCurrentPlayerThrows([])
-            setCurrentThrow(0)
-            setTeams(gameTeams) 
+            dispatch(setThrowValueSum(0))
+            dispatch(setCurrentPlayerThrowsCount(0))
+            dispatch(setCurrentPlayerThrows([]))
+            dispatch(setCurrentThrow(0))
+            dispatch(setTeams(gameTeams)) 
             return
          }
 
@@ -518,16 +455,16 @@ const Game = () => {
          currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
          
          //Updating history state
-         setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+         dispatch(setHistory([...history, newHistoryEntry]))
 
          //Sound effect:
          playSound((throwValueSum + multiplierThrowValue).toString())
 
          //Resetting states:
-         setThrowValueSum(0)
-         setCurrentPlayerThrowsCount(0)
-         setCurrentPlayerThrows([])
-         setCurrentThrow(0)
+         dispatch(setThrowValueSum(0))
+         dispatch(setCurrentPlayerThrowsCount(0))
+         dispatch(setCurrentPlayerThrows([]))
+         dispatch(setCurrentThrow(0))
          
          //Switching to the next player
          handleSwitchTeam()
@@ -539,7 +476,7 @@ const Game = () => {
 
    //SUBMIT SCORE HANDLER FOR BUTTONS (for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value)
    const handleSubmitScoreButtons = () => {
-      const updatedTeams = [...teams]
+      const updatedTeams = JSON.parse(JSON.stringify(teams))
       const currentTeam = updatedTeams[currentTeamIndex]
 
       const throwSum = currentPlayerThrows.reduce((acc, throwValue) => acc + throwValue, 0)
@@ -563,7 +500,7 @@ const Game = () => {
       currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
 
       //Updating history state
-      setHistory(prevHistory => [...prevHistory, newHistoryEntry])
+      dispatch(setHistory([...history, newHistoryEntry]))
 
       //Sound-effect
       if(throwSum === 0){
@@ -573,22 +510,22 @@ const Game = () => {
       }
       
       //Resetting states
-      setThrowValueSum(0)
-      setCurrentPlayerThrows([]) 
-      setCurrentPlayerThrowsCount(0)
-      setCurrentThrow(0)
+      dispatch(setThrowValueSum(0))
+      dispatch(setCurrentPlayerThrows([]))
+      dispatch(setCurrentPlayerThrowsCount(0))
+      dispatch(setCurrentThrow(0))
 
       //Switching to the next player
       handleSwitchTeam()
       
       //Updating player's state
-      setTeams(updatedTeams)
+      dispatch(setTeams(updatedTeams))
    }
    
    //UNDO HANDLER
    const handleUndo = () => {
       const lastEntry = history[history.length - 1]
-      const gameTeams = [...teams]
+      const gameTeams = JSON.parse(JSON.stringify(teams))
 
       //Scenario when players have just finished previous leg
       if(history.length !== 0 && lastEntry.historyTotalThrows === Number(gameMode)){
@@ -597,7 +534,7 @@ const Game = () => {
          currentTeam.legs -= 1
 
          //Updating game stats for each team
-         gameTeams.forEach((team, index) => {
+         gameTeams.forEach((team: Team, index: number) => {
             const teamHistory = [...history].reverse().find(entry => entry.historyTeamIndex === index)
             if (teamHistory) {
                team.pointsLeft = teamHistory.historyPointsLeft
@@ -609,13 +546,13 @@ const Game = () => {
          })
 
          //Setting currentTeamIndex to the last player who played in the history
-         setCurrentTeamIndex(lastEntry.historyTeamIndex) 
+         dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex)) 
 
          //Removing last history entries (inlcuding additional entries created when team finished leg)
-         setHistory(prevHistory => prevHistory.slice(0, prevHistory.length - gameTeams.length))
+         dispatch(setHistory(history.slice(0, history.length - gameTeams.length)))
 
          //Updating players state
-         setTeams(gameTeams) 
+         dispatch(setTeams(gameTeams)) 
 
          return
       }
@@ -634,11 +571,11 @@ const Game = () => {
          currentTeam.totalAttempts = lastEntry.historyTotalAttempts
          
          //Setting currentTeamIndex and currentPlayerIndexInTeam to the last team/player who played in the history
-         setCurrentTeamIndex(lastEntry.historyTeamIndex)
-         setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam) 
+         dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex))
+         dispatch(setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam)) 
          
          //Removing last history entry
-         setHistory(prevHistory => prevHistory.slice(0, -1))
+         dispatch(setHistory(history.slice(0, -1)))
       }
       
       //Undo handler for buttons
@@ -654,14 +591,16 @@ const Game = () => {
             //Updating pointsLeft, totalThrows and throwValueSum
             currentTeam.pointsLeft += updatedThrows[updatedThrows.length -1]
             currentTeam.totalThrows -= updatedThrows[updatedThrows.length -1]
-            setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
+            const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+            dispatch(setThrowValueSum(updatedThrowValueSum))
+            
             
             //Removing last available throw from temporary variable
             updatedThrows.pop()
             
             //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
-            setCurrentPlayerThrows(updatedThrows)
-            setCurrentPlayerThrowsCount(updatedThrowCount)
+            dispatch(setCurrentPlayerThrows(updatedThrows))
+            dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
          } 
          //SCENARIO 2: Empty history
          else if (history.length === 0){
@@ -679,11 +618,11 @@ const Game = () => {
             currentTeam.totalAttempts = lastEntry.historyTotalAttempts
             
             //Removing last history entry
-            setHistory(prevHistory => prevHistory.slice(0, -1))
+            dispatch(setHistory(history.slice(0, -1)))
             
             //Setting currentTeamIndex and currentPlayerIndexInTeam to the last team/player who played in the history
-            setCurrentTeamIndex(lastEntry.historyTeamIndex) 
-            setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam)
+            dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex)) 
+            dispatch(setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam))
          }
          //SCENARIO 4: History availble and currentPlayer has already thrown at least once 
          else {
@@ -696,47 +635,48 @@ const Game = () => {
             //Updating pointsLeft, totalThrows and throwValueSum
             currentTeam.pointsLeft += updatedThrows[updatedThrows.length -1]
             currentTeam.totalThrows -= updatedThrows[updatedThrows.length -1]
-            setThrowValueSum(prevSum => prevSum - currentPlayerThrows[currentPlayerThrows.length -1])
+            const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+            dispatch(setThrowValueSum(updatedThrowValueSum))
             
             //Removing last available throw from temporary variable
             updatedThrows.pop()
    
             //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
-            setCurrentPlayerThrows(updatedThrows)
-            setCurrentPlayerThrowsCount(updatedThrowCount)
+            dispatch(setCurrentPlayerThrows(updatedThrows))
+            dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
          }
       }
       
       //Updating players state
-      setTeams(gameTeams) 
+      dispatch(setTeams(gameTeams)) 
    }
 
    //GAME END HANDLER
-   const checkGameEndHandler = () => {
+   const checkGameEndHandler = (gameTeams: Team[]) => {
       //Scenario when game type is set to best-of
-      if (gameWinType === 'best-of') {
+      if (gameWin === 'best-of') {
          //Sum of legs for all teams
-         const totalLegs = teams.reduce((acc, team) => acc + team.legs, 0)
+         const totalLegs = gameTeams.reduce((acc: number, team: Team) => acc + team.legs, 0)
          
          //Check if totalLegs for teams equals to number-of-legs parameter
          if (totalLegs === Number(numberOfLegs)) {
             //Finding winner player
-            const maxLegs = Math.max(...teams.map(team => team.legs))
-            const winner = teams.find(team => team.legs === maxLegs) || null
-            setIsGameEnd(true)
-            setWinner(winner)
+            const maxLegs = Math.max(...gameTeams.map((team: Team) => team.legs))
+            const winner = teams.find((team: Team) => team.legs === maxLegs) || null
+            dispatch(setIsGameEnd(true))
+            dispatch(setWinner(winner))
             playSound('and-the-game')
          } else {
             playSound('and-the-leg')
          }       
       }
       //Scenario when game type is set to first-to
-      else if (gameWinType === 'first-to') {
+      else if (gameWin === 'first-to') {
          //Finding winner team
-         const winner = teams.find(team=> team.legs === Number(numberOfLegs)) || null
+         const winner = gameTeams.find((team: Team) => team.legs === Number(numberOfLegs)) || null
          if(winner){
-            setIsGameEnd(true)
-            setWinner(winner)
+            dispatch(setIsGameEnd(true))
+            dispatch(setWinner(winner))
             playSound('and-the-game')
          } else {
             playSound('and-the-leg')
@@ -746,69 +686,42 @@ const Game = () => {
    
    //RESTART GAME HANDLER
    const handleRestartGame = () => {
-      setTeams([
-         { 
-            name: 'Team 1', 
-            members: players.slice(0, 2), 
-            legs: 0, 
-            pointsLeft: Number(gameMode),
-            lastScore: 0,
-            totalThrows: 0,
-            totalAttempts: 0,
-            average: 0,
-            isInputPreffered: true
-         },
-         { 
-            name: 'Team 2', 
-            members: players.slice(2, 4), 
-            legs: 0, 
-            pointsLeft: Number(gameMode),
-            lastScore: 0,
-            totalThrows: 0,
-            totalAttempts: 0,
-            average: 0,
-            isInputPreffered: true
-         }
-      ])
-      setCurrentTeamIndex(0) 
-      setCurrentPlayerIndexInTeam(0)
-      setCurrentThrow(0) 
-      setHistory([]) 
-      setThrowValueSum(0) 
-      setCurrentPlayerThrowsCount(0) 
+      dispatch(initializeTeams({ playerNames, gameMode }))
+      dispatch(setCurrentTeamIndex(0)) 
+      dispatch(setCurrentPlayerIndexInTeam(0))
+      dispatch(setCurrentThrow(0)) 
+      dispatch(setHistory([])) 
+      dispatch(setThrowValueSum(0)) 
+      dispatch(setCurrentPlayerThrowsCount(0)) 
 
       if(isGameEnd){
-         setIsGameEnd(false)
-         setWinner(null)
+         dispatch(setIsGameEnd(false))
+         dispatch(setWinner(null))
       }
    }
 
-   //ERROR CLOSE HANDLER
-   const closeError = () => {
-      setIsError(false)
-   }
 
    useEffect(() => {
       if (teams[currentTeamIndex].isInputPreffered) {
-         setShowNumberButtons(false)
+         dispatch(setShowNumberButtons(false))
       } else {
-         setShowNumberButtons(true)
+         dispatch(setShowNumberButtons(true))
       }
 
       if(!initialSoundPlayed){
          playSound('game-is-on')
-         setInitialSoundPlayed(true)
+         dispatch(setInitialSoundPlayed(true))
       }
 
       console.log(history)
-      console.log(players)
+      console.log(teams)
 
-   }, [players, teams, history, teams[currentTeamIndex].isInputPreffered, currentTeamIndex, initialSoundPlayed])
+   }, [teams, history, teams[currentTeamIndex].isInputPreffered, currentTeamIndex, initialSoundPlayed])
 
    return (
       <div className='game-container'>
 
-         {/*Game players section:*/}
+         {/*GameTeams players section:*/}
          <div className="game-players-section">
          
             <div className='teams-preview'>
@@ -825,7 +738,7 @@ const Game = () => {
                   </div>
 
                   {/* Team 1 players */}
-                  {players.slice(0, 2).map((player, index) => (
+                  {teams[0].members.map((player, index) => (
                      <div className='team-player' key={index}>
                         <div className='team-player-name'>
                            {player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (
@@ -883,7 +796,7 @@ const Game = () => {
                   </div>
 
                   {/* Team 2 players */}
-                  {players.slice(2, 4).map((player, index) => (
+                  {teams[1].members.map((player, index) => (
                      <div className='team-player' key={index}>
                         <div className='team-player-name'>
                            {player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (
@@ -934,20 +847,7 @@ const Game = () => {
          </div>
            
          {/*Current player throw paragraph:*/}
-         <p className='current-player-throw'>
-            <button className='sound-button' onClick={toggleSound}>
-               <Image 
-                  src={isSoundEnabled ? '/sound-on.svg' : 'sound-off.svg'} 
-                  alt={isSoundEnabled ? 'Sound On' : 'Sound Off'} 
-                  width={16} 
-                  height={16} 
-               />
-               <span>{isSoundEnabled ? 'On' : 'Off'}</span>
-            </button>
-            <span className='current-player-throw-message'>
-               {`${teams[currentTeamIndex].members[currentPlayerIndexInTeam].name.toUpperCase()}'S TURN TO THROW!`}
-            </span>
-         </p>
+         <CurrentPlayerThrowParagraph  context={context} />
 
          {/*Main score input section (input/buttons toggle, score preview, submit score button, score buttons ):*/}
          <div className='score-section'>  
@@ -958,7 +858,7 @@ const Game = () => {
                   className={`input-toggle ${showNumberButtons ? 'buttons-active' : 'input-active'}`} 
                   onClick={() => {
                      //Resetting values when toggle button clicked
-                     const gameTeams = [...teams]
+                     const gameTeams = JSON.parse(JSON.stringify(teams))
                      const currentTeam = gameTeams[currentTeamIndex]
                      if (currentPlayerThrowsCount > 0) {
                   
@@ -967,15 +867,15 @@ const Game = () => {
                         currentTeam.totalThrows -= throwValueSum
                   
                         //Resetting throwValueSum, currentPlayerThrows and currentPlayersThrowsCount states
-                        setThrowValueSum(0)
-                        setCurrentPlayerThrows([])
+                        dispatch(setThrowValueSum(0))
+                        dispatch(setCurrentPlayerThrows([]))
                         setCurrentPlayerThrowsCount(0)         
                      }
                      
                      //Switching isInputPreffered
                      currentTeam.isInputPreffered = !currentTeam.isInputPreffered
                      //Updating player's state
-                     setTeams(gameTeams)    
+                     dispatch(setTeams(gameTeams))    
                   }}>
                   {showNumberButtons ? 'Input' : 'Buttons'}
                </button>
@@ -992,7 +892,7 @@ const Game = () => {
                         className='remove-last'
                         onClick={() => {
                            const newValue = String(currentThrow).slice(0, -1)
-                           setCurrentThrow(newValue ? Number(newValue) : 0)
+                           dispatch(setCurrentThrow(newValue ? Number(newValue) : 0))
                         }}
                      >
                         <Image src='/backspace.svg' alt='User icon' width={24} height={24} />
@@ -1035,7 +935,7 @@ const Game = () => {
                {!showNumberButtons ? (
                   teams[currentTeamIndex].pointsLeft <= 40 && teams[currentTeamIndex].pointsLeft % 2 === 0 && (
                      <button 
-                        onClick={() => setIsDoubleActive(!isDoubleActive)} 
+                        onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 
                         className={isDoubleActive ? 'active' : ''}
                      >
                         Double
@@ -1044,19 +944,19 @@ const Game = () => {
                ) : (
                   <div className="multiplier-buttons">
                      <button 
-                        onClick={() => setMultiplier(1)} 
+                        onClick={() => dispatch(setMultiplier(1))} 
                         className={multiplier === 1 ? 'active' : ''}
                      >
                         Single
                      </button>
                      <button 
-                        onClick={() => setMultiplier(2)} 
+                        onClick={() => dispatch(setMultiplier(2))} 
                         className={multiplier === 2 ? 'active' : ''}
                      >
                         Double
                      </button>
                      <button 
-                        onClick={() => setMultiplier(3)} 
+                        onClick={() => dispatch(setMultiplier(3))} 
                         className={multiplier === 3 ? 'active' : ''}
                      >
                         Triple
@@ -1074,7 +974,7 @@ const Game = () => {
                            key={i} 
                            onClick={() => {
                               const newValue = Number(`${currentThrow}${i+1}`)
-                              setCurrentThrow(newValue)
+                              dispatch(setCurrentThrow(newValue))
                            }}>
                            {i+1}
                         </button>
@@ -1083,7 +983,7 @@ const Game = () => {
                      <button
                         onClick={() => {
                            const newValue = Number(`${currentThrow}${0}`)
-                           setCurrentThrow(newValue)
+                           dispatch(setCurrentThrow(newValue))
                         }}>
                            0
                      </button>
@@ -1115,34 +1015,13 @@ const Game = () => {
             <button className='restart-game' onClick={handleRestartGame}>Restart game</button>
          </div>
          
-         {/* Error/Game End overlay */}
-         {(isError || isGameEnd) && <div className="overlay"></div>}
-
-         {/* Error section */}
-         {isError && (
-            <div className="error">
-               <div className="error-content">
-                  <Image src='/error.svg' alt='Error icon' width={100} height={100} />
-                  <p>{errorMessage}</p>
-                  <button onClick={closeError}>OK</button>
-               </div>
-            </div>
-         )}
+         {/* Error/GameTeams End overlay */}
+         <ErrorPopUp />
 
          {/* End game pop-up */}
-         {isGameEnd && (
-            <div className='game-over-popup'>
-               <div className='game-over-popup-content'>
-                  <Image src='/winner.svg' alt='Error icon' width={80} height={80} />
-                  <h3>Winner: {winner?.name}</h3>
-                  <button className='play-again' onClick={handleRestartGame}>Play Again</button>
-                  <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
-                  <button className='undo' onClick={() => {handleUndo(); setIsGameEnd(false)}}>Undo</button>
-               </div>
-            </div>
-         )}
+         {/* <GameEndPopUp /> */}
       </div>
    )
 }
  
-export default Game
+export default GameTeams

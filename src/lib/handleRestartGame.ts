@@ -1,19 +1,24 @@
-import { setPlayers, setCurrentPlayerIndex, setCurrentThrow, setHistory, setThrowValueSum, setCurrentPlayerThrowsCount, setIsGameEnd, setWinner, Player } from '@/redux/slices/gameRegularSlice'
 import { AppDispatch } from '@/redux/store'
+import { 
+   setCurrentPlayerIndex, 
+   setCurrentThrow, 
+   setHistory, 
+   setThrowValueSum, 
+   setCurrentPlayerThrowsCount, 
+   setIsGameEnd, 
+   setWinner, 
+   InitializePlayersType 
+} from '@/redux/slices/gameRegularSlice'
 
-export const handleRestartGame = (dispatch: AppDispatch, players: Player[], gameMode: number | string, isGameEnd: boolean) => {
-   const gamePlayers = players.map(player => ({
-      ...player,
-      pointsLeft: Number(gameMode),
-      legs: 0,
-      lastScore: 0,
-      totalThrows: 0,
-      totalAttempts: 0,
-      average: 0,
-      isInputPreffered: true,
-   }))
-
-   dispatch(setPlayers(gamePlayers))
+export const handleRestartGame = (
+   dispatch: AppDispatch, 
+   playerNames: string[], 
+   gameMode: number | string, 
+   isGameEnd: boolean, 
+   initializePlayers: InitializePlayersType
+) => {
+   
+   dispatch(initializePlayers({ playerNames, gameMode }))
    dispatch(setCurrentPlayerIndex(0))
    dispatch(setCurrentThrow(0))
    dispatch(setHistory([]))

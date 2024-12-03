@@ -1,8 +1,9 @@
 import React from 'react'
-import { handleUndo } from '@/lib/handleUndo'
+import { handleUndoRegular } from '@/lib/handleUndo'
 import { playSound } from '@/lib/playSound'
 import { handleSwitchPlayer } from '@/lib/handleSwitchPlayer'
 import { handleSwitchStartPlayerIndex } from '@/lib/handleSwitchStartPlayerIndex'
+import { checkGameEndHandler } from '@/lib/checkGameEndHandler'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { 
@@ -14,9 +15,7 @@ import {
    setCurrentPlayerIndex,  
    setThrowValueSum, 
    setCurrentPlayerThrowsCount, 
-   setCurrentPlayerThrows, 
-   setIsGameEnd, 
-   setWinner, 
+   setCurrentPlayerThrows,  
 } from '@/redux/slices/gameRegularSlice'
 
 const NumberButtons = () => {
@@ -109,7 +108,7 @@ const NumberButtons = () => {
             dispatch(setPlayers(gamePlayers))
 
             //Checking game end
-            checkGameEndHandler(gamePlayers)
+            checkGameEndHandler(gamePlayers, gameWin, numberOfLegs, isSoundEnabled, dispatch)
 
             //Resetting states
             dispatch(setThrowValueSum(0))
@@ -198,7 +197,7 @@ const NumberButtons = () => {
             dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
 
             //Checking game end
-            checkGameEndHandler(gamePlayers)
+            checkGameEndHandler(gamePlayers, gameWin, numberOfLegs, isSoundEnabled, dispatch)
 
             //Resetting states
             dispatch(setThrowValueSum(0))
@@ -253,41 +252,7 @@ const NumberButtons = () => {
       dispatch(setPlayers(gamePlayers))
    }
 
-   //GAME END HANDLER
-   const checkGameEndHandler = (gamePlayers: Player[]) => {
-      //Scenario when game type is set to best-of
-      if (gameWin === 'best-of') {
-         //Sum of legs for all players
-         const totalLegs = gamePlayers.reduce((acc: number, player: Player) => acc + player.legs, 0)
-       
-         //Check if totalLegs for players equals to number-of-legs parameter
-         if (totalLegs === Number(numberOfLegs)) {
-            //Finding winner player
-            const maxLegs = Math.max(...gamePlayers.map((player: Player) => player.legs))
-            const winner = gamePlayers.find((player: Player) => player.legs === maxLegs) || null
-            dispatch(setIsGameEnd(true))
-            dispatch(setWinner(winner))
-            playSound('and-the-game', isSoundEnabled)
-         } else {
-            playSound('and-the-leg', isSoundEnabled)
-         }      
-      }
-      //Scenario when game type is set to first-to
-      else if (gameWin === 'first-to') {
-         //Finding winner player
-         const winner = gamePlayers.find((player: Player) => player.legs === Number(numberOfLegs)) || null
-         console.log(winner)
-         if(winner){
-            dispatch(setIsGameEnd(true))
-            dispatch(setWinner(winner))
-            playSound('and-the-game', isSoundEnabled)
-         } else {
-            playSound('and-the-leg', isSoundEnabled)
-         }
-      }
-   }
- 
-
+   
    return (
       <div className='score-buttons'>
          {/* Score buttons */}
@@ -328,7 +293,7 @@ const NumberButtons = () => {
          </button>
          <button 
             onClick={() => {
-               handleUndo(dispatch, history, players, gameMode, showNumberButtons, currentPlayerThrowsCount, currentPlayerThrows, currentPlayerIndex, throwValueSum)}}>
+               handleUndoRegular(dispatch, history, players, gameMode, showNumberButtons, currentPlayerThrowsCount, currentPlayerThrows, currentPlayerIndex, throwValueSum)}}>
                    Undo
          </button>
       </div>

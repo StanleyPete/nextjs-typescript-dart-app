@@ -5,6 +5,7 @@ import {
 } from '@reduxjs/toolkit'
 import gameSettingsReducer, { GameSettingsState } from './slices/gameSettingsSlice'
 import gameRegularReducer, { GameRegularState } from './slices/gameRegularSlice'
+import gameRegularTeams, { GameRegularTeamsState } from './slices/gameRegularTeamsSlice'
 
 //Initial store setup
 export const store = configureStore({
@@ -28,6 +29,17 @@ export const addGameRegularReducer = () => {
    // console.log('addGameRegularReducer function completed')
 }
 
+//Adding game regular reducer
+export const addGameRegularTeamsReducer = () => {
+   rootReducer = combineReducers({
+      gameSettings: gameSettingsReducer,
+      gameRegularTeams: gameRegularTeams,
+   })
+
+   store.replaceReducer(rootReducer)
+   // console.log('addGameRegularReducer function completed')
+}
+
 export const resetReducer = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
@@ -41,6 +53,7 @@ export const resetReducer = () => {
 export type RootState = {
   gameSettings: GameSettingsState
   gameRegular: GameRegularState
+  gameRegularTeams: GameRegularTeamsState
 }
 export type AppDispatch = typeof store.dispatch
 

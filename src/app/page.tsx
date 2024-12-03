@@ -8,8 +8,9 @@ import ErrorPopUp from '@/components/ErrorPopUp'
 import GameRegularPlayerNamesInput from '@/components/game-settings/GameRegularPlayerNamesInput'
 import GameTeamsPlayerNamesInput from '@/components/game-settings/GameTeamsPlayerNamesInput'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState, addGameRegularReducer, resetReducer } from '@/redux/store'
+import { RootState, addGameRegularReducer, addGameRegularTeamsReducer, resetReducer } from '@/redux/store'
 import { initializePlayers } from '../redux/slices/gameRegularSlice'
+import { initializeTeams } from '../redux/slices/gameRegularTeamsSlice'
 import { 
    setGameType, 
    setPlayerNames, 
@@ -82,8 +83,15 @@ const Home = () => {
          event.preventDefault()
          return
       }
-      addGameRegularReducer()
-      dispatch(initializePlayers({ playerNames, gameMode }))
+      if (gameType === 'regular'){
+         addGameRegularReducer()
+         dispatch(initializePlayers({ playerNames, gameMode }))
+      }
+
+      if (gameType === 'teams'){
+         addGameRegularTeamsReducer()
+         dispatch(initializeTeams({ playerNames, gameMode }))
+      }
    }
    
    //Preparing URL

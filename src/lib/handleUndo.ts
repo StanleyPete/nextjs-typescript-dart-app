@@ -9,8 +9,18 @@ import {
    Player,
    HistoryEntry
 } from '@/redux/slices/gameRegularSlice'
+import { 
+   setCurrentTeamIndex,
+   setCurrentPlayerIndexInTeam,
+   setHistory as setHistoryTeams,
+   setTeams,
+   setThrowValueSum as setThrowValueSumTeams, 
+   setCurrentPlayerThrows as setCurrentPlayerThrowsTeams,
+   setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
+   Team, 
+   HistoryEntry as HistoryEntryTeams } from '@/redux/slices/gameRegularTeamsSlice'
   
-export const handleUndo = (
+export const handleUndoRegular = (
    dispatch: AppDispatch,
    history: HistoryEntry[],
    players: Player[],
@@ -143,4 +153,142 @@ export const handleUndo = (
     
    //Updating players state
    dispatch(setPlayers(gamePlayers)) 
+}
+
+export const handleUndoRegularTeams = (
+   dispatch: AppDispatch,
+   history: HistoryEntryTeams[],
+   teams: Team[],
+   gameMode: number | string,
+   showNumberButtons: boolean,
+   currentPlayerThrowsCount: number,
+   currentPlayerThrows: number[],
+   currentTeamIndex: number,
+   throwValueSum: number
+) => {
+   const lastEntry = history[history.length - 1]
+   const gameTeams = JSON.parse(JSON.stringify(teams))
+
+   //Scenario when players have just finished previous leg
+   if(history.length !== 0 && lastEntry.historyTotalThrows === Number(gameMode)){
+      const currentTeam = gameTeams[lastEntry.historyTeamIndex]
+
+      currentTeam.legs -= 1
+
+      //Updating game stats for each team
+      gameTeams.forEach((team: Team, index: number) => {
+         const teamHistory = [...history].reverse().find(entry => entry.historyTeamIndex === index)
+         if (teamHistory) {
+            team.pointsLeft = teamHistory.historyPointsLeft
+            team.lastScore = teamHistory.historyLastScore
+            team.totalThrows = teamHistory.historyTotalThrows === Number(gameMode) ? teamHistory.historyTotalThrows - teamHistory.historyLastScore : teamHistory.historyTotalThrows
+            team.totalAttempts = teamHistory.historyTotalAttempts
+            team.average = teamHistory.historyLastAverage
+         }
+      })
+
+      //Setting currentTeamIndex to the last player who played in the history
+      dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex)) 
+
+      //Removing last history entries (inlcuding additional entries created when team finished leg)
+      dispatch(setHistoryTeams(history.slice(0, history.length - gameTeams.length)))
+
+      //Updating players state
+      dispatch(setTeams(gameTeams)) 
+
+      return
+   }
+   
+   //Undo handler for input
+   if(!showNumberButtons){
+      if(history.length === 0) return
+      
+      const currentTeam = gameTeams[lastEntry.historyTeamIndex]
+
+      //Restoring pointsLeft, lastScore, average, totalAttempts, totalThrows
+      currentTeam.totalThrows -= currentTeam.lastScore
+      currentTeam.pointsLeft = lastEntry.historyPointsLeft 
+      currentTeam.lastScore = lastEntry.historyLastScore
+      currentTeam.average = lastEntry.historyLastAverage
+      currentTeam.totalAttempts = lastEntry.historyTotalAttempts
+      
+      //Setting currentTeamIndex and currentPlayerIndexInTeam to the last team/player who played in the history
+      dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex))
+      dispatch(setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam)) 
+      
+      //Removing last history entry
+      dispatch(setHistoryTeams(history.slice(0, -1)))
+   }
+   
+   //Undo handler for buttons
+   if(showNumberButtons){
+      //SCENARIO 1: Empty history, currentPlayerThrowCount !== 0
+      if(history.length === 0 && currentPlayerThrowsCount !== 0){
+         const currentTeam = gameTeams[currentTeamIndex]
+         
+         //Temporary variables with updated throw count and throws array
+         const updatedThrowCount = currentPlayerThrowsCount - 1
+         const updatedThrows = [...currentPlayerThrows]
+         
+         //Updating pointsLeft, totalThrows and throwValueSum
+         currentTeam.pointsLeft += updatedThrows[updatedThrows.length -1]
+         currentTeam.totalThrows -= updatedThrows[updatedThrows.length -1]
+         const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+         dispatch(setThrowValueSumTeams(updatedThrowValueSum))
+         
+         
+         //Removing last available throw from temporary variable
+         updatedThrows.pop()
+         
+         //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
+         dispatch(setCurrentPlayerThrowsTeams(updatedThrows))
+         dispatch(setCurrentPlayerThrowsCountTeams(updatedThrowCount))
+      } 
+      //SCENARIO 2: Empty history
+      else if (history.length === 0){
+         return
+      } 
+      //SCENARIO 3: History available and no currentPlayerThrowsCount
+      else if (history.length !== 0 && currentPlayerThrowsCount === 0){
+         const currentTeam = gameTeams[lastEntry.historyTeamIndex]
+         
+         //Restoring pointsLeft, lastScore, average
+         currentTeam.pointsLeft = lastEntry.historyPointsLeft 
+         currentTeam.lastScore = lastEntry.historyLastScore
+         currentTeam.average = lastEntry.historyLastAverage
+         currentTeam.totalThrows = lastEntry.historyTotalThrows
+         currentTeam.totalAttempts = lastEntry.historyTotalAttempts
+         
+         //Removing last history entry
+         dispatch(setHistoryTeams(history.slice(0, -1)))
+         
+         //Setting currentTeamIndex and currentPlayerIndexInTeam to the last team/player who played in the history
+         dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex)) 
+         dispatch(setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam))
+      }
+      //SCENARIO 4: History availble and currentPlayer has already thrown at least once 
+      else {
+         const currentTeam = gameTeams[currentTeamIndex]
+         
+         //Temporary variables with updated throw count and throws array
+         const updatedThrowCount = currentPlayerThrowsCount - 1
+         const updatedThrows = [...currentPlayerThrows]
+         
+         //Updating pointsLeft, totalThrows and throwValueSum
+         currentTeam.pointsLeft += updatedThrows[updatedThrows.length -1]
+         currentTeam.totalThrows -= updatedThrows[updatedThrows.length -1]
+         const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+         dispatch(setThrowValueSumTeams(updatedThrowValueSum))
+         
+         //Removing last available throw from temporary variable
+         updatedThrows.pop()
+
+         //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
+         dispatch(setCurrentPlayerThrowsTeams(updatedThrows))
+         dispatch(setCurrentPlayerThrowsCountTeams(updatedThrowCount))
+      }
+   }
+   
+   //Updating players state
+   dispatch(setTeams(gameTeams)) 
 }
