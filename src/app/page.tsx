@@ -8,9 +8,14 @@ import ErrorPopUp from '@/components/ErrorPopUp'
 import GameRegularPlayerNamesInput from '@/components/game-settings/GameRegularPlayerNamesInput'
 import GameTeamsPlayerNamesInput from '@/components/game-settings/GameTeamsPlayerNamesInput'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState, addGameRegularReducer, addGameRegularTeamsReducer, resetReducer } from '@/redux/store'
 import { initializePlayers } from '../redux/slices/gameRegularSlice'
 import { initializeTeams } from '../redux/slices/gameRegularTeamsSlice'
+import { 
+   RootState, 
+   addGameRegularReducer, 
+   addGameRegularTeamsReducer, 
+   resetReducer 
+} from '@/redux/store'
 import { 
    setGameType, 
    setPlayerNames, 
@@ -46,7 +51,7 @@ const Home = () => {
 
    //Validate player names
    const validatePlayerNames = () => {
-      if (playerNames.some(name => name.trim() === '')) {
+      if (playerNames.some((name: string) => name.trim() === '')) {
          dispatch(setError({ isError: true, errorMessage: 'Each player name input must be filled out!' }))
          return false
       }
@@ -100,7 +105,7 @@ const Home = () => {
       teams: 'game-teams',
       online: 'game-online'
    }
-   const gameFolder = gameFolders[gameType]
+   const gameFolder = gameFolders[gameType as keyof typeof gameFolders]
    const isCricketMode = gameMode === 'Cricket'
    const gameUrl = isCricketMode 
       ? `/${gameFolder}/game-cricket` 

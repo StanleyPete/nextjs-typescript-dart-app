@@ -1,42 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
-export interface Player {
-   name: string
-   legs: number
-   pointsLeft: number
-   lastScore: number
-   totalThrows: number
-   totalAttempts: number
-   average: number
-   isInputPreffered: boolean
-}
-
-export interface HistoryEntry {
-   historyPlayerIndex: number
-   historyPointsLeft: number
-   historyLastScore: number
-   historyTotalThrows: number
-   historyLastAverage: number
-   historyTotalAttempts: number
-}
-
-export interface GameRegularState {
-   players: Player[]
-   history: HistoryEntry[]
-   currentThrow: number
-   currentPlayerIndex: number
-   startPlayerIndex: number
-   showNumberButtons: boolean
-   throwValueSum: number
-   currentPlayerThrowsCount: number
-   currentPlayerThrows: number[]
-   multiplier: number
-   isDoubleActive: boolean
-   isGameEnd: boolean
-   winner: Player | null
-   isSoundEnabled: boolean
-   initialSoundPlayed: boolean
-}
+import { Player, HistoryEntry, GameRegularState } from '@/app/types/types'
 
 const initialState: GameRegularState = {
    players: [],
@@ -56,14 +19,21 @@ const initialState: GameRegularState = {
    initialSoundPlayed: false,
 }
 
-export type InitializePlayersType = (payload: { playerNames: string[]; gameMode: number | string }) => PayloadAction<{ playerNames: string[]; gameMode: number | string }>
-
 const gameRegularSlice = createSlice({
    name: 'gameRegular',
    initialState,
    reducers: {
-      initializePlayers(state, action: PayloadAction<{ playerNames: string[]; gameMode: number | string}>) {
-         const gameModeNumber = typeof action.payload.gameMode === 'string' ? Number(action.payload.gameMode) : action.payload.gameMode
+      initializePlayers(
+         state, 
+         action: PayloadAction<{ 
+            playerNames: string[] 
+            gameMode: number | string
+         }>
+      ){
+         const gameModeNumber = typeof action.payload.gameMode === 'string' 
+            ? Number(action.payload.gameMode) 
+            : action.payload.gameMode
+
          state.players = action.payload.playerNames.map((name) => ({
             name,
             pointsLeft: gameModeNumber,

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import checkoutArray from '@/lib/checkout-table'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { Player } from '@/app/types/types'
 
 const GameRegularPlayersSection = () => {
    
@@ -19,7 +20,7 @@ const GameRegularPlayersSection = () => {
 
             <div className='two-players-preview'>
 
-               {players.map((player, index) => (
+               {players.map((player: Player, index:number) => (
 
                   <div key={index} className={`current-player-section ${currentPlayerIndex === index ? 'current-active-player' : ''}`}>
 
@@ -127,7 +128,7 @@ const GameRegularPlayersSection = () => {
                {/*Game player list:*/}
                <div className='game-players-list'>
 
-                  {players.map((player: { name: string, legs: number, pointsLeft: number, lastScore: number, average: number, isInputPreffered: boolean }, index: number) => (
+                  {players.map((player: Player, index: number) => (
 
                      <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} key={index}>
 

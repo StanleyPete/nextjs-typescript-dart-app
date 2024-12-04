@@ -4,14 +4,13 @@ import { playSound } from '@/lib/playSound'
 import { handleSwitchPlayer } from '@/lib/handleSwitchPlayer'
 import { handleSwitchStartPlayerIndex } from '@/lib/handleSwitchStartPlayerIndex'
 import { checkGameEndHandler } from '@/lib/checkGameEndHandler'
+import { Player, HistoryEntry } from '@/app/types/types'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
 import { 
-   Player,
    setPlayers, 
    setHistory,
-   HistoryEntry, 
    setCurrentThrow, 
    setCurrentPlayerIndex,   
    setThrowValueSum, 
@@ -198,13 +197,13 @@ const ThrowValueSection = () => {
    
    //SUBMIT SCORE HANDLER FOR BUTTONS 
    /*
-    (for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value)
- */
+      (for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value)
+    */
    const handleSubmitScoreButtons = () => {
       const updatedPlayers = JSON.parse(JSON.stringify(players))
       const currentPlayer = updatedPlayers[currentPlayerIndex]
 
-      const throwSum = currentPlayerThrows.reduce((acc, throwValue) => acc + throwValue, 0)
+      const throwSum = currentPlayerThrows.reduce((acc: number, throwValue: number) => acc + throwValue, 0)
 
       //Creating newHistoryEntry
       const newHistoryEntry: HistoryEntry = {
@@ -328,7 +327,7 @@ const ThrowValueSection = () => {
                      handleSubmitScoreButtons()
                   }
                }}>
-          Submit Score
+                  Submit Score
             </button>
          </div>
     
@@ -339,7 +338,7 @@ const ThrowValueSection = () => {
                   <button 
                      onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 
                      className={isDoubleActive ? 'active' : ''}>
-                Double
+                        Double
                   </button>
                )
             ) : (
@@ -347,17 +346,17 @@ const ThrowValueSection = () => {
                   <button 
                      onClick={() => dispatch(setMultiplier(1))} 
                      className={multiplier === 1 ? 'active' : ''}>
-                Single
+                        Single
                   </button>
                   <button 
                      onClick={() => dispatch(setMultiplier(2))} 
                      className={multiplier === 2 ? 'active' : ''}>
-                Double
+                        Double
                   </button>
                   <button 
                      onClick={() => dispatch(setMultiplier(3))} 
                      className={multiplier === 3 ? 'active' : ''}>
-                Triple
+                        Triple
                   </button>
                </div>
             )}

@@ -1,85 +1,57 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { handleRestartGame } from '@/lib/handleRestartGame'
+import { handleRestartGameRegular, handleRestartGameRegularTeams } from '@/lib/handleRestartGame'
 import { handleUndoRegular, handleUndoRegularTeams } from '@/lib/handleUndo'
-import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { 
-   setIsGameEnd as setIsGameEndRegular, 
-   HistoryEntry, 
-   Player
-} from '@/redux/slices/gameRegularSlice'
-import { 
-   setIsGameEnd as setIsGameEndTeams, 
-   HistoryEntry as HistoryEntryTeams, 
-   Team 
-} from '@/redux/slices/gameRegularTeamsSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsGameEnd as setIsGameEndRegular, initializePlayers } from '@/redux/slices/gameRegularSlice'
+import { setIsGameEnd as setIsGameEndTeams, initializeTeams } from '@/redux/slices/gameRegularTeamsSlice'
+import { GameContextProps } from '@/app/types/types'
+import { Player, Team, HistoryEntry, HistoryEntryTeams, GameData } from '@/app/types/types' 
 
-interface GameEmdPopUpProps {
-   context: 'gameRegular' | 'gameRegularTeams'
-}
-
-type GameData = {
-   playersOrTeams: Player[] | Team[]
-   history: HistoryEntry[] | HistoryEntryTeams[]
-   index: number
-   showNumberButtons: boolean
-   throwValueSum: number
-   currentPlayerThrowsCount: number
-   currentPlayerThrows: number[]
-   isGameEnd: boolean
-   winner: Player | Team | null
-}
-
-const GameEndPopUp: React.FC<GameEmdPopUpProps> = ({ context }) => {
+const GameEndPopUp: React.FC<GameContextProps> = ({ context }) => {
    const dispatch = useDispatch()
    const router = useRouter()
 
-   const { gameMode } = useSelector((state: RootState) => state.gameSettings)
+   const { gameMode, playerNames } = useSelector((state: RootState) => state.gameSettings)
 
    const { 
-      playersOrTeams,
+      playersOrTeams, 
+      index, 
       history, 
-      index,
       showNumberButtons, 
       throwValueSum, 
-      currentPlayerThrowsCount, 
       currentPlayerThrows, 
-      isGameEnd,
+      currentPlayerThrowsCount, 
+      isGameEnd, 
       winner 
-   } = useSelector<RootState, GameData>((state) => {
-      if (context === 'gameRegular') {
-         return {
+   } = useSelector<RootState, GameData>((state) => 
+      context === 'gameRegular' 
+         ? {
             playersOrTeams: state.gameRegular.players,
-            history: state.gameRegular.history,
             index: state.gameRegular.currentPlayerIndex,
+            history: state.gameRegular.history,
             showNumberButtons: state.gameRegular.showNumberButtons,
             throwValueSum: state.gameRegular.throwValueSum,
-            currentPlayerThrowsCount: state.gameRegular.currentPlayerThrowsCount,
             currentPlayerThrows: state.gameRegular.currentPlayerThrows,
+            currentPlayerThrowsCount: state.gameRegular.currentPlayerThrowsCount,
             isGameEnd: state.gameRegular.isGameEnd,
-            winner: state.gameRegular.winner  
+            winner: state.gameRegular.winner
          }
-      }
-
-      if (context === 'gameRegularTeams') {
-         return {
+         : {
             playersOrTeams: state.gameRegularTeams.teams,
-            history: state.gameRegularTeams.history,
             index: state.gameRegularTeams.currentPlayerIndex,
+            history: state.gameRegularTeams.history,
             showNumberButtons: state.gameRegularTeams.showNumberButtons,
             throwValueSum: state.gameRegularTeams.throwValueSum,
-            currentPlayerThrowsCount: state.gameRegularTeams.currentPlayerThrowsCount,
             currentPlayerThrows: state.gameRegularTeams.currentPlayerThrows,
+            currentPlayerThrowsCount: state.gameRegularTeams.currentPlayerThrowsCount,
             isGameEnd: state.gameRegularTeams.isGameEnd,
-            winner: state.gameRegularTeams.winner  
+            winner: state.gameRegularTeams.winner
          }
-      }
-
-      throw new Error('Invalid context')
-   })
-
+   )
+   
    return (
       isGameEnd && (
          <div className="overlay">
@@ -95,7 +67,23 @@ const GameEndPopUp: React.FC<GameEmdPopUpProps> = ({ context }) => {
                   <button 
                      className='play-again' 
                      onClick={() => {
-                        handleRestartGame(dispatch, playersOrTeams, gameMode, isGameEnd)
+                        if(context === 'gameRegular'){
+                           handleRestartGameRegular(
+                              playerNames, 
+                              gameMode, 
+                              isGameEnd, 
+                              initializePlayers,
+                              dispatch, 
+                           )
+                        } else {
+                           handleRestartGameRegularTeams(
+                              playerNames,
+                              gameMode,
+                              isGameEnd,
+                              initializeTeams,
+                              dispatch
+                           )
+                        }
                      }}>
                         Play Again
                   </button>
@@ -109,27 +97,27 @@ const GameEndPopUp: React.FC<GameEmdPopUpProps> = ({ context }) => {
                      onClick={() => {
                         if(context === 'gameRegular'){
                            handleUndoRegular(
-                              dispatch, 
-                              history as HistoryEntry[], 
                               playersOrTeams as Player[], 
-                              gameMode, 
-                              showNumberButtons, 
-                              currentPlayerThrowsCount, 
-                              currentPlayerThrows, 
                               index, 
-                              throwValueSum
+                              history as HistoryEntry[], 
+                              showNumberButtons, 
+                              throwValueSum,
+                              currentPlayerThrows, 
+                              currentPlayerThrowsCount, 
+                              gameMode, 
+                              dispatch 
                            ); dispatch(setIsGameEndRegular(false))
                         } else {
                            handleUndoRegularTeams(
-                              dispatch, 
-                              history as HistoryEntryTeams[], 
                               playersOrTeams as Team[], 
-                              gameMode, 
-                              showNumberButtons, 
-                              currentPlayerThrowsCount, 
-                              currentPlayerThrows, 
                               index, 
-                              throwValueSum
+                              history as HistoryEntryTeams[], 
+                              showNumberButtons, 
+                              throwValueSum,
+                              currentPlayerThrows, 
+                              currentPlayerThrowsCount, 
+                              gameMode, 
+                              dispatch 
                            ); dispatch(setIsGameEndTeams(false))
                         }}}> 
                         Undo

@@ -1,19 +1,15 @@
 'use client'
 import React, { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import checkoutArray from '@/lib/checkout-table'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import ErrorPopUp from '@/components/ErrorPopUp'
-// import GameEndPopUp from '@/components/GameEndPopUp'
+import GameEndPopUp from '@/components/GameEndPopUp'
 import { setError } from '@/redux/slices/gameSettingsSlice'
-import { initializeTeams } from '@/redux/slices/gameRegularTeamsSlice'
+import { Team, HistoryEntryTeams } from '../types/types'
 import { 
-   Team,
    setTeams,
    setHistory,
-   HistoryEntry,
    setCurrentThrow,
    setCurrentTeamIndex,
    setCurrentPlayerIndexInTeam,
@@ -29,15 +25,15 @@ import {
    setInitialSoundPlayed,
 } from '@/redux/slices/gameRegularTeamsSlice'
 import CurrentPlayerThrowParagraph from '@/components/CurrentPlayerThrowParagraph'
+import GameTeamsPlayersSection from '@/components/game-regular-teams/GameTeamsPlayersSection'
+import SettingsButtons from '@/components/SettingsButtons'
 
 
 const GameTeams = () => {
    const dispatch = useDispatch()
-   const router = useRouter()
    const context = 'gameRegularTeams'
    
-   const {
-      playerNames,  
+   const { 
       gameMode,
       numberOfLegs,
       gameWin 
@@ -56,7 +52,6 @@ const GameTeams = () => {
       currentPlayerThrows,
       multiplier,
       isDoubleActive,
-      isGameEnd,
       isSoundEnabled, 
       initialSoundPlayed 
    } = useSelector((state: RootState) => state.gameRegularTeams)
@@ -101,8 +96,6 @@ const GameTeams = () => {
       }
    }
 
-
-
    //SUBMIT SCORE HANDLER FOR INPUT
    const handleSubmitThrowInput = (inputMultiplier: number) => {
       const invalidScores = [163, 166, 169, 172, 173, 175, 176, 178, 179]
@@ -123,7 +116,7 @@ const GameTeams = () => {
       }
 
       //Creating newHistoryEntry
-      const newHistoryEntry: HistoryEntry = {
+      const newHistoryEntry: HistoryEntryTeams = {
          historyTeamIndex: currentTeamIndex,
          historyPlayerIndexInTeam: currentPlayerIndexInTeam,
          historyPointsLeft: currentTeam.pointsLeft, 
@@ -154,7 +147,7 @@ const GameTeams = () => {
                   historyTotalAttempts: team.totalAttempts 
                }
             })
-            .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentTeamIndex (null)
+            .filter((entry: HistoryEntryTeams | null) => entry !== null) //Skipping currentTeamIndex (null)
 
          //Updating legs for current team
          currentTeam.legs += 1
@@ -257,7 +250,7 @@ const GameTeams = () => {
       const multiplierThrowValue = throwValue * multiplier
       
       //Creating newHistoryEntry
-      const newHistoryEntry: HistoryEntry = {
+      const newHistoryEntry: HistoryEntryTeams = {
          historyTeamIndex: currentTeamIndex,
          historyPlayerIndexInTeam: currentPlayerIndexInTeam,
          historyPointsLeft: currentTeam.pointsLeft + throwValueSum,
@@ -292,7 +285,7 @@ const GameTeams = () => {
                      historyTotalAttempts: team.totalAttempts 
                   }
                })
-               .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentTeamIndex (null)
+               .filter((entry: HistoryEntryTeams | null) => entry !== null) //Skipping currentTeamIndex (null)
 
             //Updating legs
             currentTeam.legs += 1 
@@ -391,7 +384,7 @@ const GameTeams = () => {
                      historyTotalAttempts: team.totalAttempts 
                   }
                })
-               .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentTeamIndex (null)
+               .filter((entry: HistoryEntryTeams | null) => entry !== null) //Skipping currentTeamIndex (null)
 
             //Updating legs:
             currentTeam.legs += 1 
@@ -479,10 +472,10 @@ const GameTeams = () => {
       const updatedTeams = JSON.parse(JSON.stringify(teams))
       const currentTeam = updatedTeams[currentTeamIndex]
 
-      const throwSum = currentPlayerThrows.reduce((acc, throwValue) => acc + throwValue, 0)
+      const throwSum = currentPlayerThrows.reduce((acc: number, throwValue: number) => acc + throwValue, 0)
 
       //Creating newHistoryEntry
-      const newHistoryEntry: HistoryEntry = {
+      const newHistoryEntry: HistoryEntryTeams = {
          historyTeamIndex: currentTeamIndex,
          historyPlayerIndexInTeam: currentPlayerIndexInTeam,
          historyPointsLeft: currentTeam.pointsLeft + throwSum,
@@ -684,21 +677,7 @@ const GameTeams = () => {
       }    
    }
    
-   //RESTART GAME HANDLER
-   const handleRestartGame = () => {
-      dispatch(initializeTeams({ playerNames, gameMode }))
-      dispatch(setCurrentTeamIndex(0)) 
-      dispatch(setCurrentPlayerIndexInTeam(0))
-      dispatch(setCurrentThrow(0)) 
-      dispatch(setHistory([])) 
-      dispatch(setThrowValueSum(0)) 
-      dispatch(setCurrentPlayerThrowsCount(0)) 
-
-      if(isGameEnd){
-         dispatch(setIsGameEnd(false))
-         dispatch(setWinner(null))
-      }
-   }
+  
 
 
    useEffect(() => {
@@ -721,130 +700,7 @@ const GameTeams = () => {
    return (
       <div className='game-container'>
 
-         {/*GameTeams players section:*/}
-         <div className="game-players-section">
-         
-            <div className='teams-preview'>
-
-               {/*Team 1: */}
-               <div className={`team-section ${currentTeamIndex === 0 ? 'current-active-team' : ''}`}>
-                  
-                  {/* Team 1 header */}
-                  <div className='team-header'>
-                     <p>TEAM 1:</p>
-                     <div className='team-legs'>
-                        {teams[0].legs}
-                     </div>
-                  </div>
-
-                  {/* Team 1 players */}
-                  {teams[0].members.map((player, index) => (
-                     <div className='team-player' key={index}>
-                        <div className='team-player-name'>
-                           {player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (
-                              <Image 
-                                 src='/active-dot.svg' 
-                                 alt='Active dot icon' 
-                                 width={6} 
-                                 height={6} 
-                              />
-                           )}
-                           <Image
-                              src={player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'
-                              }
-                              alt='User icon'
-                              width={16}
-                              height={16}
-                           />
-                           {player.name}
-                        </div>
-                     </div>
-                  ))}
-
-
-                  {/*Team 1 points left*/}
-                  <p className='team-points-left'>
-                     {teams[0].pointsLeft}
-                  </p>
-
-                  {/*Team 1 checkout options*/}
-                  {teams[0].pointsLeft <= 170 && (
-                     <p className='checkout-options'>{checkoutArray[teams[0].pointsLeft - 2]}</p>
-                  )}
-
-                  {/*Team 1 stats*/}
-                  <div className='team-stats'>
-                     3-DART AVERAGE: 
-                     <p>{teams[0].average.toFixed(2)}</p>
-                  </div>
-                  <div className='team-stats'>
-                     LAST SCORE: 
-                     <p>{teams[0].lastScore}</p>
-                  </div>
-
-               </div>
-
-               {/*Team 2: */}
-               <div className={`team-section ${currentTeamIndex === 1 ? 'current-active-team' : ''}`}>
-                  
-                  {/* Team 2 header */}
-                  <div className='team-header'>
-                     <p>TEAM 2:</p>
-                     <div className='team-legs'>
-                        {teams[1].legs}
-                     </div>
-                  </div>
-
-                  {/* Team 2 players */}
-                  {teams[1].members.map((player, index) => (
-                     <div className='team-player' key={index}>
-                        <div className='team-player-name'>
-                           {player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name && (
-                              <Image 
-                                 src='/active-dot.svg' 
-                                 alt='Active dot icon' 
-                                 width={6} 
-                                 height={6} 
-                              />
-                           )}
-                           <Image
-                              src={player.name === teams[currentTeamIndex].members[currentPlayerIndexInTeam].name ? '/game-user-throw.svg' : '/game-user.svg'
-                              }
-                              alt='User icon'
-                              width={16}
-                              height={16}
-                           />
-                           {player.name}
-                        </div>
-                     </div>
-                  ))}
-
-                  {/*Team 2 points left*/}
-                  <p className='team-points-left'>
-                     {teams[1].pointsLeft}
-                  </p>
-
-                  {/*Team 2 checkout options*/}
-                  {teams[1].pointsLeft <= 170 && (
-                     <p className='checkout-options'>{checkoutArray[teams[1].pointsLeft - 2]}</p>
-                  )}
-
-                  {/*Team 2 stats*/}
-                  <div className='team-stats'>
-                     3-DART AVERAGE: 
-                     <p>{teams[1].average.toFixed(2)}</p>
-                  </div>
-                  <div className='team-stats'>
-                     LAST SCORE: 
-                     <p>{teams[1].lastScore}</p>
-                  </div>
-
-               </div>
-
-            </div>
-            
-
-         </div>
+         <GameTeamsPlayersSection />
            
          {/*Current player throw paragraph:*/}
          <CurrentPlayerThrowParagraph  context={context} />
@@ -1010,16 +866,11 @@ const GameTeams = () => {
                )}  
             </div>
          </div>
-         <div className="settings-buttons">
-            <button className='go-back' onClick={() => router.back()}>Back to Settings</button>
-            <button className='restart-game' onClick={handleRestartGame}>Restart game</button>
-         </div>
-         
-         {/* Error/GameTeams End overlay */}
-         <ErrorPopUp />
 
-         {/* End game pop-up */}
-         {/* <GameEndPopUp /> */}
+        
+         <SettingsButtons context={context} />
+         <ErrorPopUp />
+         <GameEndPopUp context={context}/>
       </div>
    )
 }

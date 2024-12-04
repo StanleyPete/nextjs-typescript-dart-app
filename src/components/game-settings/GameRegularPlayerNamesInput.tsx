@@ -3,10 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
 import Image from 'next/image'
-
-interface PlayerNamesInputProps {
-  maxPlayers: number
-}
+import { PlayerNamesInputProps } from '@/app/types/types'
 
 const GameRegularPlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
    const dispatch = useDispatch()
@@ -35,7 +32,7 @@ const GameRegularPlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                ? `${playerNames.length} Player:`
                : `${playerNames.length} Players:`}
          </p>
-         {playerNames.map((name, index) => (
+         {playerNames.map((name: string, index: number) => (
             <div className="player-input" key={index}>
                <input
                   type="text"

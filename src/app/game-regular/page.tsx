@@ -1,9 +1,8 @@
 'use client'
-
 import React, { useEffect } from 'react'
-import GameRegularPlayersSection from '@/components/game-regular/GameRegularPlayersSection'
+import GameRegularPlayersSection from '@/components/game-regular-teams/GameRegularPlayersSection'
 import CurrentPlayerThrowParagraph from '@/components/CurrentPlayerThrowParagraph'
-import ScoreSection from '@/components/game-regular/ScoreSection'
+import ScoreSection from '@/components/game-regular-teams/ScoreSection'
 import SettingsButtons from '@/components/SettingsButtons'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameEndPopUp from '@/components/GameEndPopUp'
@@ -39,7 +38,7 @@ const GameRegular = () => {
          <GameRegularPlayersSection />
          <CurrentPlayerThrowParagraph  context={context} />
          <ScoreSection />
-         <SettingsButtons />
+         <SettingsButtons context={context} />
          <ErrorPopUp />
          <GameEndPopUp context={context} />
       </div>

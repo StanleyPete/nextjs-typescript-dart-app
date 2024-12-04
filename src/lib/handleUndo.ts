@@ -1,35 +1,34 @@
+import { Player, HistoryEntry, Team, HistoryEntryTeams } from '@/app/types/types'
 import { AppDispatch } from '@/redux/store'
 import {
-   setCurrentPlayerIndex,
-   setHistory,
    setPlayers,
+   setHistory,
+   setCurrentPlayerIndex,
    setThrowValueSum,
    setCurrentPlayerThrows,
    setCurrentPlayerThrowsCount,
-   Player,
-   HistoryEntry
 } from '@/redux/slices/gameRegularSlice'
 import { 
+   setTeams,
+   setHistory as setHistoryTeams,
    setCurrentTeamIndex,
    setCurrentPlayerIndexInTeam,
-   setHistory as setHistoryTeams,
-   setTeams,
    setThrowValueSum as setThrowValueSumTeams, 
    setCurrentPlayerThrows as setCurrentPlayerThrowsTeams,
    setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
-   Team, 
-   HistoryEntry as HistoryEntryTeams } from '@/redux/slices/gameRegularTeamsSlice'
-  
+} from '@/redux/slices/gameRegularTeamsSlice'
+
+//UNDO HANDLER FOR GAME REGULAR
 export const handleUndoRegular = (
-   dispatch: AppDispatch,
-   history: HistoryEntry[],
    players: Player[],
-   gameMode: number | string,
-   showNumberButtons: boolean,
-   currentPlayerThrowsCount: number,
-   currentPlayerThrows: number[],
    currentPlayerIndex: number,
-   throwValueSum: number
+   history: HistoryEntry[],
+   showNumberButtons: boolean,
+   throwValueSum: number,
+   currentPlayerThrows: number[],
+   currentPlayerThrowsCount: number,
+   gameMode: number | string,
+   dispatch: AppDispatch,
 ) => {
    const lastEntry = history[history.length - 1]
    const gamePlayers = JSON.parse(JSON.stringify(players))
@@ -155,16 +154,18 @@ export const handleUndoRegular = (
    dispatch(setPlayers(gamePlayers)) 
 }
 
+
+//UNDO HANDLER FOR GAME REGULAR TEAMS:
 export const handleUndoRegularTeams = (
-   dispatch: AppDispatch,
-   history: HistoryEntryTeams[],
    teams: Team[],
-   gameMode: number | string,
-   showNumberButtons: boolean,
-   currentPlayerThrowsCount: number,
-   currentPlayerThrows: number[],
    currentTeamIndex: number,
-   throwValueSum: number
+   history: HistoryEntryTeams[],
+   showNumberButtons: boolean,
+   throwValueSum: number,
+   currentPlayerThrows: number[],
+   currentPlayerThrowsCount: number,
+   gameMode: number | string,
+   dispatch: AppDispatch,
 ) => {
    const lastEntry = history[history.length - 1]
    const gameTeams = JSON.parse(JSON.stringify(teams))

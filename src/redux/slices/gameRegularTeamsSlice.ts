@@ -1,50 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
-export interface Player {
-   name: string
-}
-
-export interface Team {
-   name: string
-   members: Player[]
-   legs: number
-   pointsLeft: number
-   lastScore: number
-   totalThrows: number
-   totalAttempts: number
-   average: number
-   isInputPreffered: boolean
-}
-
-export interface HistoryEntry {
-   historyTeamIndex: number
-   historyPlayerIndexInTeam: number
-   historyPointsLeft: number
-   historyLastScore: number
-   historyTotalThrows: number
-   historyLastAverage: number
-   historyTotalAttempts: number
-}
-
-export interface GameRegularTeamsState {
-   teams: Team[]
-   history: HistoryEntry[]
-   currentThrow: number
-   currentPlayerIndex: number
-   currentTeamIndex: number
-   currentPlayerIndexInTeam: number
-   startTeamIndex: number
-   showNumberButtons: boolean
-   throwValueSum: number
-   currentPlayerThrowsCount: number
-   currentPlayerThrows: number[]
-   multiplier: number
-   isDoubleActive: boolean
-   isGameEnd: boolean
-   winner: Team | null
-   isSoundEnabled: boolean
-   initialSoundPlayed: boolean
-}
+import { Team, HistoryEntryTeams, GameRegularTeamsState } from '@/app/types/types'
 
 const initialState: GameRegularTeamsState = {
    teams: [],
@@ -70,17 +25,23 @@ const gameRegularTeamsSlice = createSlice({
    name: 'gameRegularTeams',
    initialState,
    reducers: {
-      initializeTeams(state, action: PayloadAction<{ playerNames: string[]; gameMode: number | string}>) {
-         const gameModeNumber = typeof action.payload.gameMode === 'string' ? Number(action.payload.gameMode) : action.payload.gameMode
+      initializeTeams(
+         state, 
+         action: PayloadAction<{ 
+            playerNames: string[] 
+            gameMode: number | string 
+         }>
+      ){
+         const gameModeNumber = typeof action.payload.gameMode === 'string' 
+            ? Number(action.payload.gameMode) 
+            : action.payload.gameMode
 
-         const players: Player[] = action.payload.playerNames.map((name) => ({
-            name,
-         }))
-
+         const { playerNames } = action.payload
+  
          state.teams = [
             {
                name: 'Team 1',
-               members: players.slice(0, 2),
+               members: playerNames.slice(0, 2), 
                legs: 0,
                pointsLeft: gameModeNumber,
                lastScore: 0,
@@ -91,7 +52,7 @@ const gameRegularTeamsSlice = createSlice({
             },
             {
                name: 'Team 2',
-               members: players.slice(2, 4), // Kolejne 2 osoby to drużyna 2
+               members: playerNames.slice(2, 4), 
                legs: 0,
                pointsLeft: gameModeNumber,
                lastScore: 0,
@@ -105,7 +66,7 @@ const gameRegularTeamsSlice = createSlice({
       setTeams(state, action: PayloadAction<Team[]>) {
          state.teams = action.payload
       },
-      setHistory(state, action: PayloadAction<HistoryEntry[]>) {
+      setHistory(state, action: PayloadAction<HistoryEntryTeams[]>) {
          state.history = action.payload
       },
       setCurrentThrow(state, action: PayloadAction<number>) {

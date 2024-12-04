@@ -4,44 +4,32 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setIsSoundEnabled as setGameRegularSoundEnabled } from '@/redux/slices/gameRegularSlice'
 import { setIsSoundEnabled as setGameRegularTeamsSoundEnabled } from '@/redux/slices/gameRegularTeamsSlice'
+import { GameContextProps } from '@/app/types/types'
 
-interface CurrentPlayerThrowParagraphProps {
-   context: 'gameRegular' | 'gameRegularTeams'
-}
-
-const CurrentPlayerThrowParagraph: React.FC<CurrentPlayerThrowParagraphProps>  = ({ context }) => {
+const CurrentPlayerThrowParagraph: React.FC<GameContextProps>  = ({ context }) => {
    const dispatch = useDispatch()
 
    const { 
       playersOrTeams, 
-      index,
+      playerOrTeamindex,
+      currentPlayerIndexInTeam, 
       isSoundEnabled 
    } = useSelector((state: RootState) => {
-      if (context === 'gameRegular') {
-         return {
+      return context === 'gameRegular'
+         ? {
             playersOrTeams: state.gameRegular.players,
-            index: state.gameRegular.currentPlayerIndex,
-            isSoundEnabled: state.gameRegular.isSoundEnabled, 
+            playerOrTeamindex: state.gameRegular.currentPlayerIndex,
+            isSoundEnabled: state.gameRegular.isSoundEnabled
          }
-      }
-
-      if (context === 'gameRegularTeams') {
-         return {
-            playersOrTeams: state.gameRegularTeams.teams[state.gameRegularTeams.currentTeamIndex].members,
-            index: state.gameRegularTeams.currentPlayerIndexInTeam,
-            isSoundEnabled: state.gameRegularTeams.isSoundEnabled,
-      
+         : {
+            playersOrTeams: state.gameRegularTeams.teams,
+            playerOrTeamindex: state.gameRegularTeams.currentTeamIndex,
+            currentPlayerIndexInTeam: state.gameRegularTeams.currentPlayerIndexInTeam,
+            isSoundEnabled: state.gameRegularTeams.isSoundEnabled
          }
-      }
-
-      return { 
-         playersOrTeams: [], 
-         index: 0, 
-         isSoundEnabled: true 
-      }
    })
    
-   const currentPlayerOrTeam = playersOrTeams[index].name
+   const currentPlayerOrTeam = playersOrTeams[playerOrTeamindex]
 
    //Sound toggle handler
    const toggleSound = () => {
@@ -68,7 +56,10 @@ const CurrentPlayerThrowParagraph: React.FC<CurrentPlayerThrowParagraphProps>  =
 
          {/* Current player's turn message */}
          <span className="current-player-throw-message">
-            {`${currentPlayerOrTeam.toUpperCase()}'S TURN TO THROW!`}
+            {context === 'gameRegular' 
+               ? `${currentPlayerOrTeam.name.toUpperCase()}'S TURN TO THROW!`
+               : `${currentPlayerOrTeam.members[currentPlayerIndexInTeam].toUpperCase()}'S TURN TO THROW!`
+            }
          </span>
          
       </p>

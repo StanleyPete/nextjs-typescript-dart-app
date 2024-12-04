@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import ThrowValueSection from './ThrowValueSection'
-import KeyboardButtons from '../score-buttons/KeyboardButtons'
-import NumberButtons from '../score-buttons/NumberButtons'
+import KeyboardButtons from './KeyboardButtons'
+import NumberButtons from './NumberButtons'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setShowNumberButtons } from '@/redux/slices/gameRegularSlice'
@@ -26,7 +26,9 @@ const ScoreSection = () => {
 
          {/* Score buttons section*/}
          <div className="score-buttons-section">
-            { !showNumberButtons ? ( <KeyboardButtons /> ) : ( <NumberButtons /> ) }  
+            { !showNumberButtons 
+               ? ( <KeyboardButtons /> ) 
+               : ( <NumberButtons /> ) }  
          </div>
 
       </div>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { handleUndo } from '@/lib/handleUndo'
+import { handleUndoRegular } from '@/lib/handleUndo'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setCurrentThrow, } from '@/redux/slices/gameRegularSlice'
@@ -7,9 +7,7 @@ import { setCurrentThrow, } from '@/redux/slices/gameRegularSlice'
 const KeyboardButtons = () => {
    const dispatch = useDispatch()
 
-   const {  
-      gameMode,
-   } = useSelector((state: RootState) => state.gameSettings)
+   const gameMode = useSelector((state: RootState) => state.gameSettings)
 
    const { 
       players, 
@@ -37,7 +35,17 @@ const KeyboardButtons = () => {
          ))}
          <button 
             onClick={() => {
-               handleUndo(dispatch, history, players, gameMode, showNumberButtons, currentPlayerThrowsCount, currentPlayerThrows, currentPlayerIndex, throwValueSum)}}>
+               handleUndoRegular(
+                  players, 
+                  currentPlayerIndex, 
+                  history, 
+                  showNumberButtons, 
+                  throwValueSum,
+                  currentPlayerThrows, 
+                  currentPlayerThrowsCount, 
+                  gameMode, 
+                  dispatch, 
+               )}}>
                    Undo
          </button>
          <button

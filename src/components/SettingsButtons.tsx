@@ -1,35 +1,52 @@
-'use client'
-
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
+import { handleRestartGameRegular, handleRestartGameRegularTeams } from '@/lib/handleRestartGame'
 import { RootState } from '@/redux/store'
-import { handleRestartGame } from '@/lib/handleRestartGame'
+import { useDispatch, useSelector } from 'react-redux'
 import { initializePlayers } from '../redux/slices/gameRegularSlice'
+import { initializeTeams } from '../redux/slices/gameRegularTeamsSlice'
+import { GameContextProps } from '@/app/types/types'
 
-
-const SettingsButtons = () => {
+const SettingsButtons: React.FC<GameContextProps> = ({ context }) => {
    const dispatch = useDispatch()
    const router = useRouter()
 
-   const { isGameEnd } = useSelector((state: RootState) => state.gameRegular)
    const { gameMode, playerNames } = useSelector((state: RootState) => state.gameSettings)
+
+   const isGameEnd = useSelector<RootState, boolean>(
+      (state) => context === 'gameRegular' 
+         ? state.gameRegular.isGameEnd 
+         : state.gameRegularTeams.isGameEnd
+   )
 
    return (
       <div className="settings-buttons">
          <button 
             className="go-back" 
-            onClick={() => {
-               router.back()
-            }}>
-        Back to Settings
+            onClick={() => {router.back()}}>
+               Back to Settings
          </button>
          <button 
             className="restart-game" 
             onClick={() => {
-               handleRestartGame(dispatch, playerNames, gameMode, isGameEnd, initializePlayers)
-            }}>
-        Restart game
+               if(context === 'gameRegular'){
+                  handleRestartGameRegular(
+                     playerNames, 
+                     gameMode, 
+                     isGameEnd, 
+                     initializePlayers,
+                     dispatch, 
+                  )
+               } else {
+                  handleRestartGameRegularTeams(
+                     playerNames,
+                     gameMode,
+                     isGameEnd,
+                     initializeTeams,
+                     dispatch
+                  )
+               }}}>
+                  Restart game
          </button>
       </div>
    )

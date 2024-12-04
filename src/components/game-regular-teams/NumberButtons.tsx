@@ -4,13 +4,12 @@ import { playSound } from '@/lib/playSound'
 import { handleSwitchPlayer } from '@/lib/handleSwitchPlayer'
 import { handleSwitchStartPlayerIndex } from '@/lib/handleSwitchStartPlayerIndex'
 import { checkGameEndHandler } from '@/lib/checkGameEndHandler'
+import { Player, HistoryEntry } from '@/app/types/types'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { 
-   Player,
    setPlayers, 
    setHistory,
-   HistoryEntry, 
    setCurrentThrow, 
    setCurrentPlayerIndex,  
    setThrowValueSum, 
@@ -239,10 +238,10 @@ const NumberButtons = () => {
          playSound((throwValueSum + multiplierThrowValue).toString(), isSoundEnabled)
 
          //Resetting states:
-         dispatch(setThrowValueSum(0))
-         dispatch(setCurrentPlayerThrowsCount(0))
-         dispatch(setCurrentPlayerThrows([]))
          dispatch(setCurrentThrow(0))
+         dispatch(setThrowValueSum(0))
+         dispatch(setCurrentPlayerThrows([]))
+         dispatch(setCurrentPlayerThrowsCount(0))
        
          //Switching to the next player
          handleSwitchPlayer(currentPlayerIndex, players, dispatch)
@@ -293,7 +292,16 @@ const NumberButtons = () => {
          </button>
          <button 
             onClick={() => {
-               handleUndoRegular(dispatch, history, players, gameMode, showNumberButtons, currentPlayerThrowsCount, currentPlayerThrows, currentPlayerIndex, throwValueSum)}}>
+               handleUndoRegular(
+                  players, 
+                  currentPlayerIndex, 
+                  history, 
+                  showNumberButtons, 
+                  throwValueSum, 
+                  currentPlayerThrows, 
+                  currentPlayerThrowsCount, 
+                  gameMode, 
+                  dispatch)}}>
                    Undo
          </button>
       </div>
