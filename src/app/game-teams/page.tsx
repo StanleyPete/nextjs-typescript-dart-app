@@ -699,10 +699,7 @@ const GameTeams = () => {
 
    return (
       <div className='game-container'>
-
          <GameTeamsPlayersSection />
-           
-         {/*Current player throw paragraph:*/}
          <CurrentPlayerThrowParagraph  context={context} />
 
          {/*Main score input section (input/buttons toggle, score preview, submit score button, score buttons ):*/}

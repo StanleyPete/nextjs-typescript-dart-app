@@ -9,7 +9,7 @@ import GameEndPopUp from '@/components/GameEndPopUp'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setInitialSoundPlayed, } from '@/redux/slices/gameRegularSlice'
-import { playSound } from '@/lib/playSound'
+import { playSound } from '@/controllers/playSound'
 
 const GameRegular = () => {
    const dispatch = useDispatch()

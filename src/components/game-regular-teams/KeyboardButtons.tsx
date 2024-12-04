@@ -1,5 +1,5 @@
 import React from 'react'
-import { handleUndoRegular } from '@/lib/handleUndo'
+import { handleUndoRegular } from '@/controllers/handleUndo'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setCurrentThrow, } from '@/redux/slices/gameRegularSlice'

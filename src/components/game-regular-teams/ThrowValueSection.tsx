@@ -1,18 +1,13 @@
 import React from 'react'
 import Image from 'next/image'
-import { playSound } from '@/lib/playSound'
-import { handleSwitchPlayer } from '@/lib/handleSwitchPlayer'
-import { handleSwitchStartPlayerIndex } from '@/lib/handleSwitchStartPlayerIndex'
-import { checkGameEndHandler } from '@/lib/checkGameEndHandler'
-import { Player, HistoryEntry } from '@/app/types/types'
+import { handleThrowChange } from '@/controllers/handleThrowChange'
+import { handleSubmitThrowKeyboardButtons } from '@/controllers/handleSubmitThrowKeyboardButtons'
+import { handleSubmitThrowSubmitScoreButton } from '@/controllers/handleSubmitThrowSubmitScoreButton'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setError } from '@/redux/slices/gameSettingsSlice'
 import { 
    setPlayers, 
-   setHistory,
-   setCurrentThrow, 
-   setCurrentPlayerIndex,   
+   setCurrentThrow,  
    setThrowValueSum, 
    setCurrentPlayerThrowsCount, 
    setCurrentPlayerThrows, 
@@ -44,210 +39,9 @@ const ThrowValueSection = () => {
       isSoundEnabled, 
    } = useSelector((state: RootState) => state.gameRegular)
 
-   //SCORE INPUT HANDLER
-   const handleThrowChange = (value: string) => {
-      dispatch(setCurrentThrow(Number(value)))
-   }
-
-   //SUBMIT SCORE HANDLER FOR INPUT
-   const handleSubmitThrowInput = (inputMultiplier: number) => {
-      const invalidScores = [163, 166, 169, 172, 173, 175, 176, 178, 179]
-      const gamePlayers = JSON.parse(JSON.stringify(players))
-      const currentPlayer = gamePlayers[currentPlayerIndex]
-   
-      //Error hanlder (currentThrow over 180)
-      if(currentThrow > 180){
-         dispatch(setError({ isError: true, errorMessage: 'Score higher than 180 is not possible' }))
-         dispatch(setCurrentThrow(0))
-         return
-      }
-
-      if(invalidScores.includes(currentThrow)){
-         dispatch(setError({ isError: true, errorMessage: `${currentThrow} is not possible` }))
-         dispatch(setCurrentThrow(0))
-         return
-      }
-
-      //Creating newHistoryEntry
-      const newHistoryEntry: HistoryEntry = {
-         historyPlayerIndex: currentPlayerIndex,
-         historyPointsLeft: currentPlayer.pointsLeft, 
-         historyTotalThrows: currentPlayer.totalThrows + (currentThrow * inputMultiplier),
-         historyLastScore: currentPlayer.lastScore,
-         historyLastAverage: currentPlayer.average,
-         historyTotalAttempts: currentPlayer.totalAttempts
-      }
-    
-      //Updating pointsLeft
-      currentPlayer.pointsLeft -= (currentThrow * inputMultiplier)
-    
-      //End leg scenario
-      if(isDoubleActive && currentPlayer.pointsLeft === 0) {
-         // Additional history entries created if leg ends in order to properly Undo handler usage 
-         const newHistoryEntries = gamePlayers
-            .map((player: Player, index: number) => {
-               if (index === currentPlayerIndex) {
-                  return null //NewHistoryEntry not created for currentPlayerIndex!
-               }
-               return {
-                  historyPlayerIndex: index, 
-                  historyPointsLeft: player.pointsLeft, 
-                  historyTotalThrows: player.totalThrows, 
-                  historyLastScore: player.lastScore, 
-                  historyLastAverage: player.average, 
-                  historyTotalAttempts: player.totalAttempts 
-               }
-            })
-            .filter((entry: HistoryEntry | null) => entry !== null) //Skipping currentPlayerIndex (null)
-       
-         //Updating legs for current player
-         currentPlayer.legs += 1
-       
-         //Updating game stats for new leg (for each player)
-         gamePlayers.forEach((player: Player) => {
-            player.pointsLeft = Number(gameMode)
-            player.lastScore = 0
-            player.totalThrows = 0
-            player.totalAttempts = 0
-            player.average = 0
-            player.isInputPreffered = true
-         })
-
-         //Updating history state with currentPlayerIndex
-         dispatch(setHistory([...history, ...newHistoryEntries, newHistoryEntry]))
-
-         //Upadating player's state
-         dispatch(setPlayers(gamePlayers)) 
-
-         //Switching to next player who start the leg
-         handleSwitchStartPlayerIndex(startPlayerIndex, players, dispatch)
-
-         //Setting current player index:
-         dispatch(setCurrentPlayerIndex((startPlayerIndex + 1) % players.length))
-
-         //End game check
-         checkGameEndHandler(gamePlayers, gameWin, numberOfLegs, isSoundEnabled, dispatch)
-
-         //Resetting isDoubleActive state
-         dispatch(setIsDoubleActive(false))
-
-         //Resetting input value
-         dispatch(setCurrentThrow(0))
-       
-         return
-      }
-
-      //Scenario when updated pointsLeft are equal or less than 1
-      if(currentPlayer.pointsLeft <= 1){
-         //Updating historyTotalThrows
-         newHistoryEntry.historyTotalThrows = currentPlayer.totalThrows
-
-         //Updating pointsLeft, lastScore, totalThrows, totalAttempts and average
-         currentPlayer.pointsLeft += (currentThrow * inputMultiplier)
-         currentPlayer.lastScore = 0
-         currentPlayer.totalThrows += 0
-         currentPlayer.totalAttempts += 1
-         currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
-
-         //Updating history state
-         dispatch(setHistory([...history, newHistoryEntry]))
-
-         //Upadating player's state
-         dispatch(setPlayers(gamePlayers))
-
-         //Sound effect
-         playSound('no-score', isSoundEnabled)
-
-         //Switching to the next player
-         handleSwitchPlayer(currentPlayerIndex, players, dispatch)
-
-         //Resetting input value
-         dispatch(setCurrentThrow(0))
-
-         return
-      }
-
-      //Updating lastScore, totalThrows, totalAttempts, average
-      currentPlayer.lastScore = (currentThrow * inputMultiplier)
-      currentPlayer.totalThrows += (currentThrow * inputMultiplier)
-      currentPlayer.totalAttempts += 1
-      currentPlayer.isInputPreffered = true
-      currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
-    
-      //Updating history state
-      dispatch(setHistory([...history, newHistoryEntry]))
-    
-      //Upadating player's state
-      dispatch(setPlayers(gamePlayers))
-
-      //Sound effect
-      if (currentThrow === 0) {
-         playSound('no-score', isSoundEnabled)
-      } else {
-         playSound(currentThrow.toString(), isSoundEnabled)
-      }
-    
-      //Switching to the next player
-      handleSwitchPlayer(currentPlayerIndex, players, dispatch)
-   
-      //Resetting input value
-      dispatch(setCurrentThrow(0))
-   }
-
-   
-   //SUBMIT SCORE HANDLER FOR BUTTONS 
-   /*
-      (for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value)
-    */
-   const handleSubmitScoreButtons = () => {
-      const updatedPlayers = JSON.parse(JSON.stringify(players))
-      const currentPlayer = updatedPlayers[currentPlayerIndex]
-
-      const throwSum = currentPlayerThrows.reduce((acc: number, throwValue: number) => acc + throwValue, 0)
-
-      //Creating newHistoryEntry
-      const newHistoryEntry: HistoryEntry = {
-         historyPlayerIndex: currentPlayerIndex,
-         historyPointsLeft: currentPlayer.pointsLeft + throwSum,
-         historyTotalThrows: currentPlayer.totalThrows, 
-         historyLastScore: currentPlayer.lastScore,
-         historyLastAverage: currentPlayer.average,
-         historyTotalAttempts: currentPlayer.totalAttempts
-      }
-    
-      //Updating lastScore and totalAttempts
-      currentPlayer.lastScore = throwSum
-      currentPlayer.totalAttempts += 1
-
-      //Average calculation:
-      currentPlayer.average = currentPlayer.totalThrows / currentPlayer.totalAttempts
-
-      //Updating history state
-      dispatch(setHistory([...history, newHistoryEntry]))
-
-      //Sound-effect
-      if(throwSum === 0){
-         playSound('no-score', isSoundEnabled)
-      } else {
-         playSound(throwSum.toString(), isSoundEnabled)
-      }
-    
-      //Resetting states
-      dispatch(setThrowValueSum(0))
-      dispatch(setCurrentPlayerThrows([]))
-      dispatch(setCurrentPlayerThrowsCount(0))
-      dispatch(setCurrentThrow(0))
-
-      //Switching to the next player
-      handleSwitchPlayer(currentPlayerIndex, players, dispatch)
-    
-      //Updating player's state
-      dispatch(setPlayers(updatedPlayers))
-   }
-
 
    return (
-      <> 
+      <>
          {/*Current throws section:*/}
          <div className="throw-value-section">
 
@@ -284,7 +78,7 @@ const ThrowValueSection = () => {
                   <input
                      type="number"
                      value={currentThrow}
-                     onChange={(e) => handleThrowChange(e.target.value)}
+                     onChange={(e) => handleThrowChange(e.target.value, dispatch)}
                   />
                   <button 
                      className='remove-last'
@@ -318,13 +112,31 @@ const ThrowValueSection = () => {
                className='submit-score' 
                onClick={() => {
                   if (!showNumberButtons) {
-                     if (isDoubleActive) {
-                        handleSubmitThrowInput(2)
-                     } else {
-                        handleSubmitThrowInput(1)
-                     }
+                     const multiplierNumber = isDoubleActive ? 2 : 1
+                     handleSubmitThrowKeyboardButtons(
+                        players,
+                        currentPlayerIndex,
+                        startPlayerIndex,
+                        history,
+                        currentThrow,
+                        multiplierNumber,
+                        gameMode,
+                        numberOfLegs,
+                        gameWin,
+                        isSoundEnabled,
+                        isDoubleActive,
+                        dispatch
+                     )
+                     
                   } else {
-                     handleSubmitScoreButtons()
+                     handleSubmitThrowSubmitScoreButton(
+                        players,
+                        currentPlayerIndex,
+                        currentPlayerThrows,
+                        history,
+                        isSoundEnabled,
+                        dispatch
+                     )
                   }
                }}>
                   Submit Score
@@ -343,21 +155,15 @@ const ThrowValueSection = () => {
                )
             ) : (
                <div className="multiplier-buttons">
-                  <button 
-                     onClick={() => dispatch(setMultiplier(1))} 
-                     className={multiplier === 1 ? 'active' : ''}>
-                        Single
-                  </button>
-                  <button 
-                     onClick={() => dispatch(setMultiplier(2))} 
-                     className={multiplier === 2 ? 'active' : ''}>
-                        Double
-                  </button>
-                  <button 
-                     onClick={() => dispatch(setMultiplier(3))} 
-                     className={multiplier === 3 ? 'active' : ''}>
-                        Triple
-                  </button>
+                  { [1, 2, 3].map((multiplierValue) => (
+                     <button
+                        key={multiplierValue}
+                        onClick={() => dispatch(setMultiplier(multiplierValue))}
+                        className={multiplier === multiplierValue ? 'active' : ''}
+                     >
+                        {multiplierValue === 1 ? 'Single' : multiplierValue === 2 ? 'Double' : 'Triple'}
+                     </button>
+                  ))}
                </div>
             )}
          </div>

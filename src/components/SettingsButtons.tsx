@@ -1,6 +1,6 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import { handleRestartGameRegular, handleRestartGameRegularTeams } from '@/lib/handleRestartGame'
+import { handleRestartGameRegular, handleRestartGameRegularTeams } from '@/controllers/handleRestartGame'
 import { RootState } from '@/redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializePlayers } from '../redux/slices/gameRegularSlice'
