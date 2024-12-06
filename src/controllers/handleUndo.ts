@@ -127,7 +127,7 @@ export const handleUndoRegular = (
          currentPlayer.pointsLeft = lastEntry.historyPointsLeft
          currentPlayer.lastScore = lastEntry.historyLastScore
          currentPlayer.average = lastEntry.historyLastAverage
-         currentPlayer.totalThrows = lastEntry.historyTotalThrows
+         currentPlayer.totalThrows = lastEntry.historyTotalThrows - currentPlayer.totalThrows
          currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
 
          //Removing last history entry
