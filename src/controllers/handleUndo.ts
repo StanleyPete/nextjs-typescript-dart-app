@@ -276,7 +276,7 @@ export const handleUndoRegularTeams = (
          currentTeam.pointsLeft = lastEntry.historyPointsLeft
          currentTeam.lastScore = lastEntry.historyLastScore
          currentTeam.average = lastEntry.historyLastAverage
-         currentTeam.totalThrows = lastEntry.historyTotalThrows
+         currentTeam.totalThrows = lastEntry.historyTotalThrows - currentTeam.totalThrows
          currentTeam.totalAttempts = lastEntry.historyTotalAttempts
 
          //Removing last history entry

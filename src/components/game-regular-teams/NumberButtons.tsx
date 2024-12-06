@@ -27,7 +27,12 @@ const NumberButtons = () => {
       isSoundEnabled, 
    } = useSelector((state: RootState) => state.gameRegular)
 
-   
+   const specialButtons = [
+      { label: 'Bull (50)', value: 50 },
+      { label: 'Outer (25)', value: 25 },
+      { label: 'Miss', value: 0 },
+   ]
+
    
    return (
       <div className='score-buttons'>
@@ -55,86 +60,41 @@ const NumberButtons = () => {
                         gameWin,
                         isSoundEnabled,
                         dispatch
-                     )}
-                  }>
-                  <span 
-                     className="base-value">
-                     {baseValue}
-                  </span>
-                  {displayValue && 
-                         <span 
-                            className="multiplied-value">
-                               ({displayValue})
-                         </span>
-                  }
+                     )
+                  }}
+               >
+                  <span className="base-value">{baseValue}</span>
+                  {displayValue && <span className="multiplied-value">({displayValue})</span>}
                </button>
             )
          })}
 
          {/* Bull, Outer, Miss and Undo buttons */}
-         <button 
-            onClick={() => {
-               handleSubmitThrowNumberButtons(
-                  multiplier === 2 ? 50 / 2 : multiplier === 3 ? 50 / 3 : 50,
-                  players,
-                  currentPlayerIndex,
-                  startPlayerIndex,
-                  history,
-                  throwValueSum,
-                  currentPlayerThrowsCount,
-                  currentPlayerThrows,
-                  multiplier,
-                  gameMode,
-                  numberOfLegs,
-                  gameWin,
-                  isSoundEnabled,
-                  dispatch
-               )}
-            }>
-                   Bull (50)
-         </button>
-         <button 
-            onClick={() => {
-               handleSubmitThrowNumberButtons(
-                  multiplier === 2 ? 25 / 2 : multiplier === 3 ? 25 / 3 : 25,
-                  players,
-                  currentPlayerIndex,
-                  startPlayerIndex,
-                  history,
-                  throwValueSum,
-                  currentPlayerThrowsCount,
-                  currentPlayerThrows,
-                  multiplier,
-                  gameMode,
-                  numberOfLegs,
-                  gameWin,
-                  isSoundEnabled,
-                  dispatch
-               )}
-            }>
-                   Outer (25)
-         </button>
-         <button 
-            onClick={() => {
-               handleSubmitThrowNumberButtons(
-                  0,
-                  players,
-                  currentPlayerIndex,
-                  startPlayerIndex,
-                  history,
-                  throwValueSum,
-                  currentPlayerThrowsCount,
-                  currentPlayerThrows,
-                  multiplier,
-                  gameMode,
-                  numberOfLegs,
-                  gameWin,
-                  isSoundEnabled,
-                  dispatch
-               )}
-            }>
-                   Miss
-         </button>
+         {specialButtons.map(({ label, value }) => (
+            <button 
+               key={label} 
+               onClick={() => {
+                  handleSubmitThrowNumberButtons(
+                     multiplier === 2 ? value / 2 : multiplier === 3 ? value / 3 : value,
+                     players,
+                     currentPlayerIndex,
+                     startPlayerIndex,
+                     history,
+                     throwValueSum,
+                     currentPlayerThrowsCount,
+                     currentPlayerThrows,
+                     multiplier,
+                     gameMode,
+                     numberOfLegs,
+                     gameWin,
+                     isSoundEnabled,
+                     dispatch
+                  )
+               }}
+            >
+               {label}
+            </button>
+         ))}
          <button 
             onClick={() => {
                handleUndoRegular(
@@ -147,9 +107,10 @@ const NumberButtons = () => {
                   currentPlayerThrowsCount, 
                   gameMode, 
                   dispatch
-               )}
-            }>
-                   Undo
+               )
+            }}
+         >
+               Undo
          </button>
       </div>
    )
