@@ -1,5 +1,6 @@
 import { AppDispatch } from '@/redux/store'
-import { setCurrentPlayerIndex, Player } from '@/redux/slices/gameRegularSlice'
+import { setCurrentPlayerIndex } from '@/redux/slices/gameRegularSlice'
+import { Player } from '@/types/types'
 
 /* Switch to another player: 
        Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 

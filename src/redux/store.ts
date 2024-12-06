@@ -3,9 +3,14 @@ import {
    configureStore,
    Reducer 
 } from '@reduxjs/toolkit'
-import gameSettingsReducer, { GameSettingsState } from './slices/gameSettingsSlice'
-import gameRegularReducer, { GameRegularState } from './slices/gameRegularSlice'
-import gameRegularTeams, { GameRegularTeamsState } from './slices/gameRegularTeamsSlice'
+import gameSettingsReducer from './slices/gameSettingsSlice'
+import gameRegularReducer from './slices/gameRegularSlice'
+import gameRegularTeams from './slices/gameRegularTeamsSlice'
+import { 
+   GameSettingsState,
+   GameRegularState, 
+   GameRegularTeamsState 
+} from '@/types/types'
 
 //Initial store setup
 export const store = configureStore({

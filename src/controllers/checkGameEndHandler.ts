@@ -1,5 +1,5 @@
 import { AppDispatch } from '@/redux/store'
-import { Player } from '@/app/types/types'
+import { Player } from '@/types/types'
 import { setIsGameEnd, setWinner } from '@/redux/slices/gameRegularSlice'
 import { playSound } from '@/controllers/playSound'
 

@@ -1,5 +1,6 @@
 import { AppDispatch } from '@/redux/store'
-import { setStartPlayerIndex, Player } from '@/redux/slices/gameRegularSlice'
+import { setStartPlayerIndex } from '@/redux/slices/gameRegularSlice'
+import { Player } from '@/types/types'
 
 /* Switch to another player who starts the leg: 
        Example: If there are 4 players and currentPlayerIndex === 3 (last player's turn), 

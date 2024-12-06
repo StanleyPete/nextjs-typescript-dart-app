@@ -1,15 +1,14 @@
 import { AppDispatch } from '@/redux/store'
-import { 
-   setCurrentPlayerIndex, 
-   setHistory, 
-   setCurrentThrow, 
-   setThrowValueSum, 
-   setCurrentPlayerThrowsCount, 
-   setIsGameEnd, 
-   setWinner, 
-   InitializePlayersType 
+import {
+   setCurrentPlayerIndex,
+   setHistory,
+   setCurrentThrow,
+   setThrowValueSum,
+   setCurrentPlayerThrowsCount,
+   setIsGameEnd,
+   setWinner,
 } from '@/redux/slices/gameRegularSlice'
-import { 
+import {
    setCurrentTeamIndex,
    setCurrentPlayerIndexInTeam,
    setHistory as setHistoryTeams,
@@ -18,18 +17,17 @@ import {
    setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
    setIsGameEnd as setIsGameEndTeams,
    setWinner as setWinnerTeams,
-   InitializeTeamsType
 } from '@/redux/slices/gameRegularTeamsSlice'
+import { InitializePlayersType, InitializeTeamsType } from '@/types/types'
 
 //Restart handler for game regular
 export const handleRestartGameRegular = (
-   playerNames: string[], 
-   gameMode: number | string, 
-   isGameEnd: boolean, 
+   playerNames: string[],
+   gameMode: number | string,
+   isGameEnd: boolean,
    initializePlayers: InitializePlayersType,
-   dispatch: AppDispatch, 
+   dispatch: AppDispatch
 ) => {
-
    dispatch(initializePlayers({ playerNames, gameMode }))
    dispatch(setCurrentPlayerIndex(0))
    dispatch(setCurrentThrow(0))
@@ -45,15 +43,14 @@ export const handleRestartGameRegular = (
 
 //Restart handler for game regular teams
 export const handleRestartGameRegularTeams = (
-   playerNames: string[], 
-   gameMode: number | string, 
-   isGameEnd: boolean, 
+   playerNames: string[],
+   gameMode: number | string,
+   isGameEnd: boolean,
    initializeTeams: InitializeTeamsType,
-   dispatch: AppDispatch, 
+   dispatch: AppDispatch
 ) => {
-
    dispatch(initializeTeams({ playerNames, gameMode }))
-   dispatch(setCurrentTeamIndex(0)) 
+   dispatch(setCurrentTeamIndex(0))
    dispatch(setCurrentPlayerIndexInTeam(0))
    dispatch(setCurrentThrowTeams(0))
    dispatch(setHistoryTeams([]))

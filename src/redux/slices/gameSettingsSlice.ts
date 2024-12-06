@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { GameSettingsState, ErrorState } from '@/app/types/types'
+import { GameSettingsState, ErrorState } from '@/types/types'
 
 const initialState: GameSettingsState = {
    gameType: 'regular',
@@ -10,15 +10,18 @@ const initialState: GameSettingsState = {
    isFirstLoad: true,
    error: {
       isError: false,
-      errorMessage: ''
-   }
+      errorMessage: '',
+   },
 }
 
 const gameSettingsSlice = createSlice({
    name: 'gameSettings',
    initialState,
    reducers: {
-      setGameType: (state, action: PayloadAction<'regular' | 'teams' | 'online'>) => {
+      setGameType: (
+         state,
+         action: PayloadAction<'regular' | 'teams' | 'online'>
+      ) => {
          state.gameType = action.payload
       },
       setPlayerNames(state, action: PayloadAction<string[]>) {
@@ -38,17 +41,17 @@ const gameSettingsSlice = createSlice({
       },
       setError: (state, action: PayloadAction<ErrorState>) => {
          state.error = action.payload
-      }
+      },
    },
 })
 
-export const { 
-   setPlayerNames, 
-   setGameMode, 
-   setGameType, 
-   setGameWin, 
-   setNumberOfLegs, 
-   setIsFirstLoad, 
-   setError 
+export const {
+   setPlayerNames,
+   setGameMode,
+   setGameType,
+   setGameWin,
+   setNumberOfLegs,
+   setIsFirstLoad,
+   setError,
 } = gameSettingsSlice.actions
 export default gameSettingsSlice.reducer

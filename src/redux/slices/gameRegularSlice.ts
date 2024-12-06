@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Player, HistoryEntry, GameRegularState } from '@/app/types/types'
+import { Player, HistoryEntry, GameRegularState } from '@/types/types'
 
 const initialState: GameRegularState = {
    players: [],
@@ -24,15 +24,16 @@ const gameRegularSlice = createSlice({
    initialState,
    reducers: {
       initializePlayers(
-         state, 
-         action: PayloadAction<{ 
-            playerNames: string[] 
-            gameMode: number | string
-         }>
-      ){
-         const gameModeNumber = typeof action.payload.gameMode === 'string' 
-            ? Number(action.payload.gameMode) 
-            : action.payload.gameMode
+         state,
+         action: PayloadAction<{
+        playerNames: string[];
+        gameMode: number | string;
+      }>
+      ) {
+         const gameModeNumber =
+        typeof action.payload.gameMode === 'string'
+           ? Number(action.payload.gameMode)
+           : action.payload.gameMode
 
          state.players = action.payload.playerNames.map((name) => ({
             name,

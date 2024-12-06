@@ -5,7 +5,7 @@ import { RootState } from '@/redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializePlayers } from '../redux/slices/gameRegularSlice'
 import { initializeTeams } from '../redux/slices/gameRegularTeamsSlice'
-import { GameContextProps } from '@/app/types/types'
+import { GameContextProps } from '@/types/types'
 
 const SettingsButtons: React.FC<GameContextProps> = ({ context }) => {
    const dispatch = useDispatch()

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setIsSoundEnabled as setGameRegularSoundEnabled } from '@/redux/slices/gameRegularSlice'
 import { setIsSoundEnabled as setGameRegularTeamsSoundEnabled } from '@/redux/slices/gameRegularTeamsSlice'
-import { GameContextProps } from '@/app/types/types'
+import { GameContextProps } from '@/types/types'
 
 const CurrentPlayerThrowParagraph: React.FC<GameContextProps>  = ({ context }) => {
    const dispatch = useDispatch()

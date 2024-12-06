@@ -6,7 +6,7 @@ import { RootState } from '@/redux/store'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameEndPopUp from '@/components/GameEndPopUp'
 import { setError } from '@/redux/slices/gameSettingsSlice'
-import { Team, HistoryEntryTeams } from '../types/types'
+import { Team, HistoryEntryTeams } from '../../types/types'
 import { 
    setTeams,
    setHistory,

@@ -3,7 +3,7 @@ import Image from 'next/image'
 import checkoutArray from '@/lib/checkout-table'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { Player } from '@/app/types/types'
+import { Player } from '@/types/types'
 
 const GameRegularPlayersSection = () => {
    
