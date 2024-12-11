@@ -5,30 +5,58 @@ import NumberButtons from './NumberButtons'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setShowNumberButtons } from '@/redux/slices/gameRegularSlice'
+import { setShowNumberButtons as setShowNumberButtonsTeams } from '@/redux/slices/gameRegularTeamsSlice'
+import { GameContextProps, ScoreSectionDataType } from '@/types/types'
 
-const ScoreSection = () => {
+const ScoreSection: React.FC<GameContextProps> = ({ context }) => {
    const dispatch = useDispatch()
-   const { players, currentPlayerIndex, showNumberButtons } = useSelector((state: RootState) => state.gameRegular)
+
+   const { 
+      playersOrTeams, 
+      index, 
+      showNumberButtons 
+   } = useSelector<RootState, ScoreSectionDataType>((state) => 
+      context === 'gameRegular' 
+         ? {
+            playersOrTeams: state.gameRegular.players,
+            index: state.gameRegular.currentPlayerIndex,
+            showNumberButtons: state.gameRegular.showNumberButtons,
+        
+         }
+         : {
+            playersOrTeams: state.gameRegularTeams.teams,
+            index: state.gameRegularTeams.currentPlayerIndex,
+            showNumberButtons: state.gameRegularTeams.showNumberButtons,
+         }
+   )
 
    useEffect(() => {
-      const isInputPreferred = players[currentPlayerIndex].isInputPreffered
-      if (isInputPreferred) {
-         dispatch(setShowNumberButtons(false))
+      const isInputPreferred = playersOrTeams[index].isInputPreffered
+      if (context === 'gameRegular'){
+         if (isInputPreferred) {
+            dispatch(setShowNumberButtons(false))
+         } else {
+            dispatch(setShowNumberButtons(true))
+         }
       } else {
-         dispatch(setShowNumberButtons(true))
+         if (isInputPreferred) {
+            dispatch(setShowNumberButtonsTeams(false))
+         } else {
+            dispatch(setShowNumberButtonsTeams(true))
+         }
       }
-   }, [players, currentPlayerIndex, dispatch])
+   }, [playersOrTeams, index, dispatch])
 
    return (
       <div className='score-section'> 
       
-         <ThrowValueSection />
+         <ThrowValueSection context={context}/>
 
          {/* Score buttons section*/}
          <div className="score-buttons-section">
             { !showNumberButtons 
-               ? ( <KeyboardButtons /> ) 
-               : ( <NumberButtons /> ) }  
+               ? ( <KeyboardButtons context={context}/> ) 
+               : ( <NumberButtons context={context} /> ) }  
          </div>
 
       </div>

@@ -20,6 +20,53 @@ export type GameData = {
     winner: Player | Team | null
 }
 
+export type ScoreSectionDataType = {
+    playersOrTeams: Player[] | Team[],
+    index: number,
+    showNumberButtons: boolean
+}
+
+export type ThrowValueSectionType = {
+    playersOrTeams: Player[] | Team[],
+    index: number,
+    currentPlayerIndexInTeam?: number, 
+    startIndex: number, 
+    history: HistoryEntry[] | HistoryEntryTeams[]
+    showNumberButtons: boolean, 
+    throwValueSum: number, 
+    currentThrow: number 
+    currentPlayerThrowsCount: number, 
+    currentPlayerThrows: number[], 
+    multiplier: number, 
+    isDoubleActive: boolean, 
+    isSoundEnabled: boolean
+}
+
+export type KeyboardButtonsType = {
+    playersOrTeams: Player[] | Team[], 
+    index: number, 
+    history: HistoryEntry[] | HistoryEntryTeams[], 
+    currentThrow: number, 
+    showNumberButtons: boolean, 
+    throwValueSum: number, 
+    currentPlayerThrowsCount: number, 
+    currentPlayerThrows: number[],
+}
+
+export type NumberButtonsType = {
+    playersOrTeams: Player[] | Team[],
+    history: HistoryEntry[] | HistoryEntryTeams[], 
+    index: number,
+    currentPlayerIndexInTeam?: number, 
+    startIndex: number, 
+    showNumberButtons: boolean, 
+    throwValueSum: number, 
+    currentPlayerThrowsCount: number, 
+    currentPlayerThrows: number[], 
+    multiplier: number, 
+    isSoundEnabled: boolean
+}
+
 
 //REDUX TYPES/INTERFACES
 export interface Player {

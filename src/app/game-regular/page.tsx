@@ -37,7 +37,7 @@ const GameRegular = () => {
       <div className='game-container'>
          <GameRegularPlayersSection />
          <CurrentPlayerThrowParagraph  context={context} />
-         <ScoreSection />
+         <ScoreSection context={context}/>
          <SettingsButtons context={context} />
          <ErrorPopUp />
          <GameEndPopUp context={context} />

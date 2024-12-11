@@ -1,8 +1,14 @@
 import React from 'react'
 import Image from 'next/image'
-import { handleThrowChange } from '@/controllers/handleThrowChange'
-import { handleSubmitThrowKeyboardButtons } from '@/controllers/handleSubmitThrowKeyboardButtons'
-import { handleSubmitThrowSubmitScoreButton } from '@/controllers/handleSubmitThrowSubmitScoreButton'
+import { handleThrowChangeRegular, handleThrowChangeTeams } from '@/controllers/handleThrowChange'
+import { 
+   handleSubmitThrowKeyboardButtonsRegular, 
+   handleSubmitThrowKeyboardButtonsTeams 
+} from '@/controllers/handleSubmitThrowKeyboardButtons'
+import { 
+   handleSubmitThrowSubmitScoreButtonRegular, 
+   handleSubmitThrowSubmitScoreButtonTeams 
+} from '@/controllers/handleSubmitThrowSubmitScoreButton'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { 
@@ -14,8 +20,18 @@ import {
    setMultiplier, 
    setIsDoubleActive,  
 } from '@/redux/slices/gameRegularSlice'
+import { 
+   setTeams, 
+   setCurrentThrow as setCurrentThrowTeams,  
+   setThrowValueSum as setThrowValueSumTeams, 
+   setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams, 
+   setCurrentPlayerThrows as setCurrentPlayerThrowsTeams, 
+   setMultiplier as setMultiplierTeams, 
+   setIsDoubleActive as setIsDoubleActiveTeams,  
+} from '@/redux/slices/gameRegularTeamsSlice'
+import { GameContextProps, HistoryEntryTeams, ThrowValueSectionType, HistoryEntry, Player, Team } from '@/types/types'
 
-const ThrowValueSection = () => {
+const ThrowValueSection: React.FC<GameContextProps> = ({ context }) => {
    const dispatch = useDispatch()
 
    const {  
@@ -25,19 +41,53 @@ const ThrowValueSection = () => {
    } = useSelector((state: RootState) => state.gameSettings)
 
    const { 
-      players, 
+      playersOrTeams, 
+      index,
+      currentPlayerIndexInTeam, 
+      startIndex, 
       history, 
-      currentThrow, 
-      currentPlayerIndex, 
-      startPlayerIndex, 
       showNumberButtons, 
       throwValueSum, 
+      currentThrow, 
       currentPlayerThrowsCount, 
       currentPlayerThrows, 
       multiplier, 
       isDoubleActive, 
       isSoundEnabled, 
-   } = useSelector((state: RootState) => state.gameRegular)
+   } = useSelector<RootState, ThrowValueSectionType>((state) => 
+      context === 'gameRegular' 
+         ? {
+            playersOrTeams: state.gameRegular.players,
+            index: state.gameRegular.currentPlayerIndex,
+            currentPlayerIndexInTeam: undefined,
+            startIndex: state. gameRegular.startPlayerIndex,
+            history: state.gameRegular.history,
+            showNumberButtons: state.gameRegular.showNumberButtons,
+            throwValueSum: state.gameRegular.throwValueSum,
+            currentThrow: state.gameRegular.currentThrow,
+            currentPlayerThrowsCount: state.gameRegular.currentPlayerThrowsCount,
+            currentPlayerThrows: state.gameRegular.currentPlayerThrows,
+            multiplier: state.gameRegular.multiplier,
+            isDoubleActive: state.gameRegular.isDoubleActive,
+            isSoundEnabled: state.gameRegular.isSoundEnabled
+          
+         }
+         : {
+            playersOrTeams: state.gameRegularTeams.teams,
+            index: state.gameRegularTeams.currentTeamIndex,
+            currentPlayerIndexInTeam: state.gameRegularTeams.currentPlayerIndexInTeam,
+            startIndex: state. gameRegularTeams.startTeamIndex,
+            history: state.gameRegularTeams.history,
+            showNumberButtons: state.gameRegularTeams.showNumberButtons,
+            throwValueSum: state.gameRegularTeams.throwValueSum,
+            currentThrow: state.gameRegularTeams.currentThrow,
+            currentPlayerThrowsCount: state.gameRegularTeams.currentPlayerThrowsCount,
+            currentPlayerThrows: state.gameRegularTeams.currentPlayerThrows,
+            multiplier: state.gameRegularTeams.multiplier,
+            isDoubleActive: state.gameRegularTeams.isDoubleActive,
+            isSoundEnabled: state.gameRegularTeams.isSoundEnabled
+         }
+   )
 
 
    return (
@@ -50,25 +100,35 @@ const ThrowValueSection = () => {
                className={`input-toggle ${showNumberButtons ? 'buttons-active' : 'input-active'}`}
                onClick={() => {
                   //Resetting values when toggle button clicked
-                  const gamePlayers = JSON.parse(JSON.stringify(players))
-                  const currentPlayer = gamePlayers[currentPlayerIndex]
+                  const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
+                  const currentPlayerOrTeam = gamePlayersOrTeams[index]
                   if (currentPlayerThrowsCount > 0) {
           
                      //Resetting pointsLeft and totalThrows values
-                     currentPlayer.pointsLeft += throwValueSum
-                     currentPlayer.totalThrows -= throwValueSum
+                     currentPlayerOrTeam.pointsLeft += throwValueSum
+                     currentPlayerOrTeam.totalThrows -= throwValueSum
           
                      //Resetting throwValueSum, currentPlayerThrows and currentPlayersThrowsCount states
-                     dispatch(setThrowValueSum(0))
-                     dispatch(setCurrentPlayerThrows([]))
-                     dispatch(setCurrentPlayerThrowsCount(0))         
+                     if(context === 'gameRegular'){
+                        dispatch(setThrowValueSum(0))
+                        dispatch(setCurrentPlayerThrows([]))
+                        dispatch(setCurrentPlayerThrowsCount(0))         
+                     } else {
+                        dispatch(setThrowValueSumTeams(0))
+                        dispatch(setCurrentPlayerThrowsTeams([]))
+                        dispatch(setCurrentPlayerThrowsCountTeams(0))  
+                     }
                   }
              
                   //Switching isInputPreffered
-                  currentPlayer.isInputPreffered = !currentPlayer.isInputPreffered
+                  currentPlayerOrTeam.isInputPreffered = !currentPlayerOrTeam.isInputPreffered
+
                   //Updating player's state
-                  dispatch(setPlayers(gamePlayers))    
-               }}>
+                  dispatch(context === 'gameRegular' 
+                     ? setPlayers(gamePlayersOrTeams) 
+                     : setTeams(gamePlayersOrTeams))
+               }}
+            >
                {showNumberButtons ? 'Input' : 'Buttons'}
             </button>
        
@@ -78,13 +138,22 @@ const ThrowValueSection = () => {
                   <input
                      type="number"
                      value={currentThrow}
-                     onChange={(e) => handleThrowChange(e.target.value, dispatch)}
+                     onChange={(e) => 
+                        context === 'gameRegular' 
+                           ? handleThrowChangeRegular(e.target.value, dispatch)
+                           : handleThrowChangeTeams(e.target.value, dispatch)
+                     }
                   />
                   <button 
                      className='remove-last'
                      onClick={() => {
                         const newValue = String(currentThrow).slice(0, -1)
-                        dispatch(setCurrentThrow(newValue ? Number(newValue) : 0))
+                        dispatch(
+                           context === 'gameRegular'
+                              ? setCurrentThrow(newValue ? Number(newValue) : 0)
+                              : setCurrentThrowTeams(newValue ? Number(newValue) : 0)
+                        )
+                        
                      }}>
                      <Image 
                         src='/backspace.svg' 
@@ -113,30 +182,61 @@ const ThrowValueSection = () => {
                onClick={() => {
                   if (!showNumberButtons) {
                      const multiplierNumber = isDoubleActive ? 2 : 1
-                     handleSubmitThrowKeyboardButtons(
-                        players,
-                        currentPlayerIndex,
-                        startPlayerIndex,
-                        history,
-                        currentThrow,
-                        multiplierNumber,
-                        gameMode,
-                        numberOfLegs,
-                        gameWin,
-                        isSoundEnabled,
-                        isDoubleActive,
-                        dispatch
-                     )
+                     if(context === 'gameRegular'){
+                        handleSubmitThrowKeyboardButtonsRegular(
+                             playersOrTeams as Player[],
+                             index,
+                             startIndex,
+                             history as HistoryEntry[],
+                             currentThrow,
+                             multiplierNumber,
+                             gameMode,
+                             numberOfLegs,
+                             gameWin,
+                             isSoundEnabled,
+                             isDoubleActive,
+                             dispatch
+                        )
+                     } else {
+                        handleSubmitThrowKeyboardButtonsTeams(
+                              playersOrTeams as Team[],
+                              index,
+                              currentPlayerIndexInTeam as number,
+                              startIndex,
+                              history as HistoryEntryTeams[],
+                              currentThrow,
+                              multiplierNumber,
+                              gameMode,
+                              numberOfLegs,
+                              gameWin,
+                              isSoundEnabled,
+                              isDoubleActive,
+                              dispatch
+                        )
+                     }
                      
                   } else {
-                     handleSubmitThrowSubmitScoreButton(
-                        players,
-                        currentPlayerIndex,
-                        currentPlayerThrows,
-                        history,
-                        isSoundEnabled,
-                        dispatch
-                     )
+                     if (context === 'gameRegular'){
+                        handleSubmitThrowSubmitScoreButtonRegular(
+                           playersOrTeams as Player[],
+                           index,
+                           currentPlayerThrows,
+                           history as HistoryEntry[],
+                           isSoundEnabled,
+                           dispatch
+                        )
+                     } else {
+                        handleSubmitThrowSubmitScoreButtonTeams(
+                           playersOrTeams as Team[],
+                           index,
+                           currentPlayerIndexInTeam as number,
+                           currentPlayerThrows,
+                           history as HistoryEntryTeams[],
+                           isSoundEnabled,
+                           dispatch
+
+                        )
+                     }
                   }
                }}>
                   Submit Score
@@ -146,9 +246,13 @@ const ThrowValueSection = () => {
          {/* Multiplier section*/}
          <div className='multiplier-section'>
             {!showNumberButtons ? (
-               players[currentPlayerIndex].pointsLeft <= 40 && players[currentPlayerIndex].pointsLeft % 2 === 0 && (
+               playersOrTeams[index].pointsLeft <= 40 && playersOrTeams[index].pointsLeft % 2 === 0 && (
                   <button 
-                     onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 
+                     onClick={() => 
+                        context === 'gameRegular' 
+                           ? dispatch(setIsDoubleActive(!isDoubleActive)) 
+                           : dispatch(setIsDoubleActiveTeams(!isDoubleActive))
+                     } 
                      className={isDoubleActive ? 'active' : ''}>
                         Double
                   </button>
@@ -158,7 +262,11 @@ const ThrowValueSection = () => {
                   { [1, 2, 3].map((multiplierValue) => (
                      <button
                         key={multiplierValue}
-                        onClick={() => dispatch(setMultiplier(multiplierValue))}
+                        onClick={() => 
+                           context === 'gameRegular' 
+                              ? dispatch(setMultiplier(multiplierValue)) 
+                              : dispatch(setMultiplierTeams(multiplierValue))
+                        }
                         className={multiplier === multiplierValue ? 'active' : ''}
                      >
                         {multiplierValue === 1 ? 'Single' : multiplierValue === 2 ? 'Double' : 'Triple'}

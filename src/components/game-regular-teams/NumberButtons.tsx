@@ -1,11 +1,11 @@
 import React from 'react'
-import { handleUndoRegular } from '@/controllers/handleUndo'
-import { handleSubmitThrowNumberButtons } from '@/controllers/handleSubmitThrowNumberButtons'
+import { handleUndoRegular, handleUndoRegularTeams } from '@/controllers/handleUndo'
+import { handleSubmitThrowNumberButtonsRegular, handleSubmitThrowNumberButtonsTeams } from '@/controllers/handleSubmitThrowNumberButtons'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { GameContextProps, HistoryEntry, HistoryEntryTeams, NumberButtonsType, Team } from '@/types/types'
 
-
-const NumberButtons = () => {
+const NumberButtons: React.FC<GameContextProps> = ({ context }) => {
    const dispatch = useDispatch()
 
    const {  
@@ -15,17 +15,47 @@ const NumberButtons = () => {
    } = useSelector((state: RootState) => state.gameSettings)
 
    const { 
-      players, 
-      history,  
-      currentPlayerIndex, 
-      startPlayerIndex, 
+      playersOrTeams,
+      history,
+      index,
+      currentPlayerIndexInTeam,
+      startIndex,
       showNumberButtons, 
       throwValueSum, 
-      currentPlayerThrowsCount, 
+      currentPlayerThrowsCount,
       currentPlayerThrows, 
       multiplier, 
       isSoundEnabled, 
-   } = useSelector((state: RootState) => state.gameRegular)
+   } = useSelector<RootState, NumberButtonsType>((state) => 
+      context === 'gameRegular' 
+         ? {
+            playersOrTeams: state.gameRegular.players,
+            history: state.gameRegular.history,
+            index: state.gameRegular.currentPlayerIndex,
+            currentPlayerIndexInTeam: undefined,
+            startIndex: state.gameRegular.startPlayerIndex,
+            showNumberButtons: state.gameRegular.showNumberButtons,
+            throwValueSum: state.gameRegular.throwValueSum,
+            currentPlayerThrowsCount: state.gameRegular.currentPlayerThrowsCount,
+            currentPlayerThrows: state.gameRegular.currentPlayerThrows,
+            multiplier: state.gameRegular.multiplier,
+            isSoundEnabled: state.gameRegular.isSoundEnabled
+          
+         }
+         : {
+            playersOrTeams: state.gameRegularTeams.teams,
+            history: state.gameRegularTeams.history,
+            index: state.gameRegularTeams.currentPlayerIndex,
+            currentPlayerIndexInTeam: state.gameRegularTeams.currentPlayerIndexInTeam,
+            startIndex: state.gameRegularTeams.startTeamIndex,
+            showNumberButtons: state.gameRegularTeams.showNumberButtons,
+            throwValueSum: state.gameRegularTeams.throwValueSum,
+            currentPlayerThrowsCount: state.gameRegularTeams.currentPlayerThrowsCount,
+            currentPlayerThrows: state.gameRegularTeams.currentPlayerThrows,
+            multiplier: state.gameRegularTeams.multiplier,
+            isSoundEnabled: state.gameRegularTeams.isSoundEnabled
+         }
+   )
 
    const specialButtons = [
       { label: 'Bull (50)', value: 50 },
@@ -45,22 +75,42 @@ const NumberButtons = () => {
                <button 
                   key={baseValue} 
                   onClick={() => {
-                     handleSubmitThrowNumberButtons(
-                        baseValue,
-                        players,
-                        currentPlayerIndex,
-                        startPlayerIndex,
-                        history,
-                        throwValueSum,
-                        currentPlayerThrowsCount,
-                        currentPlayerThrows,
-                        multiplier,
-                        gameMode,
-                        numberOfLegs,
-                        gameWin,
-                        isSoundEnabled,
-                        dispatch
-                     )
+                     if(context === 'gameRegular'){
+                        handleSubmitThrowNumberButtonsRegular(
+                           baseValue,
+                           playersOrTeams,
+                           index,
+                           startIndex,
+                           history as HistoryEntry[],
+                           throwValueSum,
+                           currentPlayerThrowsCount,
+                           currentPlayerThrows,
+                           multiplier,
+                           gameMode,
+                           numberOfLegs,
+                           gameWin,
+                           isSoundEnabled,
+                           dispatch
+                        )
+                     } else {
+                        handleSubmitThrowNumberButtonsTeams(
+                           baseValue,
+                           playersOrTeams as Team[],
+                           index,
+                           currentPlayerIndexInTeam as number,
+                           startIndex,
+                           history as HistoryEntryTeams[],
+                           throwValueSum,
+                           currentPlayerThrowsCount,
+                           currentPlayerThrows,
+                           multiplier,
+                           gameMode,
+                           numberOfLegs,
+                           gameWin,
+                           isSoundEnabled,
+                           dispatch
+                        )
+                     }
                   }}
                >
                   <span className="base-value">{baseValue}</span>
@@ -74,22 +124,42 @@ const NumberButtons = () => {
             <button 
                key={label} 
                onClick={() => {
-                  handleSubmitThrowNumberButtons(
-                     multiplier === 2 ? value / 2 : multiplier === 3 ? value / 3 : value,
-                     players,
-                     currentPlayerIndex,
-                     startPlayerIndex,
-                     history,
-                     throwValueSum,
-                     currentPlayerThrowsCount,
-                     currentPlayerThrows,
-                     multiplier,
-                     gameMode,
-                     numberOfLegs,
-                     gameWin,
-                     isSoundEnabled,
-                     dispatch
-                  )
+                  if(context === 'gameRegular'){
+                     handleSubmitThrowNumberButtonsRegular(
+                        multiplier === 2 ? value / 2 : multiplier === 3 ? value / 3 : value,
+                        playersOrTeams,
+                        index,
+                        startIndex,
+                        history as HistoryEntry[],
+                        throwValueSum,
+                        currentPlayerThrowsCount,
+                        currentPlayerThrows,
+                        multiplier,
+                        gameMode,
+                        numberOfLegs,
+                        gameWin,
+                        isSoundEnabled,
+                        dispatch
+                     )
+                  } else {
+                     handleSubmitThrowNumberButtonsTeams(
+                        multiplier === 2 ? value / 2 : multiplier === 3 ? value / 3 : value,
+                        playersOrTeams as Team[],
+                        index,
+                        currentPlayerIndexInTeam as number,
+                        startIndex,
+                        history as HistoryEntryTeams[],
+                        throwValueSum,
+                        currentPlayerThrowsCount,
+                        currentPlayerThrows,
+                        multiplier,
+                        gameMode,
+                        numberOfLegs,
+                        gameWin,
+                        isSoundEnabled,
+                        dispatch
+                     )
+                  }
                }}
             >
                {label}
@@ -97,17 +167,31 @@ const NumberButtons = () => {
          ))}
          <button 
             onClick={() => {
-               handleUndoRegular(
-                  players, 
-                  currentPlayerIndex, 
-                  history, 
-                  showNumberButtons, 
-                  throwValueSum, 
-                  currentPlayerThrows, 
-                  currentPlayerThrowsCount, 
-                  gameMode, 
-                  dispatch
-               )
+               if(context === 'gameRegular'){
+                  handleUndoRegular(
+                     playersOrTeams, 
+                     index, 
+                     history as HistoryEntry[], 
+                     showNumberButtons, 
+                     throwValueSum, 
+                     currentPlayerThrows, 
+                     currentPlayerThrowsCount, 
+                     gameMode, 
+                     dispatch
+                  )
+               } else {
+                  handleUndoRegularTeams(
+                     playersOrTeams as Team[], 
+                     index, 
+                     history as HistoryEntryTeams[], 
+                     showNumberButtons, 
+                     throwValueSum, 
+                     currentPlayerThrows, 
+                     currentPlayerThrowsCount, 
+                     gameMode, 
+                     dispatch
+                  )
+               }
             }}
          >
                Undo
