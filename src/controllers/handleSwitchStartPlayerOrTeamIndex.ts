@@ -1,32 +1,17 @@
 import { AppDispatch } from '@/redux/store'
-import { setStartPlayerIndex } from '@/redux/slices/gameRegularSlice'
-import { setStartTeamIndex } from '@/redux/slices/gameRegularTeamsSlice'
-import { Player, Team } from '@/types/types'
+import { setStartIndex } from '@/redux/slices/gameClassicSlice'
+import { PlayerClassic, TeamClassic, GameClassicStates } from '@/types/types'
 
-/* Switch to another player who starts the leg: 
-       Example: If there are 4 players and startPlayerIndex === 3 (last player's turn), 
-       after increasing startPlayerIndex by 1, 4%4 === 0 which is first team's index
+/* Switch to another player or team starting the leg: 
+       Example: If there are 4 players and startIndex === 3 (last player's turn), 
+       after increasing startIndex by 1, 4%4 === 0 which is first player's index
 */
 
-export const handleSwitchStartPlayerIndex = (
-   startPlayerIndex: number,
-   players: Player[],
+export const handleSwitchStartPlayerOrTeamIndex = (
+   startIndex: GameClassicStates['startIndex'],
+   playersOrTeams: PlayerClassic[] | TeamClassic[],
    dispatch: AppDispatch
 ) => {
-   const nextPlayerIndex = (startPlayerIndex + 1) % players.length
-   dispatch(setStartPlayerIndex(nextPlayerIndex))
-}
-
-/* Switch to another team who starts the leg: 
-       Example: there are 2 teams and startTeamIndex === 3 (last player's turn), 
-       after increasing startTeamIndex by 1, 4%4 === 0 which is first team's index
-*/
-
-export const handleSwitchStartTeamIndex = (
-   startTeamIndex: number,
-   teams: Team[],
-   dispatch: AppDispatch
-) => {
-   const nextStartTeamIndex = (startTeamIndex + 1) % teams.length
-   dispatch(setStartTeamIndex(nextStartTeamIndex))
+   const nextStartPlayerOrTeamIndex = (startIndex + 1) % playersOrTeams.length
+   dispatch(setStartIndex(nextStartPlayerOrTeamIndex))
 }

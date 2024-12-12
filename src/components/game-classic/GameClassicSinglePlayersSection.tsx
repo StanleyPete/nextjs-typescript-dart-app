@@ -1,16 +1,16 @@
 import React from 'react'
 import Image from 'next/image'
-import checkoutArray from '@/lib/checkout-table'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { Player } from '@/types/types'
+import checkoutArray from '@/lib/checkout-table'
+import { PlayerClassic } from '@/types/types'
 
-const GameRegularPlayersSection = () => {
+const GameClassicSinglePlayersSection = () => {
    
    const { 
       players, 
       currentPlayerIndex, 
-   } = useSelector((state: RootState) => state.gameRegular)
+   } = useSelector((state: RootState) => state.gameClassicSingle)
 
    return (
       <div className="game-players-section">
@@ -20,7 +20,7 @@ const GameRegularPlayersSection = () => {
 
             <div className='two-players-preview'>
 
-               {players.map((player: Player, index:number) => (
+               {players.map((player: PlayerClassic, index:number) => (
 
                   <div key={index} className={`current-player-section ${currentPlayerIndex === index ? 'current-active-player' : ''}`}>
 
@@ -128,7 +128,7 @@ const GameRegularPlayersSection = () => {
                {/*Game player list:*/}
                <div className='game-players-list'>
 
-                  {players.map((player: Player, index: number) => (
+                  {players.map((player: PlayerClassic, index: number) => (
 
                      <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} key={index}>
 
@@ -160,4 +160,4 @@ const GameRegularPlayersSection = () => {
    )
 }
 
-export default GameRegularPlayersSection
+export default GameClassicSinglePlayersSection

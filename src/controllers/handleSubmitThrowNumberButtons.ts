@@ -1,6 +1,15 @@
-import { handleSwitchPlayer, handleSwitchTeam } from '@/controllers/handleSwitchPlayerOrTeam'
-import { handleSwitchStartPlayerIndex, handleSwitchStartTeamIndex } from '@/controllers/handleSwitchStartPlayerOrTeamIndex'
-import { checkGameEndHandlerRegular, checkGameEndHandlerTeams } from '@/controllers/checkGameEndHandler'
+import {
+   handleSwitchPlayer,
+   handleSwitchTeam,
+} from '@/controllers/handleSwitchPlayerOrTeam'
+import {
+   handleSwitchStartPlayerIndex,
+   handleSwitchStartTeamIndex,
+} from '@/controllers/handleSwitchStartPlayerOrTeamIndex'
+import {
+   checkGameEndHandlerRegular,
+   checkGameEndHandlerTeams,
+} from '@/controllers/checkGameEndHandler'
 import { playSound } from '@/controllers/playSound'
 import {
    setPlayers,
@@ -10,7 +19,7 @@ import {
    setThrowValueSum,
    setCurrentPlayerThrowsCount,
    setCurrentPlayerThrows,
-} from '@/redux/slices/gameRegularSlice'
+} from '@/redux/slices/gameClassicSingleSlice'
 import {
    setTeams,
    setHistory as setHistoryTeams,
@@ -19,7 +28,7 @@ import {
    setThrowValueSum as setThrowValueSumTeams,
    setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
    setCurrentPlayerThrows as setCurrentPlayerThrowsTeams,
-} from '@/redux/slices/gameRegularTeamsSlice'
+} from '@/redux/slices/gameClassicTeamsSlice'
 import { AppDispatch } from '@/redux/store'
 import { Player, HistoryEntry, Team, HistoryEntryTeams } from '@/types/types'
 
@@ -271,7 +280,6 @@ export const handleSubmitThrowNumberButtonsRegular = (
    dispatch(setPlayers(gamePlayers))
 }
 
-
 export const handleSubmitThrowNumberButtonsTeams = (
    throwValue: number,
    teams: Team[],
@@ -292,47 +300,50 @@ export const handleSubmitThrowNumberButtonsTeams = (
    const gameTeams = JSON.parse(JSON.stringify(teams))
    const currentTeam = gameTeams[currentTeamIndex]
    const multiplierThrowValue = throwValue * multiplier
-   
+
    //Creating newHistoryEntry
    const newHistoryEntry: HistoryEntryTeams = {
       historyTeamIndex: currentTeamIndex,
       historyPlayerIndexInTeam: currentPlayerIndexInTeam,
       historyPointsLeft: currentTeam.pointsLeft + throwValueSum,
-      historyTotalThrows: currentTeam.totalThrows + multiplierThrowValue, 
+      historyTotalThrows: currentTeam.totalThrows + multiplierThrowValue,
       historyLastScore: currentTeam.lastScore,
       historyLastAverage: currentTeam.average,
-      historyTotalAttempts: currentTeam.totalAttempts
+      historyTotalAttempts: currentTeam.totalAttempts,
    }
-   
+
    // Incrementing the currentPlayerThrowsCount to keep track of the throws
    const updatedThrowCount = currentPlayerThrowsCount + 1
-   
+
    //Scenario when player has not thrown 3 times yet
    if (updatedThrowCount < 3) {
       //Updating pointsLeft
       currentTeam.pointsLeft -= multiplierThrowValue
 
       //End leg scenario when player has NOT thrown 3 times yet, multiplier === 2 and pointsLeft === 0
-      if(multiplier === 2 && currentTeam.pointsLeft === 0){
+      if (multiplier === 2 && currentTeam.pointsLeft === 0) {
          const newHistoryEntries = gameTeams
             .map((team: Team, index: number) => {
                if (index === currentTeamIndex) {
                   return null //NewHistoryEntry not created for currentTeamIndex
                }
                return {
-                  historyTeamIndex: index, 
-                  historyPlayerIndexInTeam: currentPlayerIndexInTeam - 1 === -1 ? 1 : currentPlayerIndexInTeam - 1,
-                  historyPointsLeft: team.pointsLeft, 
-                  historyTotalThrows: team.totalThrows, 
-                  historyLastScore: team.lastScore, 
-                  historyLastAverage: team.average, 
-                  historyTotalAttempts: team.totalAttempts 
+                  historyTeamIndex: index,
+                  historyPlayerIndexInTeam:
+              currentPlayerIndexInTeam - 1 === -1
+                 ? 1
+                 : currentPlayerIndexInTeam - 1,
+                  historyPointsLeft: team.pointsLeft,
+                  historyTotalThrows: team.totalThrows,
+                  historyLastScore: team.lastScore,
+                  historyLastAverage: team.average,
+                  historyTotalAttempts: team.totalAttempts,
                }
             })
             .filter((entry: HistoryEntryTeams | null) => entry !== null) //Skipping currentTeamIndex (null)
 
          //Updating legs
-         currentTeam.legs += 1 
+         currentTeam.legs += 1
 
          //Updating game stats for new leg (for each team)
          gameTeams.forEach((team: Team) => {
@@ -343,9 +354,11 @@ export const handleSubmitThrowNumberButtonsTeams = (
             team.average = 0
             team.isInputPreffered = true
          })
-         
+
          //Updating history state
-         dispatch(setHistoryTeams([...history, ...newHistoryEntries, newHistoryEntry]))
+         dispatch(
+            setHistoryTeams([...history, ...newHistoryEntries, newHistoryEntry])
+         )
 
          //Switching to the next team which starts the leg
          handleSwitchStartTeamIndex(startTeamIndex, teams, dispatch)
@@ -354,23 +367,28 @@ export const handleSubmitThrowNumberButtonsTeams = (
          dispatch(setCurrentTeamIndex((startTeamIndex + 1) % teams.length))
 
          //Updating team's state
-         dispatch(setTeams(gameTeams)) 
+         dispatch(setTeams(gameTeams))
 
          //Checking game end
-         checkGameEndHandlerTeams(gameTeams, gameWin, numberOfLegs, isSoundEnabled, dispatch)
+         checkGameEndHandlerTeams(
+            gameTeams,
+            gameWin,
+            numberOfLegs,
+            isSoundEnabled,
+            dispatch
+         )
 
          //Resetting states
          dispatch(setThrowValueSumTeams(0))
          dispatch(setCurrentPlayerThrowsCountTeams(0))
          dispatch(setCurrentPlayerThrowsTeams([]))
          dispatch(setCurrentThrowTeams(0))
-        
 
          return
       }
 
       //Scenario when player has not thrown 3 times yet but pointsLeft are equal or less than 1
-      if(currentTeam.pointsLeft <= 1) {
+      if (currentTeam.pointsLeft <= 1) {
          currentTeam.pointsLeft = newHistoryEntry.historyPointsLeft
          currentTeam.lastScore = 0
          currentTeam.totalThrows -= throwValueSum
@@ -384,14 +402,18 @@ export const handleSubmitThrowNumberButtonsTeams = (
          playSound('no-score', isSoundEnabled)
 
          //Switching to the next team
-         handleSwitchTeam(currentTeamIndex, currentPlayerIndexInTeam, teams, dispatch)
+         handleSwitchTeam(
+            currentTeamIndex,
+            currentPlayerIndexInTeam,
+            teams,
+            dispatch
+         )
 
          //Resetting states
          dispatch(setCurrentThrowTeams(0))
          dispatch(setThrowValueSumTeams(0))
          dispatch(setCurrentPlayerThrowsCountTeams(0))
          dispatch(setCurrentPlayerThrowsTeams([]))
-      
 
          //Updating team's state
          dispatch(setTeams(gameTeams))
@@ -402,36 +424,43 @@ export const handleSubmitThrowNumberButtonsTeams = (
       //Updating totalThrows, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount (currentThrow in case player would like to switch input method)
       currentTeam.totalThrows += multiplierThrowValue
       dispatch(setThrowValueSumTeams(throwValueSum + multiplierThrowValue))
-      dispatch(setCurrentPlayerThrowsTeams([...currentPlayerThrows, multiplierThrowValue].slice(-3)))
+      dispatch(
+         setCurrentPlayerThrowsTeams(
+            [...currentPlayerThrows, multiplierThrowValue].slice(-3)
+         )
+      )
       dispatch(setCurrentPlayerThrowsCountTeams(updatedThrowCount))
       dispatch(setCurrentThrowTeams(0))
-   } 
+   }
    //Scenario when players has thrown already 3 times
    else {
       //Updating pointsLeft
       currentTeam.pointsLeft -= multiplierThrowValue
-      
+
       //End leg scenario when player has thrown already 3 times, multiplier === 2 and pointsLeft === 0
-      if(multiplier === 2 && currentTeam.pointsLeft === 0){
+      if (multiplier === 2 && currentTeam.pointsLeft === 0) {
          const newHistoryEntries = gameTeams
             .map((team: Team, index: number) => {
                if (index === currentTeamIndex) {
                   return null //NewHistoryEntry not created for currentTeamIndex
                }
                return {
-                  historyTeamIndex: index, 
-                  historyPlayerIndexInTeam: currentPlayerIndexInTeam - 1 === -1 ? 1 : currentPlayerIndexInTeam - 1,
-                  historyPointsLeft: team.pointsLeft, 
-                  historyTotalThrows: team.totalThrows, 
-                  historyLastScore: team.lastScore, 
-                  historyLastAverage: team.average, 
-                  historyTotalAttempts: team.totalAttempts 
+                  historyTeamIndex: index,
+                  historyPlayerIndexInTeam:
+              currentPlayerIndexInTeam - 1 === -1
+                 ? 1
+                 : currentPlayerIndexInTeam - 1,
+                  historyPointsLeft: team.pointsLeft,
+                  historyTotalThrows: team.totalThrows,
+                  historyLastScore: team.lastScore,
+                  historyLastAverage: team.average,
+                  historyTotalAttempts: team.totalAttempts,
                }
             })
             .filter((entry: HistoryEntryTeams | null) => entry !== null) //Skipping currentTeamIndex (null)
 
          //Updating legs:
-         currentTeam.legs += 1 
+         currentTeam.legs += 1
 
          //Updating game stats for new leg (for each player)
          gameTeams.forEach((team: Team) => {
@@ -442,9 +471,11 @@ export const handleSubmitThrowNumberButtonsTeams = (
             team.average = 0
             team.isInputPreffered = true
          })
-         
+
          //Updating history state
-         dispatch(setHistoryTeams([...history, ...newHistoryEntries, newHistoryEntry]))
+         dispatch(
+            setHistoryTeams([...history, ...newHistoryEntries, newHistoryEntry])
+         )
 
          //Switching to next team which starts the leg
          handleSwitchStartTeamIndex(startTeamIndex, teams, dispatch)
@@ -453,7 +484,13 @@ export const handleSubmitThrowNumberButtonsTeams = (
          dispatch(setCurrentTeamIndex((startTeamIndex + 1) % teams.length))
 
          //Checking game end
-         checkGameEndHandlerTeams(gameTeams, gameWin, numberOfLegs, isSoundEnabled, dispatch)
+         checkGameEndHandlerTeams(
+            gameTeams,
+            gameWin,
+            numberOfLegs,
+            isSoundEnabled,
+            dispatch
+         )
 
          //Resetting states
          dispatch(setThrowValueSumTeams(0))
@@ -462,13 +499,13 @@ export const handleSubmitThrowNumberButtonsTeams = (
          dispatch(setCurrentThrowTeams(0))
 
          //Updating team's state
-         dispatch(setTeams(gameTeams)) 
+         dispatch(setTeams(gameTeams))
 
          return
       }
 
       //Scenario when player has already thrown 3 times, but pointsLeft are equal or less than 1
-      if(currentTeam.pointsLeft <= 1) {
+      if (currentTeam.pointsLeft <= 1) {
          currentTeam.pointsLeft += multiplierThrowValue
          currentTeam.lastScore = 0
          currentTeam.totalThrows -= throwValueSum
@@ -476,12 +513,17 @@ export const handleSubmitThrowNumberButtonsTeams = (
          currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
          dispatch(setHistoryTeams([...history, newHistoryEntry]))
          playSound('no-score', isSoundEnabled)
-         handleSwitchTeam(currentTeamIndex, currentPlayerIndexInTeam, teams, dispatch)
+         handleSwitchTeam(
+            currentTeamIndex,
+            currentPlayerIndexInTeam,
+            teams,
+            dispatch
+         )
          dispatch(setThrowValueSumTeams(0))
          dispatch(setCurrentPlayerThrowsCountTeams(0))
          dispatch(setCurrentPlayerThrowsTeams([]))
          dispatch(setCurrentThrowTeams(0))
-         dispatch(setTeams(gameTeams)) 
+         dispatch(setTeams(gameTeams))
          return
       }
 
@@ -490,21 +532,29 @@ export const handleSubmitThrowNumberButtonsTeams = (
       currentTeam.totalThrows += multiplierThrowValue
       currentTeam.totalAttempts += 1
       currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
-      
+
       //Updating history state
       dispatch(setHistoryTeams([...history, newHistoryEntry]))
 
       //Sound effect:
-      playSound((throwValueSum + multiplierThrowValue).toString(), isSoundEnabled)
+      playSound(
+         (throwValueSum + multiplierThrowValue).toString(),
+         isSoundEnabled
+      )
 
       //Resetting states:
       dispatch(setThrowValueSumTeams(0))
       dispatch(setCurrentPlayerThrowsCountTeams(0))
       dispatch(setCurrentPlayerThrowsTeams([]))
       dispatch(setCurrentThrowTeams(0))
-      
+
       //Switching to the next player
-      handleSwitchTeam(currentTeamIndex, currentPlayerIndexInTeam, teams, dispatch)
+      handleSwitchTeam(
+         currentTeamIndex,
+         currentPlayerIndexInTeam,
+         teams,
+         dispatch
+      )
    }
 
    //Updating  player's state

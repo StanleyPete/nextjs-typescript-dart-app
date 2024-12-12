@@ -2,8 +2,8 @@ import React from 'react'
 import { handleUndoRegular, handleUndoRegularTeams } from '@/controllers/handleUndo'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setCurrentThrow, } from '@/redux/slices/gameRegularSlice'
-import { setCurrentThrow as setCurrentThrowTeams, } from '@/redux/slices/gameRegularTeamsSlice'
+import { setCurrentThrow, } from '@/redux/slices/gameClassicSingleSlice'
+import { setCurrentThrow as setCurrentThrowTeams, } from '@/redux/slices/gameClassicTeamsSlice'
 import { GameContextProps, HistoryEntry, KeyboardButtonsType, Player, Team, HistoryEntryTeams } from '@/types/types'
 
 const KeyboardButtons: React.FC<GameContextProps> = ({ context }) => {

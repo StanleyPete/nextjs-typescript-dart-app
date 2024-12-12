@@ -6,7 +6,7 @@ import {
    setThrowValueSum,
    setCurrentPlayerThrows,
    setCurrentPlayerThrowsCount,
-} from '@/redux/slices/gameRegularSlice'
+} from '@/redux/slices/gameClassicSingleSlice'
 import {
    setTeams,
    setHistory as setHistoryTeams,
@@ -15,7 +15,7 @@ import {
    setThrowValueSum as setThrowValueSumTeams,
    setCurrentPlayerThrows as setCurrentPlayerThrowsTeams,
    setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
-} from '@/redux/slices/gameRegularTeamsSlice'
+} from '@/redux/slices/gameClassicTeamsSlice'
 import { Player, HistoryEntry, Team, HistoryEntryTeams } from '@/types/types'
 
 //UNDO HANDLER FOR GAME REGULAR
@@ -127,7 +127,8 @@ export const handleUndoRegular = (
          currentPlayer.pointsLeft = lastEntry.historyPointsLeft
          currentPlayer.lastScore = lastEntry.historyLastScore
          currentPlayer.average = lastEntry.historyLastAverage
-         currentPlayer.totalThrows = lastEntry.historyTotalThrows - currentPlayer.totalThrows
+         currentPlayer.totalThrows =
+        lastEntry.historyTotalThrows - currentPlayer.totalThrows
          currentPlayer.totalAttempts = lastEntry.historyTotalAttempts
 
          //Removing last history entry
@@ -276,7 +277,8 @@ export const handleUndoRegularTeams = (
          currentTeam.pointsLeft = lastEntry.historyPointsLeft
          currentTeam.lastScore = lastEntry.historyLastScore
          currentTeam.average = lastEntry.historyLastAverage
-         currentTeam.totalThrows = lastEntry.historyTotalThrows - currentTeam.totalThrows
+         currentTeam.totalThrows =
+        lastEntry.historyTotalThrows - currentTeam.totalThrows
          currentTeam.totalAttempts = lastEntry.historyTotalAttempts
 
          //Removing last history entry

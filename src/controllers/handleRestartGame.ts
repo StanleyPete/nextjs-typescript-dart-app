@@ -7,7 +7,7 @@ import {
    setCurrentPlayerThrowsCount,
    setIsGameEnd,
    setWinner,
-} from '@/redux/slices/gameRegularSlice'
+} from '@/redux/slices/gameClassicSingleSlice'
 import {
    setCurrentTeamIndex,
    setCurrentPlayerIndexInTeam,
@@ -17,7 +17,7 @@ import {
    setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
    setIsGameEnd as setIsGameEndTeams,
    setWinner as setWinnerTeams,
-} from '@/redux/slices/gameRegularTeamsSlice'
+} from '@/redux/slices/gameClassicTeamsSlice'
 import { InitializePlayersType, InitializeTeamsType } from '@/types/types'
 
 //Restart handler for game regular

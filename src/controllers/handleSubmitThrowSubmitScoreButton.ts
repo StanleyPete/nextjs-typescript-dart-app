@@ -1,4 +1,7 @@
-import { handleSwitchPlayer, handleSwitchTeam } from '@/controllers/handleSwitchPlayerOrTeam'
+import {
+   handleSwitchPlayer,
+   handleSwitchTeam,
+} from '@/controllers/handleSwitchPlayerOrTeam'
 import { playSound } from '@/controllers/playSound'
 import { AppDispatch } from '@/redux/store'
 import { Player, HistoryEntry, Team, HistoryEntryTeams } from '@/types/types'
@@ -9,7 +12,7 @@ import {
    setThrowValueSum,
    setCurrentPlayerThrowsCount,
    setCurrentPlayerThrows,
-} from '@/redux/slices/gameRegularSlice'
+} from '@/redux/slices/gameClassicSingleSlice'
 import {
    setTeams,
    setHistory as setHistoryTeams,
@@ -17,7 +20,7 @@ import {
    setThrowValueSum as setThrowValueSumTeams,
    setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
    setCurrentPlayerThrows as setCurrentPlayerThrowsTeams,
-} from '@/redux/slices/gameRegularTeamsSlice'
+} from '@/redux/slices/gameClassicTeamsSlice'
 
 /*  
     SUBMIT THROW HANDLER FOR SUBMIT SCORE BUTTON:
@@ -90,19 +93,22 @@ export const handleSubmitThrowSubmitScoreButtonTeams = (
    const updatedTeams = JSON.parse(JSON.stringify(teams))
    const currentTeam = updatedTeams[currentTeamIndex]
 
-   const throwSum = currentPlayerThrows.reduce((acc: number, throwValue: number) => acc + throwValue, 0)
+   const throwSum = currentPlayerThrows.reduce(
+      (acc: number, throwValue: number) => acc + throwValue,
+      0
+   )
 
    //Creating newHistoryEntry
    const newHistoryEntry: HistoryEntryTeams = {
       historyTeamIndex: currentTeamIndex,
       historyPlayerIndexInTeam: currentPlayerIndexInTeam,
       historyPointsLeft: currentTeam.pointsLeft + throwSum,
-      historyTotalThrows: currentTeam.totalThrows, 
+      historyTotalThrows: currentTeam.totalThrows,
       historyLastScore: currentTeam.lastScore,
       historyLastAverage: currentTeam.average,
-      historyTotalAttempts: currentTeam.totalAttempts
+      historyTotalAttempts: currentTeam.totalAttempts,
    }
-   
+
    //Updating lastScore and totalAttempts
    currentTeam.lastScore = throwSum
    currentTeam.totalAttempts += 1
@@ -114,12 +120,12 @@ export const handleSubmitThrowSubmitScoreButtonTeams = (
    dispatch(setHistoryTeams([...history, newHistoryEntry]))
 
    //Sound-effect
-   if(throwSum === 0){
+   if (throwSum === 0) {
       playSound('no-score', isSoundEnabled)
    } else {
       playSound(throwSum.toString(), isSoundEnabled)
    }
-   
+
    //Resetting states
    dispatch(setThrowValueSumTeams(0))
    dispatch(setCurrentPlayerThrowsTeams([]))
@@ -128,7 +134,7 @@ export const handleSubmitThrowSubmitScoreButtonTeams = (
 
    //Switching to the next player
    handleSwitchTeam(currentTeamIndex, currentPlayerIndexInTeam, teams, dispatch)
-   
+
    //Updating player's state
    dispatch(setTeams(updatedTeams))
 }

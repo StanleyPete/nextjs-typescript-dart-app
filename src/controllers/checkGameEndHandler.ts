@@ -1,31 +1,32 @@
 import { AppDispatch } from '@/redux/store'
-import { Player, Team } from '@/types/types'
-import { setIsGameEnd, setWinner } from '@/redux/slices/gameRegularSlice'
+import { setIsGameEnd, setWinner } from '@/redux/slices/gameClassicSlice'
 import { playSound } from '@/controllers/playSound'
+import { 
+   PlayerClassic, 
+   TeamClassic, 
+   GameSettingsStates, 
+   GameClassicStates 
+} from '@/types/types'
 
-export const checkGameEndHandlerRegular = (
-   gamePlayers: Player[],
-   gameWin: string,
-   numberOfLegs: number,
-   isSoundEnabled: boolean,
+export const handleCheckGameEnd = (
+   gamePlayersOrTeams: PlayerClassic[] | TeamClassic[],
+   gameWin: GameSettingsStates['gameWin'] ,
+   numberOfLegs: GameSettingsStates['numberOfLegs'],
+   isSoundEnabled: GameClassicStates['isSoundEnabled'],
    dispatch: AppDispatch
 ) => {
-   //Scenario when game type is set to best-of
+   //GAME WIN SET TO BEST-OF
    if (gameWin === 'best-of') {
-      //Sum of legs for all players
-      const totalLegs = gamePlayers.reduce(
-         (acc: number, player: Player) => acc + player.legs,
-         0
-      )
+      //Sum of legs for all players or teams
+      const totalLegs = gamePlayersOrTeams.reduce((acc: number, playerOrTeam: PlayerClassic | TeamClassic) => acc + playerOrTeam.legs, 0)
 
-      //Check if totalLegs for players equals to number-of-legs parameter
+      //Check if totalLegs for players or teams equals to number-of-legs parameter
       if (totalLegs === Number(numberOfLegs)) {
-      //Finding winner player
-         const maxLegs = Math.max(
-            ...gamePlayers.map((player: Player) => player.legs)
-         )
-         const winner =
-        gamePlayers.find((player: Player) => player.legs === maxLegs) || null
+         //Finding winner player or team
+         const maxLegs = Math.max(...gamePlayersOrTeams.map((playerOrTeam: PlayerClassic | TeamClassic) => playerOrTeam.legs))
+
+         const winner = gamePlayersOrTeams.find((playerOrTeam: PlayerClassic | TeamClassic) => playerOrTeam.legs === maxLegs) || null
+
          dispatch(setIsGameEnd(true))
          dispatch(setWinner(winner))
          playSound('and-the-game', isSoundEnabled)
@@ -33,62 +34,12 @@ export const checkGameEndHandlerRegular = (
          playSound('and-the-leg', isSoundEnabled)
       }
    }
-   //Scenario when game type is set to first-to
+
+   //GAME WIN SET TO FIRST TO
    else if (gameWin === 'first-to') {
       //Finding winner player
-      const winner =
-      gamePlayers.find(
-         (player: Player) => player.legs === Number(numberOfLegs)
-      ) || null
-      console.log(winner)
-      if (winner) {
-         dispatch(setIsGameEnd(true))
-         dispatch(setWinner(winner))
-         playSound('and-the-game', isSoundEnabled)
-      } else {
-         playSound('and-the-leg', isSoundEnabled)
-      }
-   }
-}
-
-export const checkGameEndHandlerTeams = (
-   gameTeams: Team[],
-   gameWin: string,
-   numberOfLegs: number,
-   isSoundEnabled: boolean,
-   dispatch: AppDispatch
-) => {
-   //Scenario when game type is set to best-of
-   if (gameWin === 'best-of') {
-      //Sum of legs for all players
-      const totalLegs = gameTeams.reduce(
-         (acc: number, team: Team) => acc + team.legs,
-         0
-      )
-
-      //Check if totalLegs for players equals to number-of-legs parameter
-      if (totalLegs === Number(numberOfLegs)) {
-      //Finding winner player
-         const maxLegs = Math.max(
-            ...gameTeams.map((team: Team) => team.legs)
-         )
-         const winner =
-        gameTeams.find((team: Team) => team.legs === maxLegs) || null
-         dispatch(setIsGameEnd(true))
-         dispatch(setWinner(winner))
-         playSound('and-the-game', isSoundEnabled)
-      } else {
-         playSound('and-the-leg', isSoundEnabled)
-      }
-   }
-   //Scenario when game type is set to first-to
-   else if (gameWin === 'first-to') {
-      //Finding winner player
-      const winner =
-      gameTeams.find(
-         (team: Team) => team.legs === Number(numberOfLegs)
-      ) || null
-      console.log(winner)
+      const winner =gamePlayersOrTeams.find((playerOrTeam: PlayerClassic | TeamClassic) => playerOrTeam.legs === Number(numberOfLegs)) || null
+      
       if (winner) {
          dispatch(setIsGameEnd(true))
          dispatch(setWinner(winner))

@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { GameSettingsState, ErrorState } from '@/types/types'
+import { GameSettingsStates, ErrorState } from '@/types/types'
 
-const initialState: GameSettingsState = {
-   gameType: 'regular',
+const initialState: GameSettingsStates = {
+   gameType: 'single',
    playerNames: ['', ''],
    gameMode: 501,
    gameWin: 'best-of',
@@ -20,7 +20,7 @@ const gameSettingsSlice = createSlice({
    reducers: {
       setGameType: (
          state,
-         action: PayloadAction<'regular' | 'teams' | 'online'>
+         action: PayloadAction<GameSettingsStates['gameType']>
       ) => {
          state.gameType = action.payload
       },

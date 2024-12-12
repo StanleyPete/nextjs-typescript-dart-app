@@ -3,8 +3,8 @@ import { useRouter } from 'next/navigation'
 import { handleRestartGameRegular, handleRestartGameRegularTeams } from '@/controllers/handleRestartGame'
 import { RootState } from '@/redux/store'
 import { useDispatch, useSelector } from 'react-redux'
-import { initializePlayers } from '../redux/slices/gameRegularSlice'
-import { initializeTeams } from '../redux/slices/gameRegularTeamsSlice'
+import { initializePlayers } from '../redux/slices/gameClassicSingleSlice'
+import { initializeTeams } from '../redux/slices/gameClassicTeamsSlice'
 import { GameContextProps } from '@/types/types'
 
 const SettingsButtons: React.FC<GameContextProps> = ({ context }) => {

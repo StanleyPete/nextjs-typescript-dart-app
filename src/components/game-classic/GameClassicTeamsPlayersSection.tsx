@@ -1,22 +1,22 @@
 import React from 'react'
 import Image from 'next/image'
-import checkoutArray from '@/lib/checkout-table'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { Team } from '@/types/types'
+import checkoutArray from '@/lib/checkout-table'
+import { TeamClassic } from '@/types/types'
 
 const GameTeamsPlayersSection = () => {
    const { 
       teams, 
       currentTeamIndex,
       currentPlayerIndexInTeam 
-   } = useSelector((state: RootState) => state.gameRegularTeams)
+   } = useSelector((state: RootState) => state.gameClassicTeams)
 
    return (
       <div className="game-players-section">
          <div className='teams-preview'>
 
-            {teams.map((team: Team, teamIndex: number) => (
+            {teams.map((team: TeamClassic, teamIndex: number) => (
                <div key={teamIndex} className={`team-section ${currentTeamIndex === teamIndex ? 'current-active-team' : ''}`}>
 
                   {/* Team header */}

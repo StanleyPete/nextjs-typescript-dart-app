@@ -5,8 +5,8 @@ import { handleRestartGameRegular, handleRestartGameRegularTeams } from '@/contr
 import { handleUndoRegular, handleUndoRegularTeams } from '@/controllers/handleUndo'
 import { RootState } from '@/redux/store'
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsGameEnd as setIsGameEndRegular, initializePlayers } from '@/redux/slices/gameRegularSlice'
-import { setIsGameEnd as setIsGameEndTeams, initializeTeams } from '@/redux/slices/gameRegularTeamsSlice'
+import { setIsGameEnd as setIsGameEndRegular, initializePlayers } from '@/redux/slices/gameClassicSingleSlice'
+import { setIsGameEnd as setIsGameEndTeams, initializeTeams } from '@/redux/slices/gameClassicTeamsSlice'
 import { GameContextProps } from '@/types/types'
 import { Player, Team, HistoryEntry, HistoryEntryTeams, GameData } from '@/types/types' 
 

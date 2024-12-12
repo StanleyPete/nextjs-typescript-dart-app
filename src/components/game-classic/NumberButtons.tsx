@@ -9,6 +9,7 @@ const NumberButtons: React.FC<GameContextProps> = ({ context }) => {
    const dispatch = useDispatch()
 
    const {  
+      gameType,
       gameMode,
       numberOfLegs,
       gameWin 

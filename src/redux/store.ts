@@ -1,15 +1,13 @@
-import { 
-   combineReducers, 
-   configureStore,
-   Reducer 
-} from '@reduxjs/toolkit'
+import { combineReducers, configureStore, Reducer } from '@reduxjs/toolkit'
 import gameSettingsReducer from './slices/gameSettingsSlice'
-import gameRegularReducer from './slices/gameRegularSlice'
-import gameRegularTeams from './slices/gameRegularTeamsSlice'
-import { 
-   GameSettingsState,
-   GameRegularState, 
-   GameRegularTeamsState 
+import gameClassicReducer from './slices/gameClassicSlice'
+import gameClassicSingleReducer from './slices/gameClassicSingleSlice'
+import gameClassicTeamsReducer from './slices/gameClassicTeamsSlice'
+import {
+   GameSettingsStates,
+   GameClassicStates,
+   GameClassicSingleStates,
+   GameClassicTeamsStates,
 } from '@/types/types'
 
 //Initial store setup
@@ -23,26 +21,26 @@ let rootReducer: Reducer = combineReducers({
    gameSettings: gameSettingsReducer,
 })
 
-//Adding game regular reducer
-export const addGameRegularReducer = () => {
+//Add Game Classic Single States (only for 301, 501, 701, 1001 modes)
+export const addGameClassicSingleReducer = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
-      gameRegular: gameRegularReducer,
+      gameClassic: gameClassicReducer,
+      gameClassicSingle: gameClassicSingleReducer,
    })
 
    store.replaceReducer(rootReducer)
-   // console.log('addGameRegularReducer function completed')
 }
 
-//Adding game regular reducer
-export const addGameRegularTeamsReducer = () => {
+//Add Game Classic Teams States (only for 301, 501, 701, 1001 modes)
+export const addGameClassicTeamsReducer = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
-      gameRegularTeams: gameRegularTeams,
+      gameClassic: gameClassicReducer,
+      gameClassicTeams: gameClassicTeamsReducer,
    })
 
    store.replaceReducer(rootReducer)
-   // console.log('addGameRegularReducer function completed')
 }
 
 export const resetReducer = () => {
@@ -51,15 +49,12 @@ export const resetReducer = () => {
    })
 
    store.replaceReducer(rootReducer)
-   // console.log('resetReducer function completed')
 }
-
 
 export type RootState = {
-  gameSettings: GameSettingsState
-  gameRegular: GameRegularState
-  gameRegularTeams: GameRegularTeamsState
-}
+  gameSettings: GameSettingsStates
+  gameClassic: GameClassicStates
+  gameClassicSingle: GameClassicSingleStates
+  gameClassicTeams: GameClassicTeamsStates
+};
 export type AppDispatch = typeof store.dispatch
-
-

@@ -1,19 +1,12 @@
 'use client'
-
-import React, { useEffect }from 'react'
+import React, { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import './styles/home.scss'
-import ErrorPopUp from '@/components/ErrorPopUp'
-import GameRegularPlayerNamesInput from '@/components/game-settings/GameRegularPlayerNamesInput'
-import GameTeamsPlayerNamesInput from '@/components/game-settings/GameTeamsPlayerNamesInput'
 import { useSelector, useDispatch } from 'react-redux'
-import { initializePlayers } from '../redux/slices/gameRegularSlice'
-import { initializeTeams } from '../redux/slices/gameRegularTeamsSlice'
 import { 
    RootState, 
-   addGameRegularReducer, 
-   addGameRegularTeamsReducer, 
+   addGameClassicSingleReducer, 
+   addGameClassicTeamsReducer, 
    resetReducer 
 } from '@/redux/store'
 import { 
@@ -25,7 +18,21 @@ import {
    setIsFirstLoad, 
    setError 
 } from '../redux/slices/gameSettingsSlice'
+import { initializePlayers } from '../redux/slices/gameClassicSingleSlice'
+import { initializeTeams } from '../redux/slices/gameClassicTeamsSlice'
+import ErrorPopUp from '@/components/ErrorPopUp'
+import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesInput'
+import GameTeamsPlayerNamesInput from '@/components/home/GameTeamsPlayerNamesInput'
+import './styles/home.scss'
+import { GameSettingsStates } from '@/types/types'
 
+
+/*  
+   GAME CLASSIC: 301, 501, 701, 1001 modes
+   GAME CRICKET: Cricket mode
+
+
+*/
 const Home = () => {
    const dispatch = useDispatch()
    const pathname = usePathname()
@@ -40,11 +47,11 @@ const Home = () => {
    } = useSelector((state: RootState) => state.gameSettings)
    
    //Game type handler
-   const handleGameTypeChange = (type: 'regular' | 'teams' | 'online') => {
+   const handleGameTypeChange = (type: GameSettingsStates['gameType']) => {
       dispatch(setGameType(type))
       if (type === 'teams') {
          dispatch(setPlayerNames(['', '', '', '']))
-      } else if (type === 'regular') {
+      } else if (type === 'single') {
          dispatch(setPlayerNames(['', '']))
       }
    }
@@ -59,17 +66,17 @@ const Home = () => {
    }
 
    //Game mode handler
-   const handleGameMode = (mode: number | string) => {
+   const handleGameMode = (mode: GameSettingsStates['gameMode']) => {
       dispatch(setGameMode(mode))
    }
    
    //Win type handler
-   const handleWinTypeChange = (winType: 'best-of' | 'first-to') => {
+   const handleWinTypeChange = (winType: GameSettingsStates['gameWin']) => {
       dispatch(setGameWin(winType))
    }
 
    //Legs options based on gameWin type
-   const getLegsOptions = (gameWin: 'best-of' | 'first-to') => {
+   const getLegsOptions = (gameWin: GameSettingsStates['gameWin']) => {
       if (gameWin === 'best-of') {
          return [1, 3, 5, 7, 9]
       } else {
@@ -88,37 +95,40 @@ const Home = () => {
          event.preventDefault()
          return
       }
-      if (gameType === 'regular'){
-         addGameRegularReducer()
+
+      //States added added dynamically to the redux store based on gameType.
+      if (gameType === 'single'){
+         addGameClassicSingleReducer()
          dispatch(initializePlayers({ playerNames, gameMode }))
       }
 
       if (gameType === 'teams'){
-         addGameRegularTeamsReducer()
+         addGameClassicTeamsReducer()
          dispatch(initializeTeams({ playerNames, gameMode }))
       }
    }
    
    //Preparing URL
+
    const gameFolders = {
-      regular: 'game-regular',
-      teams: 'game-teams',
+      classic: 'game-classic',
+      cricket: 'game-cricket',
       online: 'game-online'
    }
-   const gameFolder = gameFolders[gameType as keyof typeof gameFolders]
-   const isCricketMode = gameMode === 'Cricket'
-   const gameUrl = isCricketMode 
-      ? `/${gameFolder}/game-cricket` 
-      : `/${gameFolder}`
+   const gameFolder = gameMode === 'Cricket' ? gameFolders.cricket : gameFolders.classic
+   const gameUrl = `/${gameFolder}`
 
  
    useEffect(() => {
+      /*
+         When Home Page is rendered for the first time, isFirstLoad flag is set to false.
+         When user returns to Home Page from any of game pages, it triggers resetReducer function
+         All of game states are removed from the redux store.
+      */
       if(isFirstLoad){
          dispatch(setIsFirstLoad(false))
-         // console.log('Game Settings useEffect (isFirstLoad set to false completed')
       } else if (!isFirstLoad && pathname === '/'){
          resetReducer()
-         // console.log('Game Settings useEffect (resetReducer completed')
       }
    }, [pathname])
    
@@ -130,11 +140,11 @@ const Home = () => {
          <div className='game-type main-form'>
             <p className='type header'>Game type:</p>
             <div className='game-options'>
-               {['regular', 'teams', 'online'].map((type) => (
+               {['single', 'teams', 'online'].map((type) => (
                   <button
                      key={type}
                      className={`game-type-button ${gameType === type ? 'active' : ''}`}
-                     onClick={() => handleGameTypeChange(type as 'regular' | 'teams' | 'online')}
+                     onClick={() => handleGameTypeChange(type as GameSettingsStates['gameType'])}
                   >
                      {type.charAt(0).toUpperCase() + type.slice(1)} 
                   </button>
@@ -144,11 +154,9 @@ const Home = () => {
          
          {/* PLAYER NAMES INPUT SECTION*/}
          {
-            // Player names input section for regular game type
-            gameType === 'regular' ? (
-               <GameRegularPlayerNamesInput maxPlayers={4} />
+            gameType === 'single' ? (
+               <GameSinglePlayerNamesInput maxPlayers={4} />
             ) : 
-               //Player names input section for teams game type
                gameType === 'teams' ? (
                   <div className='players-section main-form team-section'>
                      {/* Team 1 */}
@@ -187,7 +195,7 @@ const Home = () => {
                   <button 
                      key={winType}
                      className={`win-type-button ${gameWin === winType ? 'active' : ''}`} 
-                     onClick={() => handleWinTypeChange(winType as 'best-of' | 'first-to')}
+                     onClick={() => handleWinTypeChange(winType as GameSettingsStates['gameWin'])}
                   >
                      {winType === 'best-of' ? 'Best Of' : 'First To'}
                   </button>
@@ -223,7 +231,7 @@ const Home = () => {
             </Link>
          </div>
          
-         {/* ERROR POP UP*/}
+         {/* ERROR POP UP - rendered only if error*/}
          <ErrorPopUp />
 
       </div>
