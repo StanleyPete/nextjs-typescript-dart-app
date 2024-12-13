@@ -85,6 +85,11 @@ export interface GameClassicTeamsStates {
     historyClassicTeams: HistoryEntryClassicTeams[]
 }
 
+export interface ErrorState {
+    isError: boolean
+    errorMessage: string
+}
+
 export type InitializePlayersType = (
     payload: { 
         playerNames: string[] 
@@ -103,6 +108,7 @@ export type InitializeTeamsType = (
         playerNames: string[] 
         gameMode: number | string 
     }>
+
 
 
 //PAGES
@@ -126,10 +132,28 @@ export type ScoreSectionComponentSelectorTypes = {
 export type ThrowValueSectionComponentSelectorTypes = {
     playersOrTeams: PlayerClassic[] | TeamClassic[],
     index: number,
-    currentPlayerIndexInTeam?: number, 
+    currentPlayerIndexInTeam: number | undefined, 
     history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[]
 }
 
+export type KeyboardButtonsComponentSelectorTypes = {
+    playersOrTeams: PlayerClassic[] | TeamClassic[], 
+    index: number,
+    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[], 
+}
+
+export type NumberButtonsComponentSelectorTypes = {
+    playersOrTeams: PlayerClassic[] | TeamClassic[],
+    index: number,
+    currentPlayerIndexInTeam: number | undefined, 
+    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],  
+}
+
+export type GameEndPopUpComponentSelectorTypes = {
+    playersOrTeams: PlayerClassic[] | TeamClassic[]
+    index: number
+    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[]
+}
 
 
 export interface TeamsPlayerInput { 
@@ -137,60 +161,9 @@ export interface TeamsPlayerInput {
     playerIndexes: number[] 
 }
 
-
 export interface PlayerNamesInputProps { maxPlayers: number }
 
-export type GameContext = 'gameRegular' | 'gameRegularTeams'
 
 
-
-export type GameData = {
-    playersOrTeams: Player[] | Team[]
-    index: number
-    history: HistoryEntry[] | HistoryEntryTeams[]
-    showNumberButtons: boolean
-    throwValueSum: number
-    currentPlayerThrows: number[]
-    currentPlayerThrowsCount: number
-    isGameEnd: boolean
-    winner: Player | Team | null
-}
-
-
-
-
-
-export type KeyboardButtonsType = {
-    playersOrTeams: Player[] | Team[], 
-    index: number, 
-    history: HistoryEntry[] | HistoryEntryTeams[], 
-    currentThrow: number, 
-    showNumberButtons: boolean, 
-    throwValueSum: number, 
-    currentPlayerThrowsCount: number, 
-    currentPlayerThrows: number[],
-}
-
-export type NumberButtonsType = {
-    playersOrTeams: Player[] | Team[],
-    history: HistoryEntry[] | HistoryEntryTeams[], 
-    index: number,
-    currentPlayerIndexInTeam?: number, 
-    startIndex: number, 
-    showNumberButtons: boolean, 
-    throwValueSum: number, 
-    currentPlayerThrowsCount: number, 
-    currentPlayerThrows: number[], 
-    multiplier: number, 
-    isSoundEnabled: boolean
-}
-
-
-
-
-export interface ErrorState {
-    isError: boolean
-    errorMessage: string
-  }
 
 

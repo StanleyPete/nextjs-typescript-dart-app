@@ -1,10 +1,15 @@
 import React from 'react'
 import Image from 'next/image'
+//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setIsSoundEnabled } from '@/redux/slices/gameClassicSlice'
-import { GameSettingsStates, TeamClassic, CurrentPlayerThrowSectionComponentTypes} from '@/types/types'
-
+//Types
+import { 
+   CurrentPlayerThrowSectionComponentTypes,
+   GameSettingsStates, 
+   TeamClassic, 
+} from '@/types/types'
 
 const CurrentPlayerThrowSection = () => {
    const dispatch = useDispatch()

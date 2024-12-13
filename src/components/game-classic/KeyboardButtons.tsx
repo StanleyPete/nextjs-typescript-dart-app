@@ -1,51 +1,55 @@
 import React from 'react'
-import { handleUndoRegular, handleUndoRegularTeams } from '@/controllers/handleUndo'
+//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setCurrentThrow, } from '@/redux/slices/gameClassicSingleSlice'
-import { setCurrentThrow as setCurrentThrowTeams, } from '@/redux/slices/gameClassicTeamsSlice'
-import { GameContextProps, HistoryEntry, KeyboardButtonsType, Player, Team, HistoryEntryTeams } from '@/types/types'
+import { setCurrentThrow, } from '@/redux/slices/gameClassicSlice'
+//Controllers
+import { handleUndo } from '@/controllers/handleUndo'
+//Types
+import { 
+   KeyboardButtonsComponentSelectorTypes, 
+   PlayerClassic, 
+   TeamClassic, 
+   HistoryEntryClassicSingle, 
+   HistoryEntryClassicTeams 
+} from '@/types/types'
 
-const KeyboardButtons: React.FC<GameContextProps> = ({ context }) => {
+const KeyboardButtons = () => {
    const dispatch = useDispatch()
 
-   const gameMode = useSelector((state: RootState) => state.gameSettings)
+   const {gameType, gameMode} = useSelector((state: RootState) => state.gameSettings)
+
+   const {
+      showNumberButtons,
+      currentThrow,
+      throwValueSum,
+      currentPlayerThrowsCount,
+      currentPlayerThrows
+   } = useSelector((state: RootState) => state.gameClassic)
 
    const { 
       playersOrTeams, 
-      index, 
+      index,
       history, 
-      showNumberButtons, 
-      currentThrow, 
-      throwValueSum, 
-      currentPlayerThrowsCount, 
-      currentPlayerThrows, 
-    
-   } = useSelector<RootState, KeyboardButtonsType>((state) => 
-      context === 'gameRegular' 
-         ? {
-            playersOrTeams: state.gameRegular.players,
-            index: state.gameRegular.currentPlayerIndex,
-            currentPlayerIndexInTeam: undefined,
-            history: state.gameRegular.history,
-            showNumberButtons: state.gameRegular.showNumberButtons,
-            currentThrow: state.gameRegular.currentThrow,
-            throwValueSum: state.gameRegular.throwValueSum,
-            currentPlayerThrowsCount: state.gameRegular.currentPlayerThrowsCount,
-            currentPlayerThrows: state.gameRegular.currentPlayerThrows,
-         }
-         : {
-            playersOrTeams: state.gameRegularTeams.teams,
-            index: state.gameRegularTeams.currentPlayerIndex,
-            currentPlayerIndexInTeam: state.gameRegularTeams.currentPlayerIndexInTeam,
-            history: state.gameRegularTeams.history,
-            showNumberButtons: state.gameRegularTeams.showNumberButtons,
-            currentThrow: state.gameRegularTeams.currentThrow,
-            throwValueSum: state.gameRegularTeams.throwValueSum,
-            currentPlayerThrowsCount: state.gameRegularTeams.currentPlayerThrowsCount,
-            currentPlayerThrows: state.gameRegularTeams.currentPlayerThrows,
-         }
-   )
+   } = useSelector<RootState, KeyboardButtonsComponentSelectorTypes>((state) => {
+      if (gameType === 'single') return{
+         playersOrTeams: state.gameClassicSingle.players,
+         index: state.gameClassicSingle.currentPlayerIndex,
+         history: state.gameClassicSingle.historyClassicSingle
+      }
+      
+      if (gameType === 'teams') return {
+         playersOrTeams: state.gameClassicTeams.teams,
+         index: state.gameClassicTeams.currentTeamIndex,
+         history: state.gameClassicTeams.historyClassicTeams,
+      }
+      
+      return {
+         playersOrTeams: [],
+         index: 0,
+         history: []
+      }
+   })
 
    return (
       <div className='score-input'>
@@ -55,10 +59,7 @@ const KeyboardButtons: React.FC<GameContextProps> = ({ context }) => {
                key={i} 
                onClick={() => {
                   const newValue = Number(`${currentThrow}${i+1}`)
-                  dispatch(context === 'gameRegular'
-                     ? setCurrentThrow(newValue)
-                     : setCurrentThrowTeams(newValue)
-                  )
+                  dispatch(setCurrentThrow(newValue))
                }}
             >
                {i+1}
@@ -66,43 +67,29 @@ const KeyboardButtons: React.FC<GameContextProps> = ({ context }) => {
          ))}
          <button 
             onClick={() => {
-               if(context === 'gameRegular'){
-                  handleUndoRegular(
-                     playersOrTeams as Player[], 
-                     index, 
-                     history as HistoryEntry[], 
-                     showNumberButtons, 
-                     throwValueSum,
-                     currentPlayerThrows, 
-                     currentPlayerThrowsCount, 
-                     gameMode as unknown as number | string, 
-                     dispatch, 
-                  )
-               } else {
-                  handleUndoRegularTeams(
-                     playersOrTeams as Team[], 
-                     index, 
-                     history as HistoryEntryTeams[], 
-                     showNumberButtons, 
-                     throwValueSum,
-                     currentPlayerThrows, 
-                     currentPlayerThrowsCount, 
-                     gameMode as unknown as number | string, 
-                     dispatch, 
-                  )
-               }
-            }}>
-                   Undo
+               handleUndo(
+                  gameType,
+                  playersOrTeams as PlayerClassic[] | TeamClassic[], 
+                  index, 
+                  history as HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[], 
+                  showNumberButtons, 
+                  throwValueSum,
+                  currentPlayerThrows, 
+                  currentPlayerThrowsCount, 
+                  gameMode as unknown as number | string, 
+                  dispatch, 
+               ) 
+            }}
+         >
+            Undo
          </button>
          <button
             onClick={() => {
                const newValue = Number(`${currentThrow}${0}`)
-               dispatch(context === 'gameRegular'
-                  ? setCurrentThrow(newValue)
-                  : setCurrentThrowTeams(newValue)
-               )
-            }}>
-                   0
+               dispatch(setCurrentThrow(newValue))
+            }}
+         >
+            0
          </button>
       </div>
    )

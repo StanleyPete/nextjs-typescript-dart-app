@@ -1,6 +1,9 @@
+//Redux
 import { AppDispatch } from '@/redux/store'
 import { setIsGameEnd, setWinner } from '@/redux/slices/gameClassicSlice'
+//Controllers
 import { playSound } from '@/controllers/playSound'
+//Types
 import { 
    PlayerClassic, 
    TeamClassic, 

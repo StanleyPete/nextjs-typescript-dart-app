@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { 
    RootState, 
@@ -20,18 +21,19 @@ import {
 } from '../redux/slices/gameSettingsSlice'
 import { initializePlayers } from '../redux/slices/gameClassicSingleSlice'
 import { initializeTeams } from '../redux/slices/gameClassicTeamsSlice'
+//Components
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesInput'
 import GameTeamsPlayerNamesInput from '@/components/home/GameTeamsPlayerNamesInput'
 import './styles/home.scss'
+//Types
 import { GameSettingsStates } from '@/types/types'
 
 
-/*  
-   GAME CLASSIC: 301, 501, 701, 1001 modes
-   GAME CRICKET: Cricket mode
-
-
+/* 
+   HOME PAGE: 
+      GAME CLASSIC: 301, 501, 701, 1001 modes
+      GAME CRICKET: Cricket mode
 */
 const Home = () => {
    const dispatch = useDispatch()
@@ -109,7 +111,6 @@ const Home = () => {
    }
    
    //Preparing URL
-
    const gameFolders = {
       classic: 'game-classic',
       cricket: 'game-cricket',
@@ -153,22 +154,21 @@ const Home = () => {
          </div>
          
          {/* PLAYER NAMES INPUT SECTION*/}
-         {
-            gameType === 'single' ? (
-               <GameSinglePlayerNamesInput maxPlayers={4} />
-            ) : 
-               gameType === 'teams' ? (
+         {gameType === 'single' 
+            ? (<GameSinglePlayerNamesInput maxPlayers={4} />) 
+            : gameType === 'teams' ? 
+               ( 
                   <div className='players-section main-form team-section'>
                      {/* Team 1 */}
                      <GameTeamsPlayerNamesInput teamIndex={0} playerIndexes={[0, 1]} />
                      {/* Team 2 */}
                      <GameTeamsPlayerNamesInput teamIndex={1} playerIndexes={[2, 3]} />
                   </div>
-
-               ) : gameType === 'online' ? (
-                  <div>Test</div>
-               ) : null 
-
+               ) 
+               : gameType === 'online' ? 
+                  (
+                     <div>Test</div>
+                  ) : null 
          }
          
          {/* GAME MODE SECTION */}

@@ -1,10 +1,13 @@
+//Redux
 import { AppDispatch } from '@/redux/store'
 import { setStartIndex } from '@/redux/slices/gameClassicSlice'
+//Types
 import { PlayerClassic, TeamClassic, GameClassicStates } from '@/types/types'
 
-/* Switch to another player or team starting the leg: 
-       Example: If there are 4 players and startIndex === 3 (last player's turn), 
-       after increasing startIndex by 1, 4%4 === 0 which is first player's index
+/* 
+   SWITCH TO ANOTHER PLAYER OR TEAM STARTING THE LEG: 
+   Example: If there are 4 players and startIndex === 3 (last player's turn), 
+   after increasing startIndex by 1, 4%4 === 0 which is first player's index
 */
 
 export const handleSwitchStartPlayerOrTeamIndex = (

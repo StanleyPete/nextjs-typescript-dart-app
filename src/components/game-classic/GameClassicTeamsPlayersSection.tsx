@@ -1,16 +1,15 @@
 import React from 'react'
 import Image from 'next/image'
+//Redux
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import checkoutArray from '@/lib/checkout-table'
+//Types
 import { TeamClassic } from '@/types/types'
+//Lib
+import checkoutArray from '@/lib/checkout-table'
 
 const GameTeamsPlayersSection = () => {
-   const { 
-      teams, 
-      currentTeamIndex,
-      currentPlayerIndexInTeam 
-   } = useSelector((state: RootState) => state.gameClassicTeams)
+   const { teams, currentTeamIndex, currentPlayerIndexInTeam } = useSelector((state: RootState) => state.gameClassicTeams)
 
    return (
       <div className="game-players-section">

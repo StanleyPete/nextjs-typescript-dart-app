@@ -1,8 +1,10 @@
 'use client'
 import React, { useEffect } from 'react'
+//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setInitialSoundPlayed, } from '@/redux/slices/gameClassicSlice'
+//Components
 import GameClassicSinglePlayersSection from '@/components/game-classic/GameClassicSinglePlayersSection'
 import GameClassicTeamsPlayersSection from '@/components/game-classic/GameClassicTeamsPlayersSection'
 import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
@@ -10,12 +12,19 @@ import ScoreSection from '@/components/game-classic/ScoreSection'
 import SettingsButtons from '@/components/SettingsButtons'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameEndPopUp from '@/components/GameEndPopUp'
+//Controllers
 import { playSound } from '@/controllers/playSound'
+//Types
 import { GameSettingsStates, GameClassicPageSelectorTypes } from '@/types/types'
+
+/* 
+   GAME CLASSIC: 
+      - only for 301, 501, 701, 1001 modes
+      - used for both single and teams game types 
+*/
 
 const GameClassic = () => {
    const dispatch = useDispatch()
-   const context = 'gameRegular'
 
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
 
@@ -63,9 +72,9 @@ const GameClassic = () => {
          )}
          <CurrentPlayerThrowSection />
          <ScoreSection />
-         <SettingsButtons context={context} />
+         <SettingsButtons />
          <ErrorPopUp />
-         <GameEndPopUp context={context} />
+         <GameEndPopUp />
       </div>
    )
 }

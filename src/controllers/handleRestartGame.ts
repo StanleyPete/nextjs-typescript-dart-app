@@ -1,37 +1,51 @@
+//Redux
 import { AppDispatch } from '@/redux/store'
 import {
-   setCurrentPlayerIndex,
-   setHistory,
    setCurrentThrow,
    setThrowValueSum,
    setCurrentPlayerThrowsCount,
    setIsGameEnd,
    setWinner,
+} from '@/redux/slices/gameClassicSlice'
+import { 
+   setCurrentPlayerIndex, 
+   setHistoryClassicSingle 
 } from '@/redux/slices/gameClassicSingleSlice'
 import {
    setCurrentTeamIndex,
    setCurrentPlayerIndexInTeam,
-   setHistory as setHistoryTeams,
-   setCurrentThrow as setCurrentThrowTeams,
-   setThrowValueSum as setThrowValueSumTeams,
-   setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
-   setIsGameEnd as setIsGameEndTeams,
-   setWinner as setWinnerTeams,
+   setHistoryClassicTeams,
+   initializeTeams
 } from '@/redux/slices/gameClassicTeamsSlice'
-import { InitializePlayersType, InitializeTeamsType } from '@/types/types'
+//Types
+import { 
+   InitializePlayersType, 
+   InitializeTeamsType,
+   GameSettingsStates,
+   GameClassicStates 
+} from '@/types/types'
 
 //Restart handler for game regular
-export const handleRestartGameRegular = (
-   playerNames: string[],
-   gameMode: number | string,
-   isGameEnd: boolean,
-   initializePlayers: InitializePlayersType,
+export const handleRestartGame = (
+   gameType: GameSettingsStates['gameType'],
+   playerNames: GameSettingsStates['playerNames'],
+   gameMode: GameSettingsStates['gameMode'],
+   isGameEnd: GameClassicStates['isGameEnd'],
+   initializePlayers: InitializePlayersType | InitializeTeamsType,
    dispatch: AppDispatch
 ) => {
-   dispatch(initializePlayers({ playerNames, gameMode }))
-   dispatch(setCurrentPlayerIndex(0))
+   if (gameType === 'single'){
+      dispatch(initializePlayers({ playerNames, gameMode }))
+      dispatch(setCurrentPlayerIndex(0))
+      dispatch(setHistoryClassicSingle([]))
+   } else {
+      dispatch(initializeTeams({ playerNames, gameMode }))
+      dispatch(setCurrentTeamIndex(0))
+      dispatch(setCurrentPlayerIndexInTeam(0))
+      dispatch(setHistoryClassicTeams([]))
+   } 
+
    dispatch(setCurrentThrow(0))
-   dispatch(setHistory([]))
    dispatch(setThrowValueSum(0))
    dispatch(setCurrentPlayerThrowsCount(0))
 
@@ -41,24 +55,3 @@ export const handleRestartGameRegular = (
    }
 }
 
-//Restart handler for game regular teams
-export const handleRestartGameRegularTeams = (
-   playerNames: string[],
-   gameMode: number | string,
-   isGameEnd: boolean,
-   initializeTeams: InitializeTeamsType,
-   dispatch: AppDispatch
-) => {
-   dispatch(initializeTeams({ playerNames, gameMode }))
-   dispatch(setCurrentTeamIndex(0))
-   dispatch(setCurrentPlayerIndexInTeam(0))
-   dispatch(setCurrentThrowTeams(0))
-   dispatch(setHistoryTeams([]))
-   dispatch(setThrowValueSumTeams(0))
-   dispatch(setCurrentPlayerThrowsCountTeams(0))
-
-   if (isGameEnd) {
-      dispatch(setIsGameEndTeams(false))
-      dispatch(setWinnerTeams(null))
-   }
-}

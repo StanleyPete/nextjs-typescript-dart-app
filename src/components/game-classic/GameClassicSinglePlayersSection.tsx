@@ -1,20 +1,18 @@
 import React from 'react'
 import Image from 'next/image'
+//Redux
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import checkoutArray from '@/lib/checkout-table'
+//Types
 import { PlayerClassic } from '@/types/types'
+//Lib
+import checkoutArray from '@/lib/checkout-table'
 
 const GameClassicSinglePlayersSection = () => {
-   
-   const { 
-      players, 
-      currentPlayerIndex, 
-   } = useSelector((state: RootState) => state.gameClassicSingle)
+   const { players, currentPlayerIndex, } = useSelector((state: RootState) => state.gameClassicSingle)
 
    return (
       <div className="game-players-section">
-
          {/*TWO PLAYERS VIEW:*/}
          {players.length === 2 ? (
 

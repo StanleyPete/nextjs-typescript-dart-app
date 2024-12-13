@@ -1,65 +1,91 @@
-import {
-   handleSwitchPlayer,
-   handleSwitchTeam,
-} from '@/controllers/handleSwitchPlayerOrTeam'
-import { playSound } from '@/controllers/playSound'
+//Redux
 import { AppDispatch } from '@/redux/store'
-import { Player, HistoryEntry, Team, HistoryEntryTeams } from '@/types/types'
-import {
-   setPlayers,
-   setHistory,
-   setCurrentThrow,
-   setThrowValueSum,
-   setCurrentPlayerThrowsCount,
-   setCurrentPlayerThrows,
-} from '@/redux/slices/gameClassicSingleSlice'
-import {
-   setTeams,
-   setHistory as setHistoryTeams,
-   setCurrentThrow as setCurrentThrowTeams,
-   setThrowValueSum as setThrowValueSumTeams,
-   setCurrentPlayerThrowsCount as setCurrentPlayerThrowsCountTeams,
-   setCurrentPlayerThrows as setCurrentPlayerThrowsTeams,
-} from '@/redux/slices/gameClassicTeamsSlice'
+import { 
+   setCurrentThrow, 
+   setThrowValueSum, 
+   setCurrentPlayerThrowsCount, 
+   setCurrentPlayerThrows 
+} from '@/redux/slices/gameClassicSlice'
+import { setPlayers, setHistoryClassicSingle } from '@/redux/slices/gameClassicSingleSlice'
+import { setTeams, setHistoryClassicTeams } from '@/redux/slices/gameClassicTeamsSlice'
+//Controllers
+import { handleSwitchPlayerOrTeam } from '@/controllers/handleSwitchPlayerOrTeam'
+import { playSound } from '@/controllers/playSound'
+//Types
+import { 
+   GameSettingsStates,
+   GameClassicStates,
+   GameClassicSingleStates,
+   GameClassicTeamsStates, 
+   PlayerClassic, 
+   TeamClassic, 
+   HistoryEntryClassicSingle, 
+   HistoryEntryClassicTeams
+} from '@/types/types'
 
 /*  
     SUBMIT THROW HANDLER FOR SUBMIT SCORE BUTTON:
-    Created for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to click on button with 0 value
+    Created for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to enter 0 values in the input field or click on button with 0 value
 */
-export const handleSubmitThrowSubmitScoreButtonRegular = (
-   players: Player[],
-   currentPlayerIndex: number,
-   currentPlayerThrows: number[],
-   history: HistoryEntry[],
-   isSoundEnabled: boolean,
+
+export const handleSubmitThrowSubmitScoreButton = (
+   gameType: GameSettingsStates['gameType'],
+   playersOrTeams: PlayerClassic[] | TeamClassic[] ,
+   index: GameClassicSingleStates['currentPlayerIndex'],
+   currentPlayerIndexInTeam: GameClassicTeamsStates['currentPlayerIndexInTeam'],
+   currentPlayerThrows: GameClassicStates['currentPlayerThrows'],
+   history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],
+   isSoundEnabled: GameClassicStates['isSoundEnabled'],
    dispatch: AppDispatch
 ) => {
-   const updatedPlayers = JSON.parse(JSON.stringify(players))
-   const currentPlayer = updatedPlayers[currentPlayerIndex]
+   const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
+   const currentPlayerOrTeam = gamePlayersOrTeams[index]
 
    const throwSum = currentPlayerThrows.reduce(
       (acc: number, throwValue: number) => acc + throwValue,
       0
    )
 
-   //Creating newHistoryEntry
-   const newHistoryEntry: HistoryEntry = {
-      historyPlayerIndex: currentPlayerIndex,
-      historyPointsLeft: currentPlayer.pointsLeft + throwSum,
-      historyTotalThrows: currentPlayer.totalThrows,
-      historyLastScore: currentPlayer.lastScore,
-      historyLastAverage: currentPlayer.average,
-      historyTotalAttempts: currentPlayer.totalAttempts,
+   //CREATING HISTORY BASED ON CURRENT VALUES (BEFORE UPDATING STATS )
+   let newHistoryEntry: HistoryEntryClassicSingle | HistoryEntryClassicTeams
+   switch (gameType) {
+   case 'single':
+      newHistoryEntry = {
+         historyPlayerIndex: index,
+         historyPointsLeft: currentPlayerOrTeam.pointsLeft + throwSum,
+         historyTotalThrows: currentPlayerOrTeam.totalThrows,
+         historyLastScore: currentPlayerOrTeam.lastScore,
+         historyLastAverage: currentPlayerOrTeam.average,
+         historyTotalAttempts: currentPlayerOrTeam.totalAttempts,
+      }
+      break
+   case 'teams':
+      newHistoryEntry = {
+         historyTeamIndex: index,
+         historyPlayerIndexInTeam: currentPlayerIndexInTeam,
+         historyPointsLeft: currentPlayerOrTeam.pointsLeft + throwSum,
+         historyTotalThrows: currentPlayerOrTeam.totalThrows,
+         historyLastScore: currentPlayerOrTeam.lastScore,
+         historyLastAverage: currentPlayerOrTeam.average,
+         historyTotalAttempts: currentPlayerOrTeam.totalAttempts,
+      }
+      break
+   default:
+      throw new Error('Invalid gameType')
    }
 
    //Updating lastScore, totalAttempts and average calculation
-   currentPlayer.lastScore = throwSum
-   currentPlayer.totalAttempts += 1
-   currentPlayer.average =
-    currentPlayer.totalThrows / currentPlayer.totalAttempts
+   currentPlayerOrTeam.lastScore = throwSum
+   currentPlayerOrTeam.totalAttempts += 1
+   currentPlayerOrTeam.average =
+   currentPlayerOrTeam.totalThrows / currentPlayerOrTeam.totalAttempts
 
    //Updating history state
-   dispatch(setHistory([...history, newHistoryEntry]))
+   if (gameType === 'single'){
+      dispatch(setHistoryClassicSingle([...history as HistoryEntryClassicSingle[], newHistoryEntry as HistoryEntryClassicSingle]))
+   } else {
+      dispatch(setHistoryClassicTeams([...history as HistoryEntryClassicTeams[], newHistoryEntry as HistoryEntryClassicTeams]))
+   }
 
    //Sound-effect
    if (throwSum === 0) {
@@ -75,66 +101,12 @@ export const handleSubmitThrowSubmitScoreButtonRegular = (
    dispatch(setCurrentThrow(0))
 
    //Switching to the next player
-   handleSwitchPlayer(currentPlayerIndex, players, dispatch)
+   handleSwitchPlayerOrTeam(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
 
    //Updating player's state
-   dispatch(setPlayers(updatedPlayers))
-}
-
-export const handleSubmitThrowSubmitScoreButtonTeams = (
-   teams: Team[],
-   currentTeamIndex: number,
-   currentPlayerIndexInTeam: number,
-   currentPlayerThrows: number[],
-   history: HistoryEntryTeams[],
-   isSoundEnabled: boolean,
-   dispatch: AppDispatch
-) => {
-   const updatedTeams = JSON.parse(JSON.stringify(teams))
-   const currentTeam = updatedTeams[currentTeamIndex]
-
-   const throwSum = currentPlayerThrows.reduce(
-      (acc: number, throwValue: number) => acc + throwValue,
-      0
-   )
-
-   //Creating newHistoryEntry
-   const newHistoryEntry: HistoryEntryTeams = {
-      historyTeamIndex: currentTeamIndex,
-      historyPlayerIndexInTeam: currentPlayerIndexInTeam,
-      historyPointsLeft: currentTeam.pointsLeft + throwSum,
-      historyTotalThrows: currentTeam.totalThrows,
-      historyLastScore: currentTeam.lastScore,
-      historyLastAverage: currentTeam.average,
-      historyTotalAttempts: currentTeam.totalAttempts,
-   }
-
-   //Updating lastScore and totalAttempts
-   currentTeam.lastScore = throwSum
-   currentTeam.totalAttempts += 1
-
-   //Average calculation:
-   currentTeam.average = currentTeam.totalThrows / currentTeam.totalAttempts
-
-   //Updating history state
-   dispatch(setHistoryTeams([...history, newHistoryEntry]))
-
-   //Sound-effect
-   if (throwSum === 0) {
-      playSound('no-score', isSoundEnabled)
+   if(gameType === 'single'){
+      dispatch(setPlayers(gamePlayersOrTeams))
    } else {
-      playSound(throwSum.toString(), isSoundEnabled)
+      dispatch(setTeams(gamePlayersOrTeams))
    }
-
-   //Resetting states
-   dispatch(setThrowValueSumTeams(0))
-   dispatch(setCurrentPlayerThrowsTeams([]))
-   dispatch(setCurrentPlayerThrowsCountTeams(0))
-   dispatch(setCurrentThrowTeams(0))
-
-   //Switching to the next player
-   handleSwitchTeam(currentTeamIndex, currentPlayerIndexInTeam, teams, dispatch)
-
-   //Updating player's state
-   dispatch(setTeams(updatedTeams))
 }

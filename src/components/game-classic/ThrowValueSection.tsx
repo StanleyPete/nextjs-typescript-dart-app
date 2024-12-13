@@ -1,23 +1,23 @@
 import React from 'react'
 import Image from 'next/image'
+//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { 
-   setCurrentThrow,  
-   setThrowValueSum,  
+   setCurrentThrow, 
+   setThrowValueSum, 
    setCurrentPlayerThrowsCount, 
-   setCurrentPlayerThrows,  
+   setCurrentPlayerThrows, 
    setMultiplier, 
    setIsDoubleActive 
 } from '@/redux/slices/gameClassicSlice'
 import { setPlayers } from '@/redux/slices/gameClassicSingleSlice'
 import { setTeams }from '@/redux/slices/gameClassicTeamsSlice'
+//Controllers
 import { handleThrowValueChange } from '@/controllers/handleThrowValueChange'
 import { handleSubmitThrowKeyboardButtons } from '@/controllers/handleSubmitThrowKeyboardButtons'
-import { 
-   handleSubmitThrowSubmitScoreButtonRegular, 
-   handleSubmitThrowSubmitScoreButtonTeams 
-} from '@/controllers/handleSubmitThrowSubmitScoreButton'
+import { handleSubmitThrowSubmitScoreButton } from '@/controllers/handleSubmitThrowSubmitScoreButton'
+//Types
 import { 
    ThrowValueSectionComponentSelectorTypes, 
    PlayerClassic, 
@@ -98,14 +98,16 @@ const ThrowValueSection = () => {
                      dispatch(setCurrentPlayerThrows([]))
                      dispatch(setCurrentPlayerThrowsCount(0))         
                    
-                     //Switching isInputPreffered
-                     currentPlayerOrTeam.isInputPreffered = !currentPlayerOrTeam.isInputPreffered
+                  }
 
-                     //Updating player's state
-                     dispatch(gameType === 'single' 
-                        ? setPlayers(gamePlayersOrTeams) 
-                        : setTeams(gamePlayersOrTeams))
-                  }}
+                  //Switching isInputPreffered
+                  currentPlayerOrTeam.isInputPreffered = !currentPlayerOrTeam.isInputPreffered
+
+                  //Updating player's state
+                  dispatch(gameType === 'single' 
+                     ? setPlayers(gamePlayersOrTeams) 
+                     : setTeams(gamePlayersOrTeams))
+               }
                }>
                {showNumberButtons ? 'Input' : 'Buttons'}
             </button>
@@ -155,11 +157,11 @@ const ThrowValueSection = () => {
                      const multiplierNumber = isDoubleActive ? 2 : 1
                      handleSubmitThrowKeyboardButtons(
                         gameType,
-                        playersOrTeams as PlayerClassic[],
+                        playersOrTeams,
                         index,
-                        currentPlayerIndexInTeam as number,
+                        gameType === 'teams' ? currentPlayerIndexInTeam! : 0,
                         startIndex,
-                        history as HistoryEntryClassicSingle[],
+                        history as HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],
                         currentThrow,
                         multiplierNumber,
                         gameMode,
@@ -170,30 +172,20 @@ const ThrowValueSection = () => {
                         dispatch
                      ) 
                   } else {
-                     if (gameType === 'single'){
-                        handleSubmitThrowSubmitScoreButtonRegular(
-                           playersOrTeams as PlayerClassic[],
-                           index,
-                           currentPlayerThrows,
-                           history as HistoryEntryClassicSingle[],
-                           isSoundEnabled,
-                           dispatch
-                        )
-                     } else {
-                        handleSubmitThrowSubmitScoreButtonTeams(
-                           playersOrTeams as TeamClassic[],
-                           index,
-                           currentPlayerIndexInTeam as number,
-                           currentPlayerThrows,
-                           history as HistoryEntryClassicTeams[],
-                           isSoundEnabled,
-                           dispatch
-
-                        )
-                     }
+                     handleSubmitThrowSubmitScoreButton(
+                        gameType,
+                        playersOrTeams as PlayerClassic[] | TeamClassic[],
+                        index,
+                        gameType === 'teams' ? currentPlayerIndexInTeam! : 0,
+                        currentPlayerThrows,
+                        history as HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],
+                        isSoundEnabled,
+                        dispatch
+                     ) 
                   }
-               }}>
-                  Submit Score
+               }}
+            >
+               Submit Score
             </button>
          </div>
     
@@ -202,8 +194,8 @@ const ThrowValueSection = () => {
             {!showNumberButtons ? (
                playersOrTeams[index].pointsLeft <= 40 && playersOrTeams[index].pointsLeft % 2 === 0 && (
                   <button 
-                     onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 
                      className={isDoubleActive ? 'active' : ''}
+                     onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 
                   >
                      Double
                   </button>
@@ -213,8 +205,8 @@ const ThrowValueSection = () => {
                   { [1, 2, 3].map((multiplierValue) => (
                      <button
                         key={multiplierValue}
-                        onClick={() => dispatch(setMultiplier(multiplierValue))}
                         className={multiplier === multiplierValue ? 'active' : ''}
+                        onClick={() => dispatch(setMultiplier(multiplierValue))}
                      >
                         {multiplierValue === 1 ? 'Single' : multiplierValue === 2 ? 'Double' : 'Triple'}
                      </button>

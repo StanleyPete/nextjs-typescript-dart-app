@@ -1,11 +1,20 @@
+//Redux
 import { AppDispatch } from '@/redux/store'
 import { setCurrentPlayerIndex } from '@/redux/slices/gameClassicSingleSlice'
 import {setCurrentTeamIndex, setCurrentPlayerIndexInTeam } from '@/redux/slices/gameClassicTeamsSlice'
-import { PlayerClassic, TeamClassic, GameSettingsStates, GameClassicSingleStates, GameClassicTeamsStates } from '@/types/types'
+//Types
+import { 
+   GameSettingsStates, 
+   GameClassicSingleStates, 
+   GameClassicTeamsStates, 
+   PlayerClassic, 
+   TeamClassic 
+} from '@/types/types'
 
-/* Switch to another player or team: 
-      Example: If there are 2 teams and currentTeamIndex === 1 (last player's turn), 
-      after increasing currentPlayerIndex by 1, 2%2 === 0 which is first teams's index
+/* 
+   SWITCH TO ANOTHER PLAYER OR TEAM: 
+   Example: If there are 2 teams and currentTeamIndex === 1 (last player's turn), 
+   after increasing currentPlayerIndex by 1, 2%2 === 0 which is first teams's index
 */
 
 export const handleSwitchPlayerOrTeam = (
@@ -22,7 +31,8 @@ export const handleSwitchPlayerOrTeam = (
    } else {
       dispatch(setCurrentTeamIndex(nextPlayerOrTeamIndex))
 
-      /* Switch to another player within team: 
+      /* 
+         SWITCH TO ANOTHER PLAYER WITHIN TEAM: 
          There are only two teams and two players in each team. When player 1 (team 1) throws, the function switches currentTeamIndex. When player 2 (team 2) has just thrown  nextPlayerOrTeamIndex === 0, what triggers updating curretPlayerIndexInTeam state
       */
      
