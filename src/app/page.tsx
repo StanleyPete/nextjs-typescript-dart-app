@@ -7,7 +7,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { 
    RootState, 
    addGameClassicSingleReducer, 
-   addGameClassicTeamsReducer, 
+   addGameClassicTeamsReducer,
+   addGameCricketSingleReducer,
+   addGameCricketTeamsReducer, 
    resetReducer 
 } from '@/redux/store'
 import { 
@@ -21,6 +23,8 @@ import {
 } from '../redux/slices/gameSettingsSlice'
 import { initializePlayers } from '../redux/slices/game-classic/gameClassicSingleSlice'
 import { initializeTeams } from '../redux/slices/game-classic/gameClassicTeamsSlice'
+import { initializeCricketPlayers } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
+import { initializeCricketTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 //Components
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesInput'
@@ -29,12 +33,12 @@ import './styles/home.scss'
 //Types
 import { GameSettingsStates } from '@/types/types'
 
-
 /* 
    HOME PAGE: 
       GAME CLASSIC: 301, 501, 701, 1001 modes
       GAME CRICKET: Cricket mode
 */
+
 const Home = () => {
    const dispatch = useDispatch()
    const pathname = usePathname()
@@ -98,16 +102,29 @@ const Home = () => {
          return
       }
 
-      //States added added dynamically to the redux store based on gameType.
-      if (gameType === 'single'){
-         addGameClassicSingleReducer()
-         dispatch(initializePlayers({ playerNames, gameMode }))
+      //States added added dynamically to the redux store based on gameType and gameMode
+      if(gameMode === 'Cricket'){
+         if (gameType === 'single'){
+            addGameCricketSingleReducer()
+            dispatch(initializeCricketPlayers({ playerNames }))
+         }
+
+         if (gameType === 'teams'){
+            addGameCricketTeamsReducer()
+            dispatch(initializeCricketTeams({ playerNames }))
+         }
+      } else {
+         if (gameType === 'single'){
+            addGameClassicSingleReducer()
+            dispatch(initializePlayers({ playerNames, gameMode }))
+         }
+   
+         if (gameType === 'teams'){
+            addGameClassicTeamsReducer()
+            dispatch(initializeTeams({ playerNames, gameMode }))
+         }
       }
 
-      if (gameType === 'teams'){
-         addGameClassicTeamsReducer()
-         dispatch(initializeTeams({ playerNames, gameMode }))
-      }
    }
    
    //Preparing URL

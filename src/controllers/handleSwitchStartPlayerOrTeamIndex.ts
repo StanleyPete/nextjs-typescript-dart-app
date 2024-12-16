@@ -1,8 +1,8 @@
 //Redux
-import { AppDispatch } from "@/redux/store";
-import { setStartIndex } from "@/redux/slices/game-classic/gameClassicSlice";
+import { AppDispatch } from '@/redux/store'
+import { setStartIndex } from '@/redux/slices/game-classic/gameClassicSlice'
 //Types
-import { PlayerClassic, TeamClassic, GameClassicStates } from "@/types/types";
+import { PlayerClassic, TeamClassic, GameClassicStates } from '@/types/types'
 
 /* 
    USED IN:
@@ -18,10 +18,10 @@ import { PlayerClassic, TeamClassic, GameClassicStates } from "@/types/types";
 */
 
 export const handleSwitchStartPlayerOrTeamIndex = (
-  startIndex: GameClassicStates["startIndex"],
-  playersOrTeams: PlayerClassic[] | TeamClassic[],
-  dispatch: AppDispatch
+   startIndex: GameClassicStates['startIndex'],
+   playersOrTeams: PlayerClassic[] | TeamClassic[],
+   dispatch: AppDispatch
 ) => {
-  const nextStartPlayerOrTeamIndex = (startIndex + 1) % playersOrTeams.length;
-  dispatch(setStartIndex(nextStartPlayerOrTeamIndex));
-};
+   const nextStartPlayerOrTeamIndex = (startIndex + 1) % playersOrTeams.length
+   dispatch(setStartIndex(nextStartPlayerOrTeamIndex))
+}

@@ -14,24 +14,21 @@ const gameCricketSingleSlice = createSlice({
       initializeCricketPlayers(
          state,
          action: 
-            PayloadAction<{
-               playerNames: string[];
-               gameMode: number | string;
-            }>
+            PayloadAction<{playerNames: string[]}>
       ) {state.players = action.payload.playerNames.map((name) => ({
-            name,
-            legs: 0,
-            points: 0 ,
-            scores: {
-                '20': 0,
-                '19': 0,
-                '18': 0,
-                '17': 0,
-                '16': 0,
-                '15': 0,
-                'Bull': 0,
-             }
-         }))
+         name,
+         legs: 0,
+         points: 0 ,
+         scores: {
+            '20': 0,
+            '19': 0,
+            '18': 0,
+            '17': 0,
+            '16': 0,
+            '15': 0,
+            'Bull': 0,
+         }
+      }))
       },
       setPlayers(state, action: PayloadAction<PlayerCricket[]>) {
          state.players = action.payload

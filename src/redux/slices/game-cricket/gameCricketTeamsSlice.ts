@@ -14,10 +14,7 @@ const gameCricketTeamsSlice = createSlice({
    reducers: {
       initializeCricketTeams(
          state,
-         action: PayloadAction<{
-        playerNames: string[];
-        gameMode: number | string;
-      }>
+         action: PayloadAction<{playerNames: string[]}>
       ) {
          const { playerNames } = action.payload
          state.teams = [
@@ -27,14 +24,14 @@ const gameCricketTeamsSlice = createSlice({
                legs: 0,
                points: 0,
                scores: {
-                '20': 0,
-                '19': 0,
-                '18': 0,
-                '17': 0,
-                '16': 0,
-                '15': 0,
-                'Bull': 0,
-             }
+                  '20': 0,
+                  '19': 0,
+                  '18': 0,
+                  '17': 0,
+                  '16': 0,
+                  '15': 0,
+                  'Bull': 0,
+               }
             },
             {
                name: 'Team 2',
@@ -42,14 +39,14 @@ const gameCricketTeamsSlice = createSlice({
                legs: 0,
                points: 0,
                scores: {
-                '20': 0,
-                '19': 0,
-                '18': 0,
-                '17': 0,
-                '16': 0,
-                '15': 0,
-                'Bull': 0,
-             }
+                  '20': 0,
+                  '19': 0,
+                  '18': 0,
+                  '17': 0,
+                  '16': 0,
+                  '15': 0,
+                  'Bull': 0,
+               }
             },
          ]
       },
