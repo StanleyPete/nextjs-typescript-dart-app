@@ -28,7 +28,7 @@ const GameClassic = () => {
    const dispatch = useDispatch()
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
    const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.gameClassic)
-    //Memoized (@/redux/memoizedSelectors.ts):
+   //Memoized (@/redux/memoizedSelectors.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)
    
    useEffect(() => { 

@@ -5,16 +5,12 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { 
    setCurrentThrow, 
-   setThrowValueSum, 
-   setCurrentPlayerThrowsCount, 
-   setCurrentPlayerThrows, 
    setMultiplier, 
    setIsDoubleActive 
 } from '@/redux/slices/gameClassicSlice'
-import { setPlayers } from '@/redux/slices/gameClassicSingleSlice'
-import { setTeams }from '@/redux/slices/gameClassicTeamsSlice'
 import { selectDataInThrowValueSectionOrNumberButtons } from '@/redux/memoizedSelectors'
 //Controllers
+import { handleToggleInputMethod } from '@/controllers/handleToggleInputMethod'
 import { handleThrowValueChange } from '@/controllers/handleThrowValueChange'
 import { handleSubmitThrowKeyboardButtons } from '@/controllers/handleSubmitThrowKeyboardButtons'
 import { handleSubmitThrowSubmitScoreButton } from '@/controllers/handleSubmitThrowSubmitScoreButton'
@@ -61,31 +57,16 @@ const ThrowValueSection = () => {
             <button 
                className={`input-toggle ${showNumberButtons ? 'buttons-active' : 'input-active'}`}
                onClick={() => {
-                  //Resetting values when toggle button clicked
-                  const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
-                  const currentPlayerOrTeam = gamePlayersOrTeams[index]
-                  if (currentPlayerThrowsCount > 0) {
-          
-                     //Resetting pointsLeft and totalThrows values
-                     currentPlayerOrTeam.pointsLeft += throwValueSum
-                     currentPlayerOrTeam.totalThrows -= throwValueSum
-          
-                     //Resetting throwValueSum, currentPlayerThrows and currentPlayersThrowsCount states
-                     dispatch(setThrowValueSum(0))
-                     dispatch(setCurrentPlayerThrows([]))
-                     dispatch(setCurrentPlayerThrowsCount(0))         
-                   
-                  }
-
-                  //Switching isInputPreffered
-                  currentPlayerOrTeam.isInputPreffered = !currentPlayerOrTeam.isInputPreffered
-
-                  //Updating player's state
-                  dispatch(gameType === 'single' 
-                     ? setPlayers(gamePlayersOrTeams) 
-                     : setTeams(gamePlayersOrTeams))
-               }
-               }>
+                  handleToggleInputMethod(
+                     gameType,
+                     playersOrTeams,
+                     index,
+                     currentPlayerThrowsCount,
+                     throwValueSum,
+                     dispatch
+                  )
+               }}      
+            >
                {showNumberButtons ? 'Input' : 'Buttons'}
             </button>
        
