@@ -25,7 +25,10 @@ import {
    GameClassicStates 
 } from '@/types/types'
 
-//Restart handler for game regular
+/* USED IN: 
+      SettingsButtons component, 
+      GameEndPopUp component 
+*/
 export const handleRestartGame = (
    gameType: GameSettingsStates['gameType'],
    playerNames: GameSettingsStates['playerNames'],

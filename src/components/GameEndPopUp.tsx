@@ -7,18 +7,16 @@ import { RootState } from '@/redux/store'
 import { setIsGameEnd } from '@/redux/slices/gameClassicSlice'
 import { initializePlayers } from '@/redux/slices/gameClassicSingleSlice'
 import { initializeTeams } from '@/redux/slices/gameClassicTeamsSlice'
+import { selectDataInKeyboardButtonsOrGameEndPopUp } from '@/redux/memoizedSelectors'
 //Controllers
 import { handleRestartGame } from '@/controllers/handleRestartGame'
 import { handleUndo } from '@/controllers/handleUndo'
-//Types
-import { GameEndPopUpComponentSelectorTypes } from '@/types/types' 
+ 
 
 const GameEndPopUp = () => {
    const dispatch = useDispatch()
    const router = useRouter()
-
    const { gameType, gameMode, playerNames } = useSelector((state: RootState) => state.gameSettings)
-
    const { 
       showNumberButtons, 
       throwValueSum, 
@@ -27,30 +25,12 @@ const GameEndPopUp = () => {
       isGameEnd, 
       winner 
    } = useSelector((state: RootState) => state.gameClassic)
-   
+   //Memoized (@/redux/memoizedSelectors.ts):
    const { 
       playersOrTeams, 
       index, 
       history, 
-   } = useSelector<RootState, GameEndPopUpComponentSelectorTypes>((state) => {
-      if (gameType === 'single') return {
-         playersOrTeams: state.gameClassicSingle.players,
-         index: state.gameClassicSingle.currentPlayerIndex,
-         history: state.gameClassicSingle.historyClassicSingle,
-      } 
-
-      if (gameType === 'teams') return {
-         playersOrTeams: state.gameClassicTeams.teams,
-         index: state.gameClassicTeams.currentTeamIndex,
-         history: state.gameClassicTeams.historyClassicTeams,
-      }
-
-      return {
-         playersOrTeams: [],
-         index: 0,
-         history: []
-      }    
-   })
+   } = useSelector(selectDataInKeyboardButtonsOrGameEndPopUp)
    
    return (
       isGameEnd && (

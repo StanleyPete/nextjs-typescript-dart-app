@@ -24,8 +24,11 @@ import {
 } from '@/types/types'
 
 /*  
-    SUBMIT THROW HANDLER FOR SUBMIT SCORE BUTTON:
-    Created for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to enter 0 values in the input field or click on button with 0 value
+   USED IN: 
+      ThrowValueSection component
+     
+   SUBMIT THROW HANDLER FOR SUBMIT SCORE BUTTON:
+      Created for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to enter 0 values in the input field or click on button with 0 value
 */
 
 export const handleSubmitThrowSubmitScoreButton = (

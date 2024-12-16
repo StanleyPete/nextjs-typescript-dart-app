@@ -4,39 +4,19 @@ import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setIsSoundEnabled } from '@/redux/slices/gameClassicSlice'
+import { selectDataInCurrentPlayerThrowSection } from '@/redux/memoizedSelectors'
 //Types
 import { 
-   CurrentPlayerThrowSectionComponentTypes,
    GameSettingsStates, 
    TeamClassic, 
 } from '@/types/types'
 
 const CurrentPlayerThrowSection = () => {
    const dispatch = useDispatch()
-
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
-
    const { isSoundEnabled } = useSelector((state: RootState) => state.gameClassic)
-
-   const { playersOrTeams, index, currentPlayerIndexInTeam } = useSelector<RootState, CurrentPlayerThrowSectionComponentTypes>((state) => {
-      if (gameType === 'single') return {
-         playersOrTeams: state.gameClassicSingle.players,
-         index: state.gameClassicSingle.currentPlayerIndex,
-         currentPlayerIndexInTeam: 0 
-      } 
-         
-      if (gameType === 'teams') return {
-         playersOrTeams: state.gameClassicTeams.teams,
-         index: state.gameClassicTeams.currentTeamIndex,
-         currentPlayerIndexInTeam: state.gameClassicTeams.currentPlayerIndexInTeam,
-      }
-      
-      return {
-         playersOrTeams: [], 
-         index: 0,  
-         currentPlayerIndexInTeam: 0,  
-      }
-   })
+   //Memoized (@/redux/memoizedSelectors.ts):
+   const { playersOrTeams, index, currentPlayerIndexInTeam } = useSelector(selectDataInCurrentPlayerThrowSection)
    
    const currentPlayerOrTeam = playersOrTeams[index]
 

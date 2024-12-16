@@ -5,6 +5,13 @@ import { setStartIndex } from '@/redux/slices/gameClassicSlice'
 import { PlayerClassic, TeamClassic, GameClassicStates } from '@/types/types'
 
 /* 
+   USED IN:
+      ThrowValueSection component: 
+         - handleSubmitThrowKeyboardButtons, 
+
+      NumberButtons component:
+         - handleSubmitThrowNumberButtons,
+
    SWITCH TO ANOTHER PLAYER OR TEAM STARTING THE LEG: 
    Example: If there are 4 players and startIndex === 3 (last player's turn), 
    after increasing startIndex by 1, 4%4 === 0 which is first player's index

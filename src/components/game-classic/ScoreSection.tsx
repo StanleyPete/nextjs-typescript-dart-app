@@ -3,36 +3,17 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setShowNumberButtons } from '@/redux/slices/gameClassicSlice'
+import { selectDataInScoreSection } from '@/redux/memoizedSelectors'
 //Components
 import ThrowValueSection from './ThrowValueSection'
 import KeyboardButtons from './KeyboardButtons'
 import NumberButtons from './NumberButtons'
-//Types
-import { GameSettingsStates, ScoreSectionComponentSelectorTypes } from '@/types/types'
 
 const ScoreSection = () => {
    const dispatch = useDispatch()
-
-   const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
-
    const showNumberButtons = useSelector((state: RootState) => state.gameClassic.showNumberButtons)
-
-   const { playersOrTeams, index } = useSelector<RootState, ScoreSectionComponentSelectorTypes>((state) => {
-      if (gameType === 'single') return {
-         playersOrTeams: state.gameClassicSingle.players,
-         index: state.gameClassicSingle.currentPlayerIndex,
-      }
-        
-      if (gameType === 'teams') return {
-         playersOrTeams: state.gameClassicTeams.teams,
-         index: state.gameClassicTeams.currentTeamIndex,
-      }
-    
-      return {
-         playersOrTeams: [], 
-         index: 0, 
-      }
-   })
+   //Memoized (@/redux/memoizedSelectors.ts):
+   const { playersOrTeams, index } = useSelector(selectDataInScoreSection)
 
    useEffect(() => {
       const isInputPreferred = playersOrTeams[index].isInputPreffered

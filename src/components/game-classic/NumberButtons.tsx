@@ -5,23 +5,21 @@ import { RootState } from '@/redux/store'
 //Controllers
 import { handleUndo } from '@/controllers/handleUndo'
 import { handleSubmitThrowNumberButtons } from '@/controllers/handleSubmitThrowNumberButtons'
+import { selectDataInThrowValueSectionOrNumberButtons } from '@/redux/memoizedSelectors'
 //Types
 import { 
-   NumberButtonsComponentSelectorTypes, 
    HistoryEntryClassicSingle, 
    HistoryEntryClassicTeams
 } from '@/types/types'
 
 const NumberButtons = () => {
    const dispatch = useDispatch()
-
    const {  
       gameType,
       gameMode,
       numberOfLegs,
       gameWin 
    } = useSelector((state: RootState) => state.gameSettings)
-
    const {  
       startIndex,
       showNumberButtons, 
@@ -31,35 +29,13 @@ const NumberButtons = () => {
       multiplier, 
       isSoundEnabled 
    } = useSelector((state: RootState) => state.gameClassic)
-
+   //Memoized (@/redux/memoizedSelectors.ts):
    const { 
       playersOrTeams,
       index,
       currentPlayerIndexInTeam,
       history 
-   } = useSelector<RootState, NumberButtonsComponentSelectorTypes>((state) => {
-      if (gameType === 'single') return {
-         playersOrTeams: state.gameClassicSingle.players,
-         index: state.gameClassicSingle.currentPlayerIndex,
-         currentPlayerIndexInTeam: undefined,   
-         history: state.gameClassicSingle.historyClassicSingle,
-      }
-
-      if (gameType === 'teams') return {
-         playersOrTeams: state.gameClassicTeams.teams,
-         index: state.gameClassicTeams.currentTeamIndex,
-         currentPlayerIndexInTeam: state.gameClassicTeams.currentPlayerIndexInTeam,
-         history: state.gameClassicTeams.historyClassicTeams,
-      }
-
-      return {
-         playersOrTeams: [],
-         index: 0,
-         currentPlayerIndexInTeam: undefined,
-         history: []
-      }
-
-   })
+   } = useSelector(selectDataInThrowValueSectionOrNumberButtons)
 
    const specialButtons = [
       { label: 'Bull (50)', value: 50 },
@@ -67,7 +43,6 @@ const NumberButtons = () => {
       { label: 'Miss', value: 0 },
    ]
 
-   
    return (
       <div className='score-buttons'>
          {/* Score buttons */}

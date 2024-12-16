@@ -11,9 +11,7 @@ import { handleRestartGame } from '@/controllers/handleRestartGame'
 const SettingsButtons = () => {
    const dispatch = useDispatch()
    const router = useRouter()
-
    const { gameMode, playerNames, gameType } = useSelector((state: RootState) => state.gameSettings)
-
    const { isGameEnd } = useSelector((state: RootState) => state.gameClassic)
 
    return (

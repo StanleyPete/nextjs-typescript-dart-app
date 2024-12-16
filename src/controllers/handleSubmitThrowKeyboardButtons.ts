@@ -29,6 +29,10 @@ import {
    HistoryEntryClassicTeams,
 } from '@/types/types'
 
+/* USED IN: 
+      ThrowValueSection component when showNumberButtons === false, 
+      Handles BUTTONS from 0 - 9
+*/
 export const handleSubmitThrowKeyboardButtons = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerClassic[] | TeamClassic[],

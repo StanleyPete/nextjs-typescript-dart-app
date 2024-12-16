@@ -13,13 +13,13 @@ import {
 } from '@/redux/slices/gameClassicSlice'
 import { setPlayers } from '@/redux/slices/gameClassicSingleSlice'
 import { setTeams }from '@/redux/slices/gameClassicTeamsSlice'
+import { selectDataInThrowValueSectionOrNumberButtons } from '@/redux/memoizedSelectors'
 //Controllers
 import { handleThrowValueChange } from '@/controllers/handleThrowValueChange'
 import { handleSubmitThrowKeyboardButtons } from '@/controllers/handleSubmitThrowKeyboardButtons'
 import { handleSubmitThrowSubmitScoreButton } from '@/controllers/handleSubmitThrowSubmitScoreButton'
 //Types
-import { 
-   ThrowValueSectionComponentSelectorTypes, 
+import {  
    PlayerClassic, 
    TeamClassic, 
    HistoryEntryClassicSingle, 
@@ -28,14 +28,12 @@ import {
 
 const ThrowValueSection = () => {
    const dispatch = useDispatch()
-
    const {  
       gameType,
       gameMode,
       numberOfLegs,
       gameWin 
    } = useSelector((state: RootState) => state.gameSettings)
-
    const {
       startIndex,
       showNumberButtons,
@@ -47,34 +45,13 @@ const ThrowValueSection = () => {
       isDoubleActive,
       isSoundEnabled,
    } = useSelector((state: RootState) => state.gameClassic)
-
+   //Memoized (@/redux/memoizedSelectors.ts):
    const { 
       playersOrTeams, 
       index, 
       currentPlayerIndexInTeam, 
       history 
-   } = useSelector<RootState, ThrowValueSectionComponentSelectorTypes>((state) => {
-      if (gameType === 'single') return {
-         playersOrTeams: state.gameClassicSingle.players,
-         index: state.gameClassicSingle.currentPlayerIndex,
-         currentPlayerIndexInTeam: undefined,
-         history: state.gameClassicSingle.historyClassicSingle,
-      }
-
-      if (gameType === 'teams') return {
-         playersOrTeams: state.gameClassicTeams.teams,
-         index: state.gameClassicTeams.currentTeamIndex,
-         currentPlayerIndexInTeam: state.gameClassicTeams.currentPlayerIndexInTeam,
-         history: state.gameClassicTeams.historyClassicTeams,
-      }
-      
-      return {
-         playersOrTeams: [],
-         index: 0,
-         currentPlayerIndexInTeam: undefined,
-         history: [],
-      }
-   })
+   } = useSelector(selectDataInThrowValueSectionOrNumberButtons)
    
    return (
       <>

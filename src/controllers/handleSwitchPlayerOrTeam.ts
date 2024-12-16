@@ -12,9 +12,17 @@ import {
 } from '@/types/types'
 
 /* 
+   USED IN:
+      ThrowValueSection component: 
+         - handleSubmitThrowKeyboardButtons, 
+         - handleSubmitThrowSubmitScoreButton, 
+         
+      NumberButtons component:
+         - handleSubmitThrowNumberButtons,
+
    SWITCH TO ANOTHER PLAYER OR TEAM: 
-   Example: If there are 2 teams and currentTeamIndex === 1 (last player's turn), 
-   after increasing currentPlayerIndex by 1, 2%2 === 0 which is first teams's index
+      Example: If there are 2 teams and currentTeamIndex === 1 (last player's turn), 
+      after increasing currentPlayerIndex by 1, 2%2 === 0 which is first teams's index
 */
 
 export const handleSwitchPlayerOrTeam = (

@@ -28,7 +28,13 @@ import {
    HistoryEntryClassicTeams 
 } from '@/types/types'
 
-//UNDO HANDLER
+/* 
+   USED IN: 
+      KeyboardButtons component,
+      NumberButtons component,
+      GameEndPopUp component    
+*/
+
 export const handleUndo = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerClassic[] | TeamClassic[],

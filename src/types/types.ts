@@ -110,52 +110,6 @@ export type InitializeTeamsType = (
     }>
 
 
-
-//PAGES
-export type GameClassicPageSelectorTypes = {
-    playersOrTeams: PlayerClassic[] | TeamClassic[]
-    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[]
-}
-
-//COMPONENTS
-export type CurrentPlayerThrowSectionComponentTypes = {
-    playersOrTeams: PlayerClassic[] | TeamClassic[]
-    index: number,
-    currentPlayerIndexInTeam: number | 0
-}
-
-export type ScoreSectionComponentSelectorTypes = {
-    playersOrTeams: PlayerClassic[] | TeamClassic[],
-    index: number,
-}
-
-export type ThrowValueSectionComponentSelectorTypes = {
-    playersOrTeams: PlayerClassic[] | TeamClassic[],
-    index: number,
-    currentPlayerIndexInTeam: number | undefined, 
-    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[]
-}
-
-export type KeyboardButtonsComponentSelectorTypes = {
-    playersOrTeams: PlayerClassic[] | TeamClassic[], 
-    index: number,
-    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[], 
-}
-
-export type NumberButtonsComponentSelectorTypes = {
-    playersOrTeams: PlayerClassic[] | TeamClassic[],
-    index: number,
-    currentPlayerIndexInTeam: number | undefined, 
-    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],  
-}
-
-export type GameEndPopUpComponentSelectorTypes = {
-    playersOrTeams: PlayerClassic[] | TeamClassic[]
-    index: number
-    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[]
-}
-
-
 export interface TeamsPlayerInput { 
     teamIndex: number 
     playerIndexes: number[] 

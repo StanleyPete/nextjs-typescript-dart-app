@@ -33,6 +33,11 @@ import {
    HistoryEntryClassicTeams 
 } from '@/types/types'
 
+/* USED IN: 
+      NumberButtons component
+      handles BUTTONS from 0 - 20 (with multiplier from 1 - 3) and Bull, Outer and Miss buttons 
+*/
+
 export const handleSubmitThrowNumberButtons = (
    gameType: GameSettingsStates['gameType'],
    throwValue: number,

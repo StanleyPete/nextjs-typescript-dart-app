@@ -11,6 +11,11 @@ import {
    GameClassicStates 
 } from '@/types/types'
 
+/* USED IN: 
+      handleSubmitThrowKeyboardButtons, 
+      handleSubmitThrowNumberButtons 
+*/
+
 export const handleCheckGameEnd = (
    gamePlayersOrTeams: PlayerClassic[] | TeamClassic[],
    gameWin: GameSettingsStates['gameWin'] ,

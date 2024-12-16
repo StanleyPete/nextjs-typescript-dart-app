@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setInitialSoundPlayed, } from '@/redux/slices/gameClassicSlice'
+import { selectDataInGameClassicPage } from '@/redux/memoizedSelectors'
 //Components
 import GameClassicSinglePlayersSection from '@/components/game-classic/GameClassicSinglePlayersSection'
 import GameClassicTeamsPlayersSection from '@/components/game-classic/GameClassicTeamsPlayersSection'
@@ -15,7 +16,7 @@ import GameEndPopUp from '@/components/GameEndPopUp'
 //Controllers
 import { playSound } from '@/controllers/playSound'
 //Types
-import { GameSettingsStates, GameClassicPageSelectorTypes } from '@/types/types'
+import { GameSettingsStates } from '@/types/types'
 
 /* 
    GAME CLASSIC: 
@@ -25,30 +26,11 @@ import { GameSettingsStates, GameClassicPageSelectorTypes } from '@/types/types'
 
 const GameClassic = () => {
    const dispatch = useDispatch()
-
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
-
    const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.gameClassic)
-
-   //Destructured only for the purpose of reviewing states in console
-   const { playersOrTeams, history } = useSelector<RootState, GameClassicPageSelectorTypes>((state) => {
-      if (gameType === 'single') return {
-         playersOrTeams: state.gameClassicSingle.players,
-         history: state.gameClassicSingle.historyClassicSingle,
-      }
-      
-      if (gameType === 'teams') return {
-         playersOrTeams: state.gameClassicTeams.teams,
-         history: state.gameClassicTeams.historyClassicTeams,
-      }
-      
-      return {
-         playersOrTeams: [],
-         history: [],
-      }
-   })
- 
-    
+    //Memoized (@/redux/memoizedSelectors.ts):
+   const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)
+   
    useEffect(() => { 
       //Initial sound played only once (when game start)
       if(!initialSoundPlayed){
@@ -65,11 +47,10 @@ const GameClassic = () => {
    
    return (
       <div className='game-container'>
-         {gameType === 'single' ? (
-            <GameClassicSinglePlayersSection />
-         ) : (
-            <GameClassicTeamsPlayersSection />
-         )}
+         {gameType === 'single' 
+            ? (<GameClassicSinglePlayersSection />) 
+            : (<GameClassicTeamsPlayersSection />)
+         }
          <CurrentPlayerThrowSection />
          <ScoreSection />
          <SettingsButtons />
