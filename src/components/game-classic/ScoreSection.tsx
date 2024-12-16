@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setShowNumberButtons } from '@/redux/slices/gameClassicSlice'
+import { setShowNumberButtons } from '@/redux/slices/game-classic/gameClassicSlice'
 import { selectDataInScoreSection } from '@/redux/memoizedSelectors'
 //Components
 import ThrowValueSection from './ThrowValueSection'

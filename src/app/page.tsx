@@ -19,8 +19,8 @@ import {
    setIsFirstLoad, 
    setError 
 } from '../redux/slices/gameSettingsSlice'
-import { initializePlayers } from '../redux/slices/gameClassicSingleSlice'
-import { initializeTeams } from '../redux/slices/gameClassicTeamsSlice'
+import { initializePlayers } from '../redux/slices/game-classic/gameClassicSingleSlice'
+import { initializeTeams } from '../redux/slices/game-classic/gameClassicTeamsSlice'
 //Components
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesInput'

@@ -1,15 +1,18 @@
 //Redux
-import { AppDispatch } from '@/redux/store'
-import { setCurrentPlayerIndex } from '@/redux/slices/gameClassicSingleSlice'
-import {setCurrentTeamIndex, setCurrentPlayerIndexInTeam } from '@/redux/slices/gameClassicTeamsSlice'
+import { AppDispatch } from "@/redux/store";
+import { setCurrentPlayerIndex } from "@/redux/slices/game-classic/gameClassicSingleSlice";
+import {
+  setCurrentTeamIndex,
+  setCurrentPlayerIndexInTeam,
+} from "@/redux/slices/game-classic/gameClassicTeamsSlice";
 //Types
-import { 
-   GameSettingsStates, 
-   GameClassicSingleStates, 
-   GameClassicTeamsStates, 
-   PlayerClassic, 
-   TeamClassic 
-} from '@/types/types'
+import {
+  GameSettingsStates,
+  GameClassicSingleStates,
+  GameClassicTeamsStates,
+  PlayerClassic,
+  TeamClassic,
+} from "@/types/types";
 
 /* 
    USED IN:
@@ -26,29 +29,32 @@ import {
 */
 
 export const handleSwitchPlayerOrTeam = (
-   gameType: GameSettingsStates['gameType'],
-   index: GameClassicSingleStates['currentPlayerIndex'] | GameClassicTeamsStates['currentTeamIndex'],
-   currentPlayerIndexInTeam: GameClassicTeamsStates['currentPlayerIndexInTeam'],
-   playersOrTeams: PlayerClassic[] | TeamClassic[],
-   dispatch: AppDispatch
+  gameType: GameSettingsStates["gameType"],
+  index:
+    | GameClassicSingleStates["currentPlayerIndex"]
+    | GameClassicTeamsStates["currentTeamIndex"],
+  currentPlayerIndexInTeam: GameClassicTeamsStates["currentPlayerIndexInTeam"],
+  playersOrTeams: PlayerClassic[] | TeamClassic[],
+  dispatch: AppDispatch
 ) => {
-   const nextPlayerOrTeamIndex = (index + 1) % playersOrTeams.length
+  const nextPlayerOrTeamIndex = (index + 1) % playersOrTeams.length;
 
-   if(gameType === 'single'){
-      dispatch(setCurrentPlayerIndex(nextPlayerOrTeamIndex))
-   } else {
-      dispatch(setCurrentTeamIndex(nextPlayerOrTeamIndex))
+  if (gameType === "single") {
+    dispatch(setCurrentPlayerIndex(nextPlayerOrTeamIndex));
+  } else {
+    dispatch(setCurrentTeamIndex(nextPlayerOrTeamIndex));
 
-      /* 
+    /* 
          SWITCH TO ANOTHER PLAYER WITHIN TEAM: 
          There are only two teams and two players in each team. When player 1 (team 1) throws, the function switches currentTeamIndex. When player 2 (team 2) has just thrown  nextPlayerOrTeamIndex === 0, what triggers updating curretPlayerIndexInTeam state
       */
-     
-      const team = playersOrTeams[0] as TeamClassic
-      const updatedPlayerIndexInTeam = (currentPlayerIndexInTeam + 1) % team.members.length
 
-      if (nextPlayerOrTeamIndex === 0) {
-         dispatch(setCurrentPlayerIndexInTeam(updatedPlayerIndexInTeam))
-      }
-   } 
-}
+    const team = playersOrTeams[0] as TeamClassic;
+    const updatedPlayerIndexInTeam =
+      (currentPlayerIndexInTeam + 1) % team.members.length;
+
+    if (nextPlayerOrTeamIndex === 0) {
+      dispatch(setCurrentPlayerIndexInTeam(updatedPlayerIndexInTeam));
+    }
+  }
+};

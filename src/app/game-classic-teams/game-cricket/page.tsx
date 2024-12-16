@@ -29,7 +29,6 @@ interface HistoryEntry {
    historyLastThrowSector: string
 }
 
-
 const Cricket = () => {
    const router = useRouter()
    const searchParams = useSearchParams()

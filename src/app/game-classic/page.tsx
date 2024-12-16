@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setInitialSoundPlayed, } from '@/redux/slices/gameClassicSlice'
+import { setInitialSoundPlayed, } from '@/redux/slices/game-classic/gameClassicSlice'
 import { selectDataInGameClassicPage } from '@/redux/memoizedSelectors'
 //Components
 import GameClassicSinglePlayersSection from '@/components/game-classic/GameClassicSinglePlayersSection'

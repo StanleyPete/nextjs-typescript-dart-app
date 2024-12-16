@@ -2,7 +2,7 @@ import React from 'react'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setCurrentThrow, } from '@/redux/slices/gameClassicSlice'
+import { setCurrentThrow, } from '@/redux/slices/game-classic/gameClassicSlice'
 import { selectDataInKeyboardButtonsOrGameEndPopUp } from '@/redux/memoizedSelectors'
 //Controllers
 import { handleUndo } from '@/controllers/handleUndo'

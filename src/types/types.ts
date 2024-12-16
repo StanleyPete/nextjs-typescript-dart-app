@@ -1,47 +1,63 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 
 //REDUX TYPES/INTERFACES
-export interface PlayerClassic {
-    name: string
-    legs: number
-    pointsLeft: number
-    lastScore: number
-    totalThrows: number
-    totalAttempts: number
-    average: number
-    isInputPreffered: boolean
+export interface GameCricketStates {
+    startIndex: number,
+    currentPlayerThrowsCount: number,
+    currentPlayerThrows: string[],
+    completedSectors: Record<'20' | '19' | '18' | '17' | '16' | '15' | 'Bull', boolean>,
+    isGameEnd: boolean,
+    winner: PlayerCricket | TeamCricket | null,
+    isSoundEnabled: boolean,
+    initialSoundPlayed: boolean,
 }
 
-export interface TeamClassic {
-    name: string
-    members: string[]
-    legs: number
-    pointsLeft: number
-    lastScore: number
-    totalThrows: number
-    totalAttempts: number
-    average: number
-    isInputPreffered: boolean
+export interface PlayerCricket {
+    name: string,
+    legs: number,
+    points: number,
+    scores: { [key: string]: number}
 }
-export interface HistoryEntryClassicSingle {
+
+export interface TeamCricket {
+    name: string,
+    members: string[],
+    legs: number,
+    points: number,
+    scores: { [key: string]: number}
+}
+
+export interface GameCricketSingleStates {
+    players: PlayerCricket[]
+    currentPlayerIndex: number
+    historyCricketSingle: HistoryEntryCricketSingle[]
+}
+
+export interface GameCricketTeamsStates {
+    teams: TeamCricket[]
+    currentTeamIndex: number
+    currentPlayerIndexInTeam: number
+    historyCricketTeams: HistoryEntryCricketTeams[]
+}
+
+export interface HistoryEntryCricketSingle {
+   historyPlayerIndex: number
+   historyPoints: number
+   historyScores: { [key: string]: number }
+   historyThrows: string[]
+   historyLegs: number
+   historyLastThrowSector: string
+}
+
+export interface HistoryEntryCricketTeams {
     historyPlayerIndex: number
-    historyPointsLeft: number
-    historyLastScore: number
-    historyTotalThrows: number
-    historyLastAverage: number
-    historyTotalAttempts: number
+   historyPlayerIndexInTeam: number
+   historyPoints: number
+   historyScores: { [key: string]: number }
+   historyThrows: string[]
+   historyLegs: number
+   historyLastThrowSector: string
 }
-
-export interface HistoryEntryClassicTeams {
-    historyTeamIndex: number
-    historyPlayerIndexInTeam: number
-    historyPointsLeft: number
-    historyLastScore: number
-    historyTotalThrows: number
-    historyLastAverage: number
-    historyTotalAttempts: number
-}
-
 
 export interface GameSettingsStates {
     gameType: 'single' | 'teams' | 'online'
@@ -51,9 +67,14 @@ export interface GameSettingsStates {
     numberOfLegs: number
     isFirstLoad: boolean,
     error: {
-     isError: boolean
-     errorMessage: string
-   }
+        isError: boolean
+        errorMessage: string
+    }
+}
+
+export interface ErrorState {
+    isError: boolean
+    errorMessage: string
 }
 
 export interface GameClassicStates{
@@ -69,14 +90,55 @@ export interface GameClassicStates{
     winner: PlayerClassic | TeamClassic | null
     isSoundEnabled: boolean
     initialSoundPlayed: boolean
+}
 
+export interface PlayerClassic {
+    name: string
+    legs: number
+    pointsLeft: number
+    lastScore: number
+    totalThrows: number
+    totalAttempts: number
+    average: number
+    isInputPreffered: boolean
+}
+
+export interface HistoryEntryClassicSingle {
+    historyPlayerIndex: number
+    historyPointsLeft: number
+    historyLastScore: number
+    historyTotalThrows: number
+    historyLastAverage: number
+    historyTotalAttempts: number
 }
 
 export interface GameClassicSingleStates {
     players: PlayerClassic[]
     currentPlayerIndex: number
     historyClassicSingle: HistoryEntryClassicSingle[]
- }
+}
+
+export interface TeamClassic {
+    name: string
+    members: string[]
+    legs: number
+    pointsLeft: number
+    lastScore: number
+    totalThrows: number
+    totalAttempts: number
+    average: number
+    isInputPreffered: boolean
+}
+
+export interface HistoryEntryClassicTeams {
+    historyTeamIndex: number
+    historyPlayerIndexInTeam: number
+    historyPointsLeft: number
+    historyLastScore: number
+    historyTotalThrows: number
+    historyLastAverage: number
+    historyTotalAttempts: number
+}
 
 export interface GameClassicTeamsStates {
     teams: TeamClassic[]
@@ -85,10 +147,6 @@ export interface GameClassicTeamsStates {
     historyClassicTeams: HistoryEntryClassicTeams[]
 }
 
-export interface ErrorState {
-    isError: boolean
-    errorMessage: string
-}
 
 export type InitializePlayersType = (
     payload: { 
@@ -109,13 +167,14 @@ export type InitializeTeamsType = (
         gameMode: number | string 
     }>
 
-
 export interface TeamsPlayerInput { 
     teamIndex: number 
     playerIndexes: number[] 
 }
 
 export interface PlayerNamesInputProps { maxPlayers: number }
+
+
 
 
 

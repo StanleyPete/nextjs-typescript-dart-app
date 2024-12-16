@@ -4,9 +4,9 @@ import Image from 'next/image'
 //Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setIsGameEnd } from '@/redux/slices/gameClassicSlice'
-import { initializePlayers } from '@/redux/slices/gameClassicSingleSlice'
-import { initializeTeams } from '@/redux/slices/gameClassicTeamsSlice'
+import { setIsGameEnd } from '@/redux/slices/game-classic/gameClassicSlice'
+import { initializePlayers } from '@/redux/slices/game-classic/gameClassicSingleSlice'
+import { initializeTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 import { selectDataInKeyboardButtonsOrGameEndPopUp } from '@/redux/memoizedSelectors'
 //Controllers
 import { handleRestartGame } from '@/controllers/handleRestartGame'

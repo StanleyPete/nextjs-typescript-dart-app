@@ -7,7 +7,7 @@ import {
    setCurrentThrow, 
    setMultiplier, 
    setIsDoubleActive 
-} from '@/redux/slices/gameClassicSlice'
+} from '@/redux/slices/game-classic/gameClassicSlice'
 import { selectDataInThrowValueSectionOrNumberButtons } from '@/redux/memoizedSelectors'
 //Controllers
 import { handleToggleInputMethod } from '@/controllers/handleToggleInputMethod'

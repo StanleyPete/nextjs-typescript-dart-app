@@ -3,7 +3,7 @@ import Image from 'next/image'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setIsSoundEnabled } from '@/redux/slices/gameClassicSlice'
+import { setIsSoundEnabled } from '@/redux/slices/game-classic/gameClassicSlice'
 import { selectDataInCurrentPlayerThrowSection } from '@/redux/memoizedSelectors'
 //Types
 import { 
