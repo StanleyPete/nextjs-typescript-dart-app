@@ -14,7 +14,14 @@ import {
 const CurrentPlayerThrowSection = () => {
    const dispatch = useDispatch()
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
-   const { isSoundEnabled } = useSelector((state: RootState) => state.gameClassic)
+   const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode) as GameSettingsStates['gameMode']
+   const { isSoundEnabled } = useSelector((state: RootState) => {
+      if (gameMode === 'Cricket') {
+         return { isSoundEnabled: state.gameCricket.isSoundEnabled}
+      } else {
+         return { isSoundEnabled: state.gameClassic.isSoundEnabled}
+      }
+   })
    //Memoized (@/redux/memoizedSelectors.ts):
    const { playersOrTeams, index, currentPlayerIndexInTeam } = useSelector(selectDataInCurrentPlayerThrowSection)
    

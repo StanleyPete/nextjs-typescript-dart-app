@@ -10,10 +10,10 @@ import {
 } from '@/redux/slices/game-classic/gameClassicSlice'
 import { selectDataInThrowValueSectionOrNumberButtons } from '@/redux/memoizedSelectors'
 //Controllers
-import { handleToggleInputMethod } from '@/controllers/handleToggleInputMethod'
-import { handleThrowValueChange } from '@/controllers/handleThrowValueChange'
-import { handleSubmitThrowKeyboardButtons } from '@/controllers/handleSubmitThrowKeyboardButtons'
-import { handleSubmitThrowSubmitScoreButton } from '@/controllers/handleSubmitThrowSubmitScoreButton'
+import { handleToggleInputMethod } from '@/controllers/game-classic/handleToggleInputMethod'
+import { handleThrowValueChange } from '@/controllers/game-classic/handleThrowValueChange'
+import { handleSubmitThrowKeyboardButtons } from '@/controllers/game-classic/handleSubmitThrowKeyboardButtons'
+import { handleSubmitThrowSubmitScoreButton } from '@/controllers/game-classic/handleSubmitThrowSubmitScoreButton'
 //Types
 import {  
    PlayerClassic, 

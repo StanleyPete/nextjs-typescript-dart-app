@@ -46,17 +46,17 @@ export interface HistoryEntryCricketSingle {
    historyScores: { [key: string]: number }
    historyThrows: string[]
    historyLegs: number
-   historyLastThrowSector: string
+   historyLastThrowSector: '20' | '19' | '18' | '17' | '16' | '15' | 'Bull' | ''
 }
 
 export interface HistoryEntryCricketTeams {
-    historyPlayerIndex: number
+   historyTeamIndex: number
    historyPlayerIndexInTeam: number
    historyPoints: number
    historyScores: { [key: string]: number }
    historyThrows: string[]
    historyLegs: number
-   historyLastThrowSector: string
+   historyLastThrowSector: '20' | '19' | '18' | '17' | '16' | '15' | 'Bull' | ''
 }
 
 export interface GameSettingsStates {
@@ -156,6 +156,20 @@ export type InitializePlayersType = (
         PayloadAction<{ 
             playerNames: string[] 
             gameMode: number | string 
+        }>
+export type InitializeCricketPlayersType = (
+    payload: { 
+        playerNames: string[] 
+    }) => 
+        PayloadAction<{ 
+            playerNames: string[] 
+        }>
+export type InitializeCricketTeamsType = (
+    payload: { 
+        playerNames: string[] 
+    }) => 
+        PayloadAction<{ 
+            playerNames: string[] 
         }>
 
 export type InitializeTeamsType = (

@@ -1,89 +1,27 @@
 'use client'
-import React, { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useEffect } from 'react'
+import { useRouter, } from 'next/navigation'
 import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import Scores from '@/lib/cricket-scores'
 import GameCricketSinglePlayersSection from '@/components/game-cricket/GameCricketSinglePlayersSection'
 import GameCricketTeamsPlayersSection from '@/components/game-cricket/GameCricketTeamsPlayersSection'
-
-interface Player {
-   name: string
-   legs: number
-   points: number
-   scores: { [key: string]: number}
-}
-
-interface HistoryEntry {
-   historyPlayerIndex: number
-   historyPoints: number
-   historyScores: { [key: string]: number }
-   historyThrows: string[]
-   historyLegs: number
-   historyLastThrowSector: string
-}
-
+import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
+import { playSound } from '@/controllers/playSound'
+import { setInitialSoundPlayed } from '@/redux/slices/game-cricket/gameCricketSlice'
+import { selectDataInGameCricketPage } from '@/redux/memoizedSelectors'
+import SettingsButtons from '@/components/SettingsButtons'
+import ErrorPopUp from '@/components/ErrorPopUp'
+import GameEndPopUp from '@/components/GameEndPopUp'
 
 const GameCricket = () => {
+   const dispatch = useDispatch()
    const { gameType } = useSelector((state: RootState) => state.gameSettings)
+   const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.gameCricket)
+   const { playersOrTeams, history } = useSelector(selectDataInGameCricketPage)
 
-   const router = useRouter()
-   const searchParams = useSearchParams()
-
-   const gameWinType = searchParams.get('game-win-type')
-   const numberOfLegs = searchParams.get('number-of-legs')
-   const urlPlayers: string[] = JSON.parse(decodeURIComponent(searchParams.get('players') || '[]'))
    
-   //State to track players results
-   const [players, setPlayers] = useState<Player[]>(urlPlayers.map((playerName: string) => ({
-      name: playerName,
-      legs: 0,
-      points: 0, 
-      scores: {
-         '20': 0,
-         '19': 0,
-         '18': 0,
-         '17': 0,
-         '16': 0,
-         '15': 0,
-         'Bull': 0,
-      }
-       
-   })))
-   //State to track history of moves
-   const [history, setHistory] = useState<HistoryEntry[]>([])
-   //CurrentPlayerIndex state declared in order to keep players index who currently plays
-   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0)
-   //State to track which player starts the leg
-   const [startPlayerIndex, setStartPlayerIndex] = useState<number>(0)
-   //State to track throws count for each player when using buttons
-   const [currentPlayerThrowsCount, setCurrentPlayerThrowsCount] = useState<number>(0)
-   //State to track current player throw value and display it in current throw section
-   const [currentPlayerThrows, setCurrentPlayerThrows] = useState<string[]>([])
-   //State to track if all players have completed sector
-   const [completedSectors, setCompletedSectors] = useState<{ [key: string]: boolean }>({
-      '20': false,
-      '19': false,
-      '18': false,
-      '17': false,
-      '16': false,
-      '15': false,
-      'Bull': false,
-   })
-   //State to track if error occured
-   const [isError, setIsError] = useState<boolean>(false)
-   //State to set error message
-   const [errorMessage, setErrorMessage] = useState<string>('')
-   //State to check if game ends
-   const [isGameEnd, setIsGameEnd] = useState<boolean>(false)
-   //State to set winner of the game
-   const [winner, setWinner] = useState<Player | null>(null)
-   //State to track if the sound is on/off
-   const [isSoundEnabled, setIsSoundEnabled] = useState<boolean>(true)
-   //State to track if initial sound message ('game is on') has been played
-   const [initialSoundPlayed, setInitialSoundPlayed] = useState<boolean>(false)
-
    //NEXT PLAYER HANDLER
    const handleSwitchPlayer = () => {
       /* Switch to another player: 
@@ -99,18 +37,7 @@ const GameCricket = () => {
       setStartPlayerIndex(prevIndex => (prevIndex + 1) % players.length)
    }
 
-   //SOUND EFFECT HANDLER
-   const playSound = (fileName: string) => {
-      if(isSoundEnabled){
-         const audio = new Audio(`/sounds/${fileName}.mp3`)
-         audio.play().catch(error => console.log('Error:', error))
-      }
-   }
 
-   //SOUND TOGGLE HANDLER
-   const toggleSound = () => {
-      setIsSoundEnabled(prev => !prev)
-   }
 
    //SCORE BUTTONS HANDLER:
    const handleScoreButtons = (sector: string, label: string, increment: number, value: number) => {
@@ -342,76 +269,55 @@ const GameCricket = () => {
       setHistory(history.slice(0, history.length - 1))
    }
 
-   //GAME END HANDLER
-   const checkGameEndHandler = () => {
-      //Scenario when game type is set to best-of
-      if (gameWinType === 'best-of') {
-         //Sum of legs for all players
-         const totalLegs = players.reduce((acc, player) => acc + player.legs, 0)
+   // //GAME END HANDLER
+   // const checkGameEndHandler = () => {
+   //    //Scenario when game type is set to best-of
+   //    if (gameWinType === 'best-of') {
+   //       //Sum of legs for all players
+   //       const totalLegs = players.reduce((acc, player) => acc + player.legs, 0)
          
-         //Check if totalLegs for players equals to number-of-legs parameter
-         if (totalLegs === Number(numberOfLegs)) {
-            const maxLegs = Math.max(...players.map(player => player.legs))
-            const winner = players.find(player => player.legs === maxLegs) || null
-            setIsGameEnd(true)
-            setWinner(winner)
-            playSound('and-the-game')
-         } else {
-            playSound('and-the-leg')
-         }      
-      }
-      //Scenario when game type is set to first-to
-      else if (gameWinType === 'first-to') {
-         const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
-         if(winner){
-            setIsGameEnd(true)
-            setWinner(winner)
-            playSound('and-the-game')
-         } else {
-            playSound('and-the-leg')
-         }
-      }
-   }
+   //       //Check if totalLegs for players equals to number-of-legs parameter
+   //       if (totalLegs === Number(numberOfLegs)) {
+   //          const maxLegs = Math.max(...players.map(player => player.legs))
+   //          const winner = players.find(player => player.legs === maxLegs) || null
+   //          setIsGameEnd(true)
+   //          setWinner(winner)
+   //          playSound('and-the-game')
+   //       } else {
+   //          playSound('and-the-leg')
+   //       }      
+   //    }
+   //    //Scenario when game type is set to first-to
+   //    else if (gameWinType === 'first-to') {
+   //       const winner = players.find(player => player.legs === Number(numberOfLegs)) || null
+   //       if(winner){
+   //          setIsGameEnd(true)
+   //          setWinner(winner)
+   //          playSound('and-the-game')
+   //       } else {
+   //          playSound('and-the-leg')
+   //       }
+   //    }
+   // }
 
-   //RESTART GAME HANDLER
-   const handleRestartGame = () => {
-      setPlayers(urlPlayers.map((playerName) => ({
-         name: playerName,
-         legs: 0,
-         points: 0,
-         scores: {
-            '20': 0,
-            '19': 0,
-            '18': 0,
-            '17': 0,
-            '16': 0,
-            '15': 0,
-            'Bull': 0,
-         }
-      })))
-      setCurrentPlayerIndex(0)
-      setStartPlayerIndex(0) 
-      setHistory([])
-      setCurrentPlayerThrowsCount(0)
-      setCurrentPlayerThrows([]) 
-   }
 
-   //ERROR CLOSE HANDLER
-   const closeError = () => {
-      setIsError(false)
-   }
+
+   // //ERROR CLOSE HANDLER
+   // const closeError = () => {
+   //    setIsError(false)
+   // }
 
    useEffect(() => {
       if(!initialSoundPlayed){
-         playSound('game-is-on')
-         setInitialSoundPlayed(true)
+         playSound('game-is-on', isSoundEnabled)
+         dispatch(setInitialSoundPlayed(true))
       }
 
-      console.log(history)
-      console.log(`CurrentPlayerThrowsCount: ${currentPlayerThrowsCount}`)
-      console.log(`CurrentPlayerThrows: ${currentPlayerThrows}`)
+      //Only for the purpose of reviewing players/teams and history states in console
+      console.log('Players: ', playersOrTeams)
+      console.log('History: ', history)
 
-   }, [history, currentPlayerThrowsCount, currentPlayerThrows, initialSoundPlayed])
+   }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled])
 
 
    return (    
@@ -420,22 +326,7 @@ const GameCricket = () => {
             ? (<GameCricketSinglePlayersSection />) 
             : (<GameCricketTeamsPlayersSection />)
          }
-
-         {/*Current player throw paragraph:*/}
-         <p className='current-player-throw'>
-            <button className='sound-button' onClick={toggleSound}>
-               <Image 
-                  src={isSoundEnabled ? '/sound-on.svg' : '/sound-off.svg'} 
-                  alt={isSoundEnabled ? 'Sound On' : 'Sound Off'} 
-                  width={16} 
-                  height={16} 
-               />
-               <span>{isSoundEnabled ? 'On' : 'Off'}</span>
-            </button>
-            <span className='current-player-throw-message'>
-               {`${players[currentPlayerIndex].name.toUpperCase()}'S TURN TO THROW!`}
-            </span>
-         </p>
+         <CurrentPlayerThrowSection />
 
          {/*Main score input section:*/}
          <div className='score-section'> 
@@ -611,72 +502,10 @@ const GameCricket = () => {
 
          </div>
          
-         {/* Settings buttons*/}
-         <div className="settings-buttons">
-            <button 
-               className='go-back' 
-               onClick={() => router.back()}>
-                  Back to Settings
-            </button>
-            <button 
-               className='restart-game' 
-               onClick={handleRestartGame}>
-                  Restart game
-            </button>
-         </div>
+         <SettingsButtons />
+         <ErrorPopUp />
+         <GameEndPopUp />
          
-         {/* Error/Game End overlay */}
-         {(isError || isGameEnd) && <div className="overlay"></div>}
-
-         {/* Error section */}
-         {isError && (
-            <div className="error">
-               <div className="error-content">
-                  <Image 
-                     src='/error.svg' 
-                     alt='Error icon' 
-                     width={100} 
-                     height={100} 
-                  />
-                  <p>{errorMessage}</p>
-                  <button 
-                     onClick={closeError}>
-                        OK
-                  </button>
-               </div>
-            </div>
-         )}
-
-         {/* End game pop-up */}
-         {isGameEnd && (
-            <div className='game-over-popup'>
-               <div className='game-over-popup-content'>
-                  <Image 
-                     src='/winner.svg' 
-                     alt='Winner image' 
-                     width={80} 
-                     height={80} 
-                  />
-                  <h3>Winner: {winner?.name}</h3>
-                  <button 
-                     className='play-again' 
-                     onClick={handleRestartGame}>
-                        Play Again
-                  </button>
-                  <button 
-                     className='go-back' 
-                     onClick={() => router.back()}>
-                        Back to Settings
-                  </button>
-                  <button 
-                     className='undo' 
-                     onClick={() => {
-                        handleUndo(); setIsGameEnd(false)}}>
-                        Undo
-                  </button>
-               </div>
-            </div>
-         )}
         
       </div>
    )

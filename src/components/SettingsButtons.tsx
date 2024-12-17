@@ -2,11 +2,10 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 //Redux
 import { useDispatch, useSelector } from 'react-redux'
-import { initializePlayers } from '../redux/slices/game-classic/gameClassicSingleSlice'
-import { initializeTeams } from '../redux/slices/game-classic/gameClassicTeamsSlice'
 import { RootState } from '@/redux/store'
 //Controllers
-import { handleRestartGame } from '@/controllers/handleRestartGame'
+import { handleRestartGameClassic } from '@/controllers/game-classic/handleRestartGameClassic'
+import { handleRestartGameCricket } from '@/controllers/game-cricket/handleRestartGameCricket'
 
 const SettingsButtons = () => {
    const dispatch = useDispatch()
@@ -24,14 +23,11 @@ const SettingsButtons = () => {
          <button 
             className="restart-game" 
             onClick={() => {
-               handleRestartGame(
-                  gameType,
-                  playerNames, 
-                  gameMode, 
-                  isGameEnd, 
-                  gameType === 'single' ? initializePlayers : initializeTeams,
-                  dispatch, 
-               )  
+               if (gameMode === 'Cricket') {
+                  handleRestartGameCricket(gameType, playerNames, isGameEnd, dispatch)
+               } else {
+                  handleRestartGameClassic(gameType, playerNames, gameMode, isGameEnd, dispatch)  
+               }
             }}
          >
             Restart game

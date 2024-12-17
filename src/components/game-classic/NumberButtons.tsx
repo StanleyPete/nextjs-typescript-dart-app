@@ -3,8 +3,8 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 //Controllers
-import { handleUndo } from '@/controllers/handleUndo'
-import { handleSubmitThrowNumberButtons } from '@/controllers/handleSubmitThrowNumberButtons'
+import { handleUndo } from '@/controllers/game-classic/handleUndo'
+import { handleSubmitThrowNumberButtons } from '@/controllers/game-classic/handleSubmitThrowNumberButtons'
 import { selectDataInThrowValueSectionOrNumberButtons } from '@/redux/memoizedSelectors'
 //Types
 import { 

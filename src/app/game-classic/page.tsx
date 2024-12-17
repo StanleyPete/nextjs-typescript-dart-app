@@ -42,7 +42,7 @@ const GameClassic = () => {
       console.log('Players: ', playersOrTeams)
       console.log('History: ', history)
 
-   }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled, gameType])
+   }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled])
 
    
    return (
@@ -54,8 +54,8 @@ const GameClassic = () => {
          <CurrentPlayerThrowSection />
          <ScoreSection />
          <SettingsButtons />
-         <ErrorPopUp />
          <GameEndPopUp />
+         <ErrorPopUp />
       </div>
    )
 }

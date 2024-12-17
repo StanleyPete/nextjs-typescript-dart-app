@@ -1,6 +1,7 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
 import {
+   setStartIndex,
    setCurrentThrow,
    setThrowValueSum,
    setCurrentPlayerThrowsCount,
@@ -10,6 +11,7 @@ import {
 import {
    setCurrentPlayerIndex,
    setHistoryClassicSingle,
+   initializePlayers,
 } from '@/redux/slices/game-classic/gameClassicSingleSlice'
 import {
    setCurrentTeamIndex,
@@ -19,8 +21,6 @@ import {
 } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Types
 import {
-   InitializePlayersType,
-   InitializeTeamsType,
    GameSettingsStates,
    GameClassicStates,
 } from '@/types/types'
@@ -29,12 +29,11 @@ import {
       SettingsButtons component, 
       GameEndPopUp component 
 */
-export const handleRestartGame = (
+export const handleRestartGameClassic = (
    gameType: GameSettingsStates['gameType'],
    playerNames: GameSettingsStates['playerNames'],
    gameMode: GameSettingsStates['gameMode'],
    isGameEnd: GameClassicStates['isGameEnd'],
-   initializePlayers: InitializePlayersType | InitializeTeamsType,
    dispatch: AppDispatch
 ) => {
    if (gameType === 'single') {
@@ -48,6 +47,7 @@ export const handleRestartGame = (
       dispatch(setHistoryClassicTeams([]))
    }
 
+   dispatch(setStartIndex(0))
    dispatch(setCurrentThrow(0))
    dispatch(setThrowValueSum(0))
    dispatch(setCurrentPlayerThrowsCount(0))
