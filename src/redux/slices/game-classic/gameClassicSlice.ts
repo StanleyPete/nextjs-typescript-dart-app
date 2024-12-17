@@ -1,5 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { PlayerClassic, TeamClassic, GameClassicStates } from '@/types/types'
+import {
+   PlayerClassic,
+   TeamClassic,
+   GameClassicStates,
+} from '@/types/components/componentsTypes'
 
 const initialState: GameClassicStates = {
    startIndex: 0,
@@ -47,7 +51,10 @@ const gameClassicSlice = createSlice({
       setIsGameEnd(state, action: PayloadAction<boolean>) {
          state.isGameEnd = action.payload
       },
-      setWinner(state, action: PayloadAction<PlayerClassic | TeamClassic | null>) {
+      setWinner(
+         state,
+         action: PayloadAction<PlayerClassic | TeamClassic | null>
+      ) {
          state.winner = action.payload
       },
       setIsSoundEnabled(state, action: PayloadAction<boolean>) {

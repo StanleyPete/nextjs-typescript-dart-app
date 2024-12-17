@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
-import { PlayerNamesInputProps } from '@/types/types'
+import { PlayerNamesInputProps } from '@/types/components/componentsTypes'
 
 const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
    const dispatch = useDispatch()

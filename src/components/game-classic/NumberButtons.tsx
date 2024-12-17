@@ -5,21 +5,20 @@ import { RootState } from '@/redux/store'
 //Controllers
 import { handleUndo } from '@/controllers/game-classic/handleUndo'
 import { handleSubmitThrowNumberButtons } from '@/controllers/game-classic/handleSubmitThrowNumberButtons'
-import { selectDataInThrowValueSectionOrNumberButtons } from '@/redux/memoizedSelectors'
+import { selectDataInThrowValueSectionAndNumberButtons } from '@/redux/selectors/game-classic/selectDataInThrowValueSectionAndNumberButtons'
 //Types
-import { 
-   HistoryEntryClassicSingle, 
-   HistoryEntryClassicTeams
-} from '@/types/types'
+import { HistoryEntryClassicSingle, HistoryEntryClassicTeams } from '@/types/redux/gameClassicTypes'
 
 const NumberButtons = () => {
    const dispatch = useDispatch()
+
    const {  
       gameType,
       gameMode,
       numberOfLegs,
       gameWin 
    } = useSelector((state: RootState) => state.gameSettings)
+
    const {  
       startIndex,
       showNumberButtons, 
@@ -29,13 +28,14 @@ const NumberButtons = () => {
       multiplier, 
       isSoundEnabled 
    } = useSelector((state: RootState) => state.gameClassic)
-   //Memoized (@/redux/memoizedSelectors.ts):
+
+   //Memoized (@/redux/selectors/game-classic/selectDataInThrowValueSectionAndNumberButtons.ts):
    const { 
       playersOrTeams,
       index,
       currentPlayerIndexInTeam,
       history 
-   } = useSelector(selectDataInThrowValueSectionOrNumberButtons)
+   } = useSelector(selectDataInThrowValueSectionAndNumberButtons)
 
    const specialButtons = [
       { label: 'Bull (50)', value: 50 },

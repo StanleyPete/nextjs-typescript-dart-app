@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 //Types
-import { PlayerClassic } from '@/types/types'
+import { PlayerClassic } from '@/types/redux/gameClassicTypes'
 //Lib
 import checkoutArray from '@/lib/checkout-table'
 

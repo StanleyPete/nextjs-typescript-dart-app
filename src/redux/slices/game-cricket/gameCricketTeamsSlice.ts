@@ -1,11 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TeamCricket, HistoryEntryCricketTeams, GameCricketTeamsStates } from '@/types/types'
+import {
+   TeamCricket,
+   HistoryEntryCricketTeams,
+   GameCricketTeamsStates,
+} from '@/types/components/componentsTypes'
 
 const initialState: GameCricketTeamsStates = {
    teams: [],
    currentTeamIndex: 0,
    currentPlayerIndexInTeam: 0,
-   historyCricketTeams: []
+   historyCricketTeams: [],
 }
 
 const gameCricketTeamsSlice = createSlice({
@@ -14,7 +18,7 @@ const gameCricketTeamsSlice = createSlice({
    reducers: {
       initializeCricketTeams(
          state,
-         action: PayloadAction<{playerNames: string[]}>
+         action: PayloadAction<{ playerNames: string[] }>
       ) {
          const { playerNames } = action.payload
          state.teams = [
@@ -30,8 +34,8 @@ const gameCricketTeamsSlice = createSlice({
                   '17': 0,
                   '16': 0,
                   '15': 0,
-                  'Bull': 0,
-               }
+                  Bull: 0,
+               },
             },
             {
                name: 'Team 2',
@@ -45,8 +49,8 @@ const gameCricketTeamsSlice = createSlice({
                   '17': 0,
                   '16': 0,
                   '15': 0,
-                  'Bull': 0,
-               }
+                  Bull: 0,
+               },
             },
          ]
       },
@@ -59,7 +63,10 @@ const gameCricketTeamsSlice = createSlice({
       setCurrentPlayerIndexInTeam(state, action: PayloadAction<number>) {
          state.currentPlayerIndexInTeam = action.payload
       },
-      setHistoryCricketTeams(state, action: PayloadAction<HistoryEntryCricketTeams[]>) {
+      setHistoryCricketTeams(
+         state,
+         action: PayloadAction<HistoryEntryCricketTeams[]>
+      ) {
          state.historyCricketTeams = action.payload
       },
    },

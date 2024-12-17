@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
-import { TeamsPlayerInput } from '@/types/types'
+import { TeamsPlayerInput } from '@/types/components/componentsTypes'
 
 const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInput) => {
    const dispatch = useDispatch()

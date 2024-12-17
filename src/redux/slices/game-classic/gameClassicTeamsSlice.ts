@@ -1,5 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TeamClassic, HistoryEntryClassicTeams, GameClassicTeamsStates } from '@/types/types'
+import {
+   TeamClassic,
+   HistoryEntryClassicTeams,
+   GameClassicTeamsStates,
+} from '@/types/components/componentsTypes'
 
 const initialState: GameClassicTeamsStates = {
    teams: [],
@@ -60,7 +64,10 @@ const gameClassicTeamsSlice = createSlice({
       setCurrentPlayerIndexInTeam(state, action: PayloadAction<number>) {
          state.currentPlayerIndexInTeam = action.payload
       },
-      setHistoryClassicTeams(state, action: PayloadAction<HistoryEntryClassicTeams[]>) {
+      setHistoryClassicTeams(
+         state,
+         action: PayloadAction<HistoryEntryClassicTeams[]>
+      ) {
          state.historyClassicTeams = action.payload
       },
    },

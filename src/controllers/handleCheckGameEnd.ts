@@ -1,18 +1,16 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   setIsGameEnd,
-   setWinner,
-} from '@/redux/slices/game-classic/gameClassicSlice'
+import { setIsGameEnd, setWinner } from '@/redux/slices/game-classic/gameClassicSlice'
 //Controllers
 import { playSound } from '@/controllers/playSound'
 //Types
-import {
-   PlayerClassic,
-   TeamClassic,
-   GameSettingsStates,
-   GameClassicStates,
-} from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameClassicStates, 
+   PlayerClassic, 
+   TeamClassic 
+} from '@/types/redux/gameClassicTypes'
+
 
 /* USED IN: 
       handleSubmitThrowKeyboardButtons, 

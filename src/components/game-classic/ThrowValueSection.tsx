@@ -8,28 +8,30 @@ import {
    setMultiplier, 
    setIsDoubleActive 
 } from '@/redux/slices/game-classic/gameClassicSlice'
-import { selectDataInThrowValueSectionOrNumberButtons } from '@/redux/memoizedSelectors'
+import { selectDataInThrowValueSectionAndNumberButtons } from '@/redux/selectors/game-classic/selectDataInThrowValueSectionAndNumberButtons'
 //Controllers
 import { handleToggleInputMethod } from '@/controllers/game-classic/handleToggleInputMethod'
 import { handleThrowValueChange } from '@/controllers/game-classic/handleThrowValueChange'
 import { handleSubmitThrowKeyboardButtons } from '@/controllers/game-classic/handleSubmitThrowKeyboardButtons'
 import { handleSubmitThrowSubmitScoreButton } from '@/controllers/game-classic/handleSubmitThrowSubmitScoreButton'
 //Types
-import {  
+import { 
    PlayerClassic, 
    TeamClassic, 
    HistoryEntryClassicSingle, 
    HistoryEntryClassicTeams 
-} from '@/types/types'
+} from '@/types/redux/gameClassicTypes'
 
 const ThrowValueSection = () => {
    const dispatch = useDispatch()
+
    const {  
       gameType,
       gameMode,
       numberOfLegs,
       gameWin 
    } = useSelector((state: RootState) => state.gameSettings)
+
    const {
       startIndex,
       showNumberButtons,
@@ -41,13 +43,14 @@ const ThrowValueSection = () => {
       isDoubleActive,
       isSoundEnabled,
    } = useSelector((state: RootState) => state.gameClassic)
-   //Memoized (@/redux/memoizedSelectors.ts):
+   
+   //Memoized (@/redux/selectors/game-classic/selectDataInThrowValueSectionAndNumberButtons.ts):
    const { 
       playersOrTeams, 
       index, 
       currentPlayerIndexInTeam, 
       history 
-   } = useSelector(selectDataInThrowValueSectionOrNumberButtons)
+   } = useSelector(selectDataInThrowValueSectionAndNumberButtons)
    
    return (
       <>

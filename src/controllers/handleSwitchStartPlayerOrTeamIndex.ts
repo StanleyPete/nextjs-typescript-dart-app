@@ -2,7 +2,11 @@
 import { AppDispatch } from '@/redux/store'
 import { setStartIndex } from '@/redux/slices/game-classic/gameClassicSlice'
 //Types
-import { PlayerClassic, TeamClassic, GameClassicStates } from '@/types/types'
+import {
+   GameClassicStates, 
+   PlayerClassic, 
+   TeamClassic 
+} from '@/types/redux/gameClassicTypes'
 
 /* 
    USED IN:

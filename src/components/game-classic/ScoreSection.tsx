@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setShowNumberButtons } from '@/redux/slices/game-classic/gameClassicSlice'
-import { selectDataInScoreSection } from '@/redux/memoizedSelectors'
+import { selectDataInScoreSection } from '@/redux/selectors/game-classic/selectDataInScoreSection'
 //Components
 import ThrowValueSection from './ThrowValueSection'
 import KeyboardButtons from './KeyboardButtons'
@@ -12,7 +12,7 @@ import NumberButtons from './NumberButtons'
 const ScoreSection = () => {
    const dispatch = useDispatch()
    const showNumberButtons = useSelector((state: RootState) => state.gameClassic.showNumberButtons)
-   //Memoized (@/redux/memoizedSelectors.ts):
+   //Memoized (@/redux/selectors/game-classic/selectDataInScoreSection.ts)
    const { playersOrTeams, index } = useSelector(selectDataInScoreSection)
 
    useEffect(() => {

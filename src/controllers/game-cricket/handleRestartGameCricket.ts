@@ -1,26 +1,24 @@
 import { AppDispatch } from '@/redux/store'
-import { 
-   initializeCricketPlayers, 
-   setCurrentPlayerIndex, 
-   setHistoryCricketSingle 
+import {
+   initializeCricketPlayers,
+   setCurrentPlayerIndex,
+   setHistoryCricketSingle,
 } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
 import {
-   setCurrentPlayerThrows, 
-   setCurrentPlayerThrowsCount, 
-   setIsGameEnd, 
-   setStartIndex, 
-   setWinner 
+   setCurrentPlayerThrows,
+   setCurrentPlayerThrowsCount,
+   setIsGameEnd,
+   setStartIndex,
+   setWinner,
 } from '@/redux/slices/game-cricket/gameCricketSlice'
-import { 
-   initializeCricketTeams, 
-   setCurrentPlayerIndexInTeam, 
-   setCurrentTeamIndex, 
-   setHistoryCricketTeams 
+import {
+   initializeCricketTeams,
+   setCurrentPlayerIndexInTeam,
+   setCurrentTeamIndex,
+   setHistoryCricketTeams,
 } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
-import { 
-   GameCricketStates, 
-   GameSettingsStates, 
-} from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameCricketStates } from '@/types/redux/gameCricketTypes'
 
 /* USED IN: 
       SettingsButtons component, 
@@ -32,12 +30,12 @@ export const handleRestartGameCricket = (
    isGameEnd: GameCricketStates['isGameEnd'],
    dispatch: AppDispatch
 ) => {
-   if (gameType === 'single'){
-      dispatch(initializeCricketPlayers({playerNames}))
+   if (gameType === 'single') {
+      dispatch(initializeCricketPlayers({ playerNames }))
       dispatch(setCurrentPlayerIndex(0))
       dispatch(setHistoryCricketSingle([]))
    } else {
-      dispatch(initializeCricketTeams({playerNames}))
+      dispatch(initializeCricketTeams({ playerNames }))
       dispatch(setCurrentTeamIndex(0))
       dispatch(setCurrentPlayerIndexInTeam(0))
       dispatch(setHistoryCricketTeams([]))
@@ -47,9 +45,8 @@ export const handleRestartGameCricket = (
    dispatch(setCurrentPlayerThrowsCount(0))
    dispatch(setCurrentPlayerThrows([]))
 
-   if (isGameEnd){
+   if (isGameEnd) {
       dispatch(setIsGameEnd(false))
       dispatch(setWinner(null))
    }
-   
 }

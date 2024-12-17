@@ -20,10 +20,9 @@ import {
    initializeTeams,
 } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Types
-import {
-   GameSettingsStates,
-   GameClassicStates,
-} from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameClassicStates } from '@/types/redux/gameClassicTypes'
+
 
 /* USED IN: 
       SettingsButtons component, 

@@ -12,7 +12,7 @@ import {
    GameCricketTeamsStates,
    TeamCricket,
    PlayerCricket,
-} from '@/types/types'
+} from '@/types/components/componentsTypes'
 
 /* 
    USED IN:
@@ -24,7 +24,9 @@ import {
 
 export const handleSwitchPlayerOrTeamCricket = (
    gameType: GameSettingsStates['gameType'],
-   index: GameCricketSingleStates['currentPlayerIndex'] | GameCricketTeamsStates['currentTeamIndex'],
+   index:
+    | GameCricketSingleStates['currentPlayerIndex']
+    | GameCricketTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameCricketTeamsStates['currentPlayerIndexInTeam'],
    playersOrTeams: PlayerCricket[] | TeamCricket[],
    dispatch: AppDispatch

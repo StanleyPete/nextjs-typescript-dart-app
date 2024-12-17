@@ -4,16 +4,11 @@ import Image from 'next/image'
 //Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setIsGameEnd as setIsGameEndClassic } from '@/redux/slices/game-classic/gameClassicSlice'
-import { setIsGameEnd as setIsGameEndCricket } from '@/redux/slices/game-cricket/gameCricketSlice'
-import { selectDataInKeyboardButtonsOrGameEndPopUp } from '@/redux/memoizedSelectors'
+import { setIsGameEnd } from '@/redux/slices/game-classic/gameClassicSlice'
+import { selectDataInKeyboardButtonsAndGameEndPopUp } from '@/redux/selectors/game-classic/selectDataInKeyboardButtonsAndGameEndPopUp'
 //Controllers
 import { handleRestartGameClassic } from '@/controllers/game-classic/handleRestartGameClassic'
-import { handleRestartGameCricket } from '@/controllers/game-cricket/handleRestartGameCricket'
 import { handleUndo } from '@/controllers/game-classic/handleUndo'
-import { handleUndoCricket } from '@/controllers/game-cricket/handleUndoCricket'
-import { HistoryEntryClassicSingle, HistoryEntryClassicTeams, HistoryEntryCricketSingle, HistoryEntryCricketTeams, PlayerClassic, PlayerCricket, TeamClassic, TeamCricket } from '@/types/types'
- 
 
 const GameEndPopUp = () => {
    const dispatch = useDispatch()
@@ -32,7 +27,7 @@ const GameEndPopUp = () => {
       playersOrTeams, 
       index, 
       history, 
-   } = useSelector(selectDataInKeyboardButtonsOrGameEndPopUp)
+   } = useSelector(selectDataInKeyboardButtonsAndGameEndPopUp)
    
    return (
       isGameEnd && (
@@ -49,11 +44,7 @@ const GameEndPopUp = () => {
                   <button 
                      className='play-again' 
                      onClick={() => {
-                        if (gameMode === 'Cricket') {
-                           handleRestartGameCricket(gameType, playerNames, isGameEnd, dispatch)
-                        } else {
-                           handleRestartGameClassic(gameType, playerNames, gameMode, isGameEnd, dispatch)  
-                        }
+                        handleRestartGameClassic(gameType, playerNames, gameMode, isGameEnd, dispatch)  
                      }}
                   >
                      Play Again
@@ -66,12 +57,9 @@ const GameEndPopUp = () => {
                   <button 
                      className='undo' 
                      onClick={() => {
-                        if (gameMode === 'Cricket'){
-                           handleUndoCricket(gameType, playersOrTeams as PlayerCricket[] | TeamCricket[], history as HistoryEntryCricketSingle[] | HistoryEntryCricketTeams[], currentPlayerThrowsCount, dispatch); dispatch(setIsGameEndCricket(false))
-                        } else {
-                           handleUndo(gameType, playersOrTeams as PlayerClassic[] | TeamClassic[], index, history as HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[], showNumberButtons, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount, gameMode, dispatch); dispatch(setIsGameEndClassic(false))
-                        }
-                     }}
+                        handleUndo(gameType, playersOrTeams, index, history, showNumberButtons, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount, gameMode, dispatch); dispatch(setIsGameEnd(false))
+                     }
+                     }
                   > 
                      Undo
                   </button>

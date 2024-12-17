@@ -1,18 +1,16 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
 import { setCurrentPlayerIndex } from '@/redux/slices/game-classic/gameClassicSingleSlice'
-import {
-   setCurrentTeamIndex,
-   setCurrentPlayerIndexInTeam,
-} from '@/redux/slices/game-classic/gameClassicTeamsSlice'
+import { setCurrentTeamIndex, setCurrentPlayerIndexInTeam } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Types
-import {
-   GameSettingsStates,
-   GameClassicSingleStates,
-   GameClassicTeamsStates,
-   PlayerClassic,
-   TeamClassic,
-} from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameClassicSingleStates, 
+   GameClassicTeamsStates, 
+   PlayerClassic, 
+   TeamClassic 
+} from '@/types/redux/gameClassicTypes'
+
 
 /* 
    USED IN:

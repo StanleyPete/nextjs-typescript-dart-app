@@ -1,5 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { PlayerCricket, HistoryEntryCricketSingle, GameCricketSingleStates } from '@/types/types'
+import {
+   PlayerCricket,
+   HistoryEntryCricketSingle,
+   GameCricketSingleStates,
+} from '@/types/components/componentsTypes'
 
 const initialState: GameCricketSingleStates = {
    players: [],
@@ -13,27 +17,30 @@ const gameCricketSingleSlice = createSlice({
    reducers: {
       initializeCricketPlayers(
          state,
-         action: 
-            PayloadAction<{playerNames: string[]}>
-      ) {state.players = action.payload.playerNames.map((name) => ({
-         name,
-         legs: 0,
-         points: 0 ,
-         scores: {
-            '20': 0,
-            '19': 0,
-            '18': 0,
-            '17': 0,
-            '16': 0,
-            '15': 0,
-            'Bull': 0,
-         }
-      }))
+         action: PayloadAction<{ playerNames: string[] }>
+      ) {
+         state.players = action.payload.playerNames.map((name) => ({
+            name,
+            legs: 0,
+            points: 0,
+            scores: {
+               '20': 0,
+               '19': 0,
+               '18': 0,
+               '17': 0,
+               '16': 0,
+               '15': 0,
+               Bull: 0,
+            },
+         }))
       },
       setPlayers(state, action: PayloadAction<PlayerCricket[]>) {
          state.players = action.payload
       },
-      setHistoryCricketSingle(state, action: PayloadAction<HistoryEntryCricketSingle[]>) {
+      setHistoryCricketSingle(
+         state,
+         action: PayloadAction<HistoryEntryCricketSingle[]>
+      ) {
          state.historyCricketSingle = action.payload
       },
       setCurrentPlayerIndex(state, action: PayloadAction<number>) {

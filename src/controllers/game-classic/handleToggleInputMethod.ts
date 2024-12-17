@@ -8,14 +8,15 @@ import {
 import { setPlayers } from '@/redux/slices/game-classic/gameClassicSingleSlice'
 import { setTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Types
-import {
-   GameSettingsStates,
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
    GameClassicStates,
    GameClassicSingleStates,
-   GameClassicTeamsStates,
-   PlayerClassic,
-   TeamClassic,
-} from '@/types/types'
+   GameClassicTeamsStates, 
+   PlayerClassic, 
+   TeamClassic 
+} from '@/types/redux/gameClassicTypes'
+
 
 /* USED IN: ThrowValueSection component */
 

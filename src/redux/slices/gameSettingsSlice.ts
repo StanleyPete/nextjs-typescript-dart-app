@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { GameSettingsStates, ErrorState } from '@/types/types'
+import {
+   GameSettingsStates,
+   ErrorState,
+} from '@/types/components/componentsTypes'
 
 const initialState: GameSettingsStates = {
    gameType: 'single',

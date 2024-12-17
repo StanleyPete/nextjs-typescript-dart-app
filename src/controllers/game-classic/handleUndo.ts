@@ -17,16 +17,17 @@ import {
    setHistoryClassicTeams,
 } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Types
-import {
-   GameSettingsStates,
-   GameClassicStates,
-   GameClassicSingleStates,
-   GameClassicTeamsStates,
-   PlayerClassic,
-   HistoryEntryClassicSingle,
-   TeamClassic,
-   HistoryEntryClassicTeams,
-} from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameClassicStates, 
+   GameClassicSingleStates, 
+   GameClassicTeamsStates, 
+   PlayerClassic, 
+   TeamClassic, 
+   HistoryEntryClassicSingle, 
+   HistoryEntryClassicTeams 
+} from '@/types/redux/gameClassicTypes'
+
 
 /* 
    USED IN: 

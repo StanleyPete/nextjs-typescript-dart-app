@@ -2,9 +2,8 @@ import React from 'react'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { selectDataInThrowValueSectionCricket  } from '@/redux/memoizedSelectors'
+import { selectDataInThrowValueSection } from '@/redux/selectors/game-cricket/selectDataInThrowValueSection'
 //Controllers
-
 import { handleUndoCricket } from '@/controllers/game-cricket/handleUndoCricket'
 import { handleSubmitScoreButton } from '@/controllers/game-cricket/handleSubmitScoreButton'
 
@@ -19,7 +18,7 @@ const ThrowValueSectionCricket = () => {
       index, 
       currentPlayerIndexInTeam, 
       history 
-   } = useSelector(selectDataInThrowValueSectionCricket)
+   } = useSelector(selectDataInThrowValueSection)
    
    return (
       <>

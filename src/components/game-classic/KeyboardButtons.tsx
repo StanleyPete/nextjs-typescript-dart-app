@@ -3,7 +3,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setCurrentThrow, } from '@/redux/slices/game-classic/gameClassicSlice'
-import { selectDataInKeyboardButtonsOrGameEndPopUp } from '@/redux/memoizedSelectors'
+import { selectDataInKeyboardButtonsAndGameEndPopUp } from '@/redux/selectors/game-classic/selectDataInKeyboardButtonsAndGameEndPopUp'
 //Controllers
 import { handleUndo } from '@/controllers/game-classic/handleUndo'
 //Types
@@ -12,7 +12,7 @@ import {
    TeamClassic, 
    HistoryEntryClassicSingle, 
    HistoryEntryClassicTeams 
-} from '@/types/types'
+} from '@/types/redux/gameClassicTypes'
 
 const KeyboardButtons = () => {
    const dispatch = useDispatch()
@@ -24,12 +24,12 @@ const KeyboardButtons = () => {
       currentPlayerThrowsCount,
       currentPlayerThrows
    } = useSelector((state: RootState) => state.gameClassic)
-   //Memoized (@/redux/memoizedSelectors.ts):
+   //Memoized (@/redux/selectors/game-classic/selectDataInKeyboardButtonsAndGameEndPopUp.ts):
    const { 
       playersOrTeams, 
       index,
       history, 
-   } = useSelector(selectDataInKeyboardButtonsOrGameEndPopUp)
+   } = useSelector(selectDataInKeyboardButtonsAndGameEndPopUp)
 
    return (
       <div className='score-input'>

@@ -1,5 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { GameCricketStates, PlayerCricket, TeamCricket } from '@/types/types'
+import {
+   GameCricketStates,
+   PlayerCricket,
+   TeamCricket,
+} from '@/types/components/componentsTypes'
 
 const initialState: GameCricketStates = {
    startIndex: 0,
@@ -12,7 +16,7 @@ const initialState: GameCricketStates = {
       '17': false,
       '16': false,
       '15': false,
-      'Bull': false,
+      Bull: false,
    },
    isGameEnd: false,
    winner: null,
@@ -34,8 +38,11 @@ const gameCricketSlice = createSlice({
          state.currentPlayerThrows = action.payload
       },
       setCompletedSectors(
-         state, 
-         action: PayloadAction<{ sector: keyof typeof state.completedSectors; completed: boolean }>
+         state,
+         action: PayloadAction<{
+        sector: keyof typeof state.completedSectors;
+        completed: boolean;
+      }>
       ) {
          const { sector, completed } = action.payload
          state.completedSectors[sector] = completed
@@ -44,7 +51,7 @@ const gameCricketSlice = createSlice({
          state.isGameEnd = action.payload
       },
       setWinner(
-         state, 
+         state,
          action: PayloadAction<PlayerCricket | TeamCricket | null>
       ) {
          state.winner = action.payload
@@ -58,9 +65,7 @@ const gameCricketSlice = createSlice({
          state.initialSoundPlayed = action.payload
       },
    },
-     
-},
-)
+})
 
 export const {
    setStartIndex,

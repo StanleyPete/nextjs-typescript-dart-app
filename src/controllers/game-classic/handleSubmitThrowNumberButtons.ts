@@ -22,16 +22,16 @@ import { handleSwitchStartPlayerOrTeamIndex } from '@/controllers/handleSwitchSt
 import { handleCheckGameEnd } from '@/controllers/handleCheckGameEnd'
 import { playSound } from '@/controllers/playSound'
 //Types
-import {
-   GameSettingsStates,
-   GameClassicStates,
-   GameClassicSingleStates,
-   GameClassicTeamsStates,
-   PlayerClassic,
-   HistoryEntryClassicSingle,
-   TeamClassic,
-   HistoryEntryClassicTeams,
-} from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameClassicStates, 
+   GameClassicSingleStates, 
+   GameClassicTeamsStates, 
+   PlayerClassic, 
+   TeamClassic, 
+   HistoryEntryClassicSingle, 
+   HistoryEntryClassicTeams 
+} from '@/types/redux/gameClassicTypes'
 
 /* USED IN: 
       NumberButtons component

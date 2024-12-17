@@ -14,7 +14,7 @@ import {
    GameCricketStates,
    GameCricketSingleStates,
    GameCricketTeamsStates,
-} from '@/types/types'
+} from '@/types/components/componentsTypes'
 
 //Initial store setup
 export const store = configureStore({
@@ -80,12 +80,12 @@ export const resetReducer = () => {
 }
 
 export type RootState = {
-  gameSettings: GameSettingsStates
-  gameClassic: GameClassicStates
-  gameClassicSingle: GameClassicSingleStates
-  gameClassicTeams: GameClassicTeamsStates
-  gameCricket: GameCricketStates
-  gameCricketSingle: GameCricketSingleStates
-  gameCricketTeams: GameCricketTeamsStates
-}
-export type AppDispatch = typeof store.dispatch
+  gameSettings: GameSettingsStates;
+  gameClassic: GameClassicStates;
+  gameClassicSingle: GameClassicSingleStates;
+  gameClassicTeams: GameClassicTeamsStates;
+  gameCricket: GameCricketStates;
+  gameCricketSingle: GameCricketSingleStates;
+  gameCricketTeams: GameCricketTeamsStates;
+};
+export type AppDispatch = typeof store.dispatch;

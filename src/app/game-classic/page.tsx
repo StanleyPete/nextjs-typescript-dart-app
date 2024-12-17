@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setInitialSoundPlayed, } from '@/redux/slices/game-classic/gameClassicSlice'
-import { selectDataInGameClassicPage } from '@/redux/memoizedSelectors'
+import { selectDataInGameClassicPage } from '@/redux/selectors/game-classic/selectDataInGameClassicPage'
 //Components
 import GameClassicSinglePlayersSection from '@/components/game-classic/GameClassicSinglePlayersSection'
 import GameClassicTeamsPlayersSection from '@/components/game-classic/GameClassicTeamsPlayersSection'
@@ -12,11 +12,11 @@ import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
 import ScoreSection from '@/components/game-classic/ScoreSection'
 import SettingsButtons from '@/components/SettingsButtons'
 import ErrorPopUp from '@/components/ErrorPopUp'
-import GameEndPopUp from '@/components/GameEndPopUp'
+import GameEndPopUp from '@/components/game-classic/GameEndPopUp'
 //Controllers
 import { playSound } from '@/controllers/playSound'
 //Types
-import { GameSettingsStates } from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 /* 
    GAME CLASSIC: 
@@ -28,7 +28,7 @@ const GameClassic = () => {
    const dispatch = useDispatch()
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
    const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.gameClassic)
-   //Memoized (@/redux/memoizedSelectors.ts):
+   //Memoized (@/redux/selectors/game-classic/selectDataInGameClassicPage.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)
    
    useEffect(() => { 

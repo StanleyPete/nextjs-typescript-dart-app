@@ -1,0 +1,72 @@
+import React from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+//Redux
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { setIsGameEnd } from '@/redux/slices/game-cricket/gameCricketSlice'
+import { selectDataInGameEndPopUp } from '@/redux/selectors/game-cricket/selectDataInGameEndPopUp'
+//Controllers
+import { handleRestartGameCricket } from '@/controllers/game-cricket/handleRestartGameCricket'
+import { handleUndoCricket } from '@/controllers/game-cricket/handleUndoCricket'
+
+ 
+
+const GameEndPopUp = () => {
+   const dispatch = useDispatch()
+   const router = useRouter()
+   const { gameType, playerNames } = useSelector((state: RootState) => state.gameSettings)
+
+   const { 
+      currentPlayerThrowsCount, 
+      isGameEnd, 
+      winner 
+   } = useSelector((state: RootState) => state.gameCricket)
+
+   //Memoized (@/redux/selectors/game-cricket/selectDataInGameEndPopUp.ts):
+   const { 
+      playersOrTeams,  
+      history, 
+   } = useSelector(selectDataInGameEndPopUp)
+   
+   return (
+      isGameEnd && (
+         <div className="overlay">
+            <div className='game-over-popup'>
+               <div className='game-over-popup-content'>
+                  <Image 
+                     src='/winner.svg' 
+                     alt='Winner icon' 
+                     width={80} 
+                     height={80} 
+                  />
+                  <h3>Winner: {winner?.name}</h3>
+                  <button 
+                     className='play-again' 
+                     onClick={() => {
+                        handleRestartGameCricket(gameType, playerNames, isGameEnd, dispatch)
+                     }}
+                  >
+                     Play Again
+                  </button>
+                  <button 
+                     className='go-back' 
+                     onClick={() => router.back()}>
+                        Back to Settings
+                  </button>
+                  <button 
+                     className='undo' 
+                     onClick={() => {
+                        handleUndoCricket(gameType, playersOrTeams, history, currentPlayerThrowsCount, dispatch); dispatch(setIsGameEnd(false))
+                     }}
+                  > 
+                     Undo
+                  </button>
+               </div>
+            </div>
+         </div>
+      )
+   )
+}
+
+export default GameEndPopUp

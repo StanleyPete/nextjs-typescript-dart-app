@@ -31,7 +31,7 @@ import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesI
 import GameTeamsPlayerNamesInput from '@/components/home/GameTeamsPlayerNamesInput'
 import './styles/home.scss'
 //Types
-import { GameSettingsStates } from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 /* 
    HOME PAGE: 

@@ -1,10 +1,7 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
-import {
-   setCurrentThrow,
-   setIsDoubleActive,
-} from '@/redux/slices/game-classic/gameClassicSlice'
+import { setCurrentThrow, setIsDoubleActive } from '@/redux/slices/game-classic/gameClassicSlice'
 import {
    setPlayers,
    setCurrentPlayerIndex,
@@ -21,16 +18,17 @@ import { handleSwitchStartPlayerOrTeamIndex } from '@/controllers/handleSwitchSt
 import { handleCheckGameEnd } from '@/controllers/handleCheckGameEnd'
 import { playSound } from '@/controllers/playSound'
 //Types
-import {
-   GameSettingsStates,
-   GameClassicStates,
-   GameClassicSingleStates,
-   GameClassicTeamsStates,
-   PlayerClassic,
-   TeamClassic,
-   HistoryEntryClassicSingle,
-   HistoryEntryClassicTeams,
-} from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameClassicStates, 
+   GameClassicSingleStates, 
+   GameClassicTeamsStates, 
+   PlayerClassic, 
+   TeamClassic, 
+   HistoryEntryClassicSingle, 
+   HistoryEntryClassicTeams 
+} from '@/types/redux/gameClassicTypes'
+
 
 /* USED IN: 
       ThrowValueSection component when showNumberButtons === false, 
@@ -39,9 +37,7 @@ import {
 export const handleSubmitThrowKeyboardButtons = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerClassic[] | TeamClassic[],
-   index:
-    | GameClassicSingleStates['currentPlayerIndex']
-    | GameClassicTeamsStates['currentTeamIndex'],
+   index: GameClassicSingleStates['currentPlayerIndex'] | GameClassicTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameClassicTeamsStates['currentPlayerIndexInTeam'],
    startIndex: GameClassicStates['startIndex'],
    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],

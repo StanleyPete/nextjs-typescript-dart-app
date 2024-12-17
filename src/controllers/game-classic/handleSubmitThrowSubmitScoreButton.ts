@@ -4,30 +4,24 @@ import {
    setCurrentThrow,
    setThrowValueSum,
    setCurrentPlayerThrowsCount,
-   setCurrentPlayerThrows,
+   setCurrentPlayerThrows
 } from '@/redux/slices/game-classic/gameClassicSlice'
-import {
-   setPlayers,
-   setHistoryClassicSingle,
-} from '@/redux/slices/game-classic/gameClassicSingleSlice'
-import {
-   setTeams,
-   setHistoryClassicTeams,
-} from '@/redux/slices/game-classic/gameClassicTeamsSlice'
+import { setPlayers, setHistoryClassicSingle } from '@/redux/slices/game-classic/gameClassicSingleSlice'
+import { setTeams, setHistoryClassicTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Controllers
 import { handleSwitchPlayerOrTeam } from '@/controllers/handleSwitchPlayerOrTeam'
 import { playSound } from '@/controllers/playSound'
 //Types
-import {
-   GameSettingsStates,
-   GameClassicStates,
-   GameClassicSingleStates,
-   GameClassicTeamsStates,
-   PlayerClassic,
-   TeamClassic,
-   HistoryEntryClassicSingle,
-   HistoryEntryClassicTeams,
-} from '@/types/types'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameClassicStates, 
+   GameClassicSingleStates, 
+   GameClassicTeamsStates, 
+   PlayerClassic, 
+   TeamClassic, 
+   HistoryEntryClassicSingle, 
+   HistoryEntryClassicTeams 
+} from '@/types/redux/gameClassicTypes'
 
 /*  
    USED IN: 
