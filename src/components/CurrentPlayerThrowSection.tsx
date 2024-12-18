@@ -9,14 +9,21 @@ import { selectIsSoundEnabled } from '@/redux/selectors/selectDataInCurrentPlaye
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { TeamClassic } from '@/types/redux/gameClassicTypes'
+import { TeamCricket } from '@/types/redux/gameCricketTypes'
 
 const CurrentPlayerThrowSection = () => {
+
    const dispatch = useDispatch()
+
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
    
    //Memoized (@/redux/selectors/selectDataInCurrentPlayerThrowSection.ts):
    const { isSoundEnabled } = useSelector(selectIsSoundEnabled)
-   const { playersOrTeams, index, currentPlayerIndexInTeam } = useSelector(selectDataInCurrentPlayerThrowSection)
+   const { 
+      playersOrTeams, 
+      index, 
+      currentPlayerIndexInTeam 
+   } = useSelector(selectDataInCurrentPlayerThrowSection)
    
    const currentPlayerOrTeam = playersOrTeams[index]
 
@@ -43,7 +50,7 @@ const CurrentPlayerThrowSection = () => {
          <span className="current-player-throw-message">
             {gameType === 'single' 
                ? `${currentPlayerOrTeam.name.toUpperCase()}'S TURN TO THROW!`
-               : `${(currentPlayerOrTeam as TeamClassic).members[currentPlayerIndexInTeam].toUpperCase()}'S TURN TO THROW!`
+               : `${(currentPlayerOrTeam as TeamClassic | TeamCricket).members[currentPlayerIndexInTeam].toUpperCase()}'S TURN TO THROW!`
             }
          </span>
          

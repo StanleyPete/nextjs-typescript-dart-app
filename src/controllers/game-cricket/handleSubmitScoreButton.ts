@@ -20,9 +20,7 @@ import {
 export const handleSubmitScoreButton = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerCricket[] | TeamCricket[],
-   index:
-    | GameCricketSingleStates['currentPlayerIndex']
-    | GameCricketTeamsStates['currentTeamIndex'],
+   index: GameCricketSingleStates['currentPlayerIndex'] | GameCricketTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameCricketTeamsStates['currentPlayerIndexInTeam'],
    history: HistoryEntryCricketSingle[] | HistoryEntryCricketTeams[],
    currentPlayerThrowsCount: GameCricketStates['currentPlayerThrowsCount'],
@@ -61,13 +59,7 @@ export const handleSubmitScoreButton = (
 
    //Scenario when player missed all 3 throws and hits submit score button
    if (currentPlayerThrowsCount === 0) {
-      handleSwitchPlayerOrTeamCricket(
-         gameType,
-         index,
-         currentPlayerIndexInTeam,
-         playersOrTeams,
-         dispatch
-      )
+      handleSwitchPlayerOrTeamCricket(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch )
       dispatch(setCurrentPlayerThrowsCount(0))
       dispatch(setCurrentPlayerThrows([]))
    }
@@ -91,28 +83,13 @@ export const handleSubmitScoreButton = (
       newHistoryEntry.historyLastThrowSector = sector
    }
 
-   if (gameType === 'single') {
-      dispatch(
-         setHistoryCricketSingle([
-            ...(history as HistoryEntryCricketSingle[]),
-        newHistoryEntry as HistoryEntryCricketSingle,
-         ])
-      )
-   } else {
-      dispatch(
-         setHistoryCricketTeams([
-            ...(history as HistoryEntryCricketTeams[]),
-        newHistoryEntry as HistoryEntryCricketTeams,
-         ])
-      )
-   }
-   handleSwitchPlayerOrTeamCricket(
-      gameType,
-      index,
-      currentPlayerIndexInTeam,
-      playersOrTeams,
-      dispatch
+   dispatch(
+      gameType === 'single'
+         ? setHistoryCricketSingle([...(history as HistoryEntryCricketSingle[]), newHistoryEntry as HistoryEntryCricketSingle])
+         : setHistoryCricketTeams([...(history as HistoryEntryCricketTeams[]), newHistoryEntry as HistoryEntryCricketTeams])
    )
+  
+   handleSwitchPlayerOrTeamCricket(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
    dispatch(setCurrentPlayerThrowsCount(0))
    dispatch(setCurrentPlayerThrows([]))
 }

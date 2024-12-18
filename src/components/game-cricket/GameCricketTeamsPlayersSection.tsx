@@ -4,10 +4,15 @@ import Image from 'next/image'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 //Types
-import { TeamCricket } from '@/types/components/componentsTypes'
+import { TeamCricket } from '@/types/redux/gameCricketTypes'
 
 const GameCricketTeamsPlayersSection = () => {
-   const { teams, currentTeamIndex, currentPlayerIndexInTeam } = useSelector((state: RootState) => state.gameCricketTeams)
+
+   const { 
+      teams, 
+      currentTeamIndex, 
+      currentPlayerIndexInTeam 
+   } = useSelector((state: RootState) => state.gameCricketTeams)
 
    return (
       <div className="game-players-section">

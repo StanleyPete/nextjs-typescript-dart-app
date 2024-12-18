@@ -7,11 +7,14 @@ import { selectDataInThrowValueSection } from '@/redux/selectors/game-cricket/se
 import { handleUndoCricket } from '@/controllers/game-cricket/handleUndoCricket'
 import { handleSubmitScoreButton } from '@/controllers/game-cricket/handleSubmitScoreButton'
 
-
 const ThrowValueSectionCricket = () => {
+
    const dispatch = useDispatch()
+
    const { gameType } = useSelector((state: RootState) => state.gameSettings)
+
    const {currentPlayerThrows, currentPlayerThrowsCount } = useSelector((state: RootState) => state.gameCricket)
+
    //Memoized (@/redux/memoizedSelectors.ts):
    const { 
       playersOrTeams, 
@@ -26,8 +29,14 @@ const ThrowValueSectionCricket = () => {
             {/*Undo button:*/}
             <button 
                className="input-toggle" 
-               onClick={() => {handleUndoCricket(gameType, playersOrTeams, history, currentPlayerThrowsCount, dispatch)
-
+               onClick={() => {
+                  handleUndoCricket(
+                     gameType, 
+                     playersOrTeams, 
+                     history, 
+                     currentPlayerThrowsCount, 
+                     dispatch
+                  )
                }}>
                 Undo
             </button>
@@ -45,7 +54,16 @@ const ThrowValueSectionCricket = () => {
             <button 
                className='submit-score' 
                onClick={() => {
-                  handleSubmitScoreButton(gameType, playersOrTeams, index, currentPlayerIndexInTeam as number, history, currentPlayerThrowsCount, currentPlayerThrows, dispatch)
+                  handleSubmitScoreButton(
+                     gameType, 
+                     playersOrTeams, 
+                     index, 
+                     currentPlayerIndexInTeam as number, 
+                     history, 
+                     currentPlayerThrowsCount, 
+                     currentPlayerThrows, 
+                     dispatch
+                  )
                }}
             >
                Submit Score

@@ -1,9 +1,5 @@
+//Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   initializeCricketPlayers,
-   setCurrentPlayerIndex,
-   setHistoryCricketSingle,
-} from '@/redux/slices/game-cricket/gameCricketSingleSlice'
 import {
    setCurrentPlayerThrows,
    setCurrentPlayerThrowsCount,
@@ -12,11 +8,17 @@ import {
    setWinner,
 } from '@/redux/slices/game-cricket/gameCricketSlice'
 import {
+   initializeCricketPlayers,
+   setCurrentPlayerIndex,
+   setHistoryCricketSingle,
+} from '@/redux/slices/game-cricket/gameCricketSingleSlice'
+import {
    initializeCricketTeams,
    setCurrentPlayerIndexInTeam,
    setCurrentTeamIndex,
    setHistoryCricketTeams,
 } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
+//Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GameCricketStates } from '@/types/redux/gameCricketTypes'
 

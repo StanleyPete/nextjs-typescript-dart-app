@@ -11,7 +11,8 @@ import GameCricketTeamsPlayersSection from '@/components/game-cricket/GameCricke
 import SettingsButtons from '@/components/SettingsButtons'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameEndPopUp from '@/components/game-cricket/GameEndPopUp'
-import ScoreSectionCricket from '@/components/game-cricket/ScoreSectionCricket'
+import ThrowValueSectionCricket from '@/components/game-cricket/ThrowValueSectionCricket'
+import ScoreButtonsCricket from '@/components/game-cricket/ScoreButtonsCricket'
 import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
 //Controllers
 import { playSound } from '@/controllers/playSound'
@@ -45,7 +46,8 @@ const GameCricket = () => {
             : (<GameCricketTeamsPlayersSection />)
          }
          <CurrentPlayerThrowSection />
-         <ScoreSectionCricket />
+         <ThrowValueSectionCricket />
+         <ScoreButtonsCricket />
          <SettingsButtons />
          <ErrorPopUp />
          <GameEndPopUp />

@@ -42,9 +42,7 @@ export const handleSubmitThrowNumberButtons = (
    gameType: GameSettingsStates['gameType'],
    throwValue: number,
    playersOrTeams: PlayerClassic[] | TeamClassic[],
-   index:
-    | GameClassicSingleStates['currentPlayerIndex']
-    | GameClassicTeamsStates['currentTeamIndex'],
+   index: GameClassicSingleStates['currentPlayerIndex']| GameClassicTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameClassicTeamsStates['currentPlayerIndexInTeam'],
    startIndex: GameClassicStates['startIndex'],
    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],
@@ -132,11 +130,7 @@ export const handleSubmitThrowNumberButtons = (
                   }
             })
          //Skipping current current player or team index (null)
-            .filter(
-               (
-                  entry: HistoryEntryClassicSingle | HistoryEntryClassicTeams | null
-               ) => entry !== null
-            )
+            .filter((entry: HistoryEntryClassicSingle | HistoryEntryClassicTeams | null) => entry !== null)
 
          //Updating legs
          currentPlayerOrTeam.legs += 1
@@ -154,46 +148,18 @@ export const handleSubmitThrowNumberButtons = (
          )
 
          if (gameType === 'single') {
-            dispatch(
-               setHistoryClassicSingle([
-                  ...history,
-                  ...newHistoryEntries,
-                  newHistoryEntry,
-               ])
-            )
-            handleSwitchStartPlayerOrTeamIndex(
-               startIndex,
-               playersOrTeams,
-               dispatch
-            )
-            dispatch(
-               setCurrentPlayerIndex((startIndex + 1) % playersOrTeams.length)
-            )
+            dispatch(setHistoryClassicSingle([...history, ...newHistoryEntries, newHistoryEntry]))
+            handleSwitchStartPlayerOrTeamIndex(gameMode, startIndex, playersOrTeams, dispatch)
+            dispatch(setCurrentPlayerIndex((startIndex + 1) % playersOrTeams.length))
             dispatch(setPlayers(gamePlayersOrTeams))
          } else {
-            dispatch(
-               setHistoryClassicTeams([
-                  ...history,
-                  ...newHistoryEntries,
-                  newHistoryEntry,
-               ])
-            )
-            handleSwitchStartPlayerOrTeamIndex(
-               startIndex,
-               playersOrTeams,
-               dispatch
-            )
+            dispatch(setHistoryClassicTeams([...history, ...newHistoryEntries, newHistoryEntry]))
+            handleSwitchStartPlayerOrTeamIndex(gameMode, startIndex, playersOrTeams, dispatch)
             dispatch(setCurrentTeamIndex((startIndex + 1) % playersOrTeams.length))
             dispatch(setTeams(gamePlayersOrTeams))
          }
 
-         handleCheckGameEnd(
-            gamePlayersOrTeams,
-            gameWin,
-            numberOfLegs,
-            isSoundEnabled,
-            dispatch
-         )
+         handleCheckGameEnd(gamePlayersOrTeams, gameWin, numberOfLegs, isSoundEnabled, dispatch)
          dispatch(setThrowValueSum(0))
          dispatch(setCurrentPlayerThrowsCount(0))
          dispatch(setCurrentPlayerThrows([]))
@@ -212,24 +178,12 @@ export const handleSubmitThrowNumberButtons = (
 
          dispatch(
             gameType === 'single'
-               ? setHistoryClassicSingle([
-                  ...(history as HistoryEntryClassicSingle[]),
-              newHistoryEntry as HistoryEntryClassicSingle,
-               ])
-               : setHistoryClassicTeams([
-                  ...(history as HistoryEntryClassicTeams[]),
-              newHistoryEntry as HistoryEntryClassicTeams,
-               ])
+               ? setHistoryClassicSingle([...(history as HistoryEntryClassicSingle[]), newHistoryEntry as HistoryEntryClassicSingle])
+               : setHistoryClassicTeams([...(history as HistoryEntryClassicTeams[]), newHistoryEntry as HistoryEntryClassicTeams])
          )
 
          playSound('no-score', isSoundEnabled)
-         handleSwitchPlayerOrTeam(
-            gameType,
-            index,
-            currentPlayerIndexInTeam,
-            playersOrTeams,
-            dispatch
-         )
+         handleSwitchPlayerOrTeam(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
          dispatch(setThrowValueSum(0))
          dispatch(setCurrentPlayerThrowsCount(0))
          dispatch(setCurrentPlayerThrows([]))
@@ -239,18 +193,13 @@ export const handleSubmitThrowNumberButtons = (
                ? setPlayers(gamePlayersOrTeams)
                : setTeams(gamePlayersOrTeams)
          )
-
          return
       }
 
       //Updating totalThrows, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount (currentThrow in case player would like to switch input method)
       currentPlayerOrTeam.totalThrows += multiplierThrowValue
       dispatch(setThrowValueSum(throwValueSum + multiplierThrowValue))
-      dispatch(
-         setCurrentPlayerThrows(
-            [...currentPlayerThrows, multiplierThrowValue].slice(-3)
-         )
-      )
+      dispatch(setCurrentPlayerThrows([...currentPlayerThrows, multiplierThrowValue].slice(-3)))
       dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
       dispatch(setCurrentThrow(0))
    }
@@ -292,11 +241,7 @@ export const handleSubmitThrowNumberButtons = (
                   }
             })
          //Skipping current player or team index (null)
-            .filter(
-               (
-                  entry: HistoryEntryClassicSingle | HistoryEntryClassicTeams | null
-               ) => entry !== null
-            )
+            .filter((entry: HistoryEntryClassicSingle | HistoryEntryClassicTeams | null) => entry !== null)
 
          currentPlayerOrTeam.legs += 1
 
@@ -313,44 +258,16 @@ export const handleSubmitThrowNumberButtons = (
          )
 
          if (gameType === 'single') {
-            dispatch(
-               setHistoryClassicSingle([
-                  ...history,
-                  ...newHistoryEntries,
-                  newHistoryEntry,
-               ])
-            )
-            handleSwitchStartPlayerOrTeamIndex(
-               startIndex,
-               playersOrTeams,
-               dispatch
-            )
-            dispatch(
-               setCurrentPlayerIndex((startIndex + 1) % playersOrTeams.length)
-            )
+            dispatch(setHistoryClassicSingle([...history, ...newHistoryEntries, newHistoryEntry]))
+            handleSwitchStartPlayerOrTeamIndex(gameMode, startIndex, playersOrTeams, dispatch)
+            dispatch(setCurrentPlayerIndex((startIndex + 1) % playersOrTeams.length))
          } else {
-            dispatch(
-               setHistoryClassicTeams([
-                  ...history,
-                  ...newHistoryEntries,
-                  newHistoryEntry,
-               ])
-            )
-            handleSwitchStartPlayerOrTeamIndex(
-               startIndex,
-               playersOrTeams,
-               dispatch
-            )
+            dispatch(setHistoryClassicTeams([...history, ...newHistoryEntries, newHistoryEntry]))
+            handleSwitchStartPlayerOrTeamIndex(gameMode, startIndex, playersOrTeams, dispatch)
             dispatch(setCurrentTeamIndex((startIndex + 1) % playersOrTeams.length))
          }
 
-         handleCheckGameEnd(
-            gamePlayersOrTeams,
-            gameWin,
-            numberOfLegs,
-            isSoundEnabled,
-            dispatch
-         )
+         handleCheckGameEnd(gamePlayersOrTeams, gameWin, numberOfLegs, isSoundEnabled, dispatch)
          dispatch(setThrowValueSum(0))
          dispatch(setCurrentPlayerThrowsCount(0))
          dispatch(setCurrentPlayerThrows([]))
@@ -374,23 +291,11 @@ export const handleSubmitThrowNumberButtons = (
 
          dispatch(
             gameType === 'single'
-               ? setHistoryClassicSingle([
-                  ...(history as HistoryEntryClassicSingle[]),
-              newHistoryEntry as HistoryEntryClassicSingle,
-               ])
-               : setHistoryClassicTeams([
-                  ...(history as HistoryEntryClassicTeams[]),
-              newHistoryEntry as HistoryEntryClassicTeams,
-               ])
+               ? setHistoryClassicSingle([...(history as HistoryEntryClassicSingle[]), newHistoryEntry as HistoryEntryClassicSingle])
+               : setHistoryClassicTeams([...(history as HistoryEntryClassicTeams[]), newHistoryEntry as HistoryEntryClassicTeams,])
          )
          playSound('no-score', isSoundEnabled)
-         handleSwitchPlayerOrTeam(
-            gameType,
-            index,
-            currentPlayerIndexInTeam,
-            playersOrTeams,
-            dispatch
-         )
+         handleSwitchPlayerOrTeam(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
          dispatch(setThrowValueSum(0))
          dispatch(setCurrentPlayerThrowsCount(0))
          dispatch(setCurrentPlayerThrows([]))
@@ -413,32 +318,17 @@ export const handleSubmitThrowNumberButtons = (
       //Updating history state
       dispatch(
          gameType === 'single'
-            ? setHistoryClassicSingle([
-               ...(history as HistoryEntryClassicSingle[]),
-            newHistoryEntry as HistoryEntryClassicSingle,
-            ])
-            : setHistoryClassicTeams([
-               ...(history as HistoryEntryClassicTeams[]),
-            newHistoryEntry as HistoryEntryClassicTeams,
-            ])
+            ? setHistoryClassicSingle([...(history as HistoryEntryClassicSingle[]), newHistoryEntry as HistoryEntryClassicSingle])
+            : setHistoryClassicTeams([...(history as HistoryEntryClassicTeams[]), newHistoryEntry as HistoryEntryClassicTeams])
       )
 
       //Sound effect:
-      playSound(
-         (throwValueSum + multiplierThrowValue).toString(),
-         isSoundEnabled
-      )
+      playSound((throwValueSum + multiplierThrowValue).toString(), isSoundEnabled)
       dispatch(setCurrentThrow(0))
       dispatch(setThrowValueSum(0))
       dispatch(setCurrentPlayerThrows([]))
       dispatch(setCurrentPlayerThrowsCount(0))
-      handleSwitchPlayerOrTeam(
-         gameType,
-         index,
-         currentPlayerIndexInTeam,
-         playersOrTeams,
-         dispatch
-      )
+      handleSwitchPlayerOrTeam(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
    }
 
    dispatch(

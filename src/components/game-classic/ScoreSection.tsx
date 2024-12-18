@@ -10,24 +10,21 @@ import KeyboardButtons from './KeyboardButtons'
 import NumberButtons from './NumberButtons'
 
 const ScoreSection = () => {
+
    const dispatch = useDispatch()
+
    const showNumberButtons = useSelector((state: RootState) => state.gameClassic.showNumberButtons)
+
    //Memoized (@/redux/selectors/game-classic/selectDataInScoreSection.ts)
    const { playersOrTeams, index } = useSelector(selectDataInScoreSection)
 
    useEffect(() => {
       const isInputPreferred = playersOrTeams[index].isInputPreffered
-      console.log(`isInputPreffered before dispatch: ${isInputPreferred}`)
-      console.log(`showNumberButtons before dispatch: ${showNumberButtons}`)
       if (isInputPreferred) {
          dispatch(setShowNumberButtons(false))
       } else {
          dispatch(setShowNumberButtons(true))
       }
-
-      console.log(`isInputPreffered after dispatch: ${isInputPreferred}`)
-      console.log(`showNumberButtons after dispatch: ${showNumberButtons}`)
-    
    }, [playersOrTeams, index, dispatch])
 
    return (

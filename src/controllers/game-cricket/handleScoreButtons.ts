@@ -1,14 +1,37 @@
-import { setCurrentPlayerIndex, setHistoryCricketSingle, setPlayers } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
-import { setCurrentTeamIndex, setHistoryCricketTeams, setTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
-import { setError } from '@/redux/slices/gameSettingsSlice'
-import { setCurrentPlayerThrows, setCurrentPlayerThrowsCount, setCompletedSectors } from '@/redux/slices/game-cricket/gameCricketSlice'
+//Redux
 import { AppDispatch } from '@/redux/store'
-import { GameCricketSingleStates, GameCricketStates, GameCricketTeamsStates, HistoryEntryCricketSingle, HistoryEntryCricketTeams, PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
-import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { setError } from '@/redux/slices/gameSettingsSlice'
+import { 
+   setCurrentPlayerThrows, 
+   setCurrentPlayerThrowsCount, 
+   setCompletedSectors 
+} from '@/redux/slices/game-cricket/gameCricketSlice'
+import { 
+   setPlayers, 
+   setCurrentPlayerIndex, 
+   setHistoryCricketSingle
+} from '@/redux/slices/game-cricket/gameCricketSingleSlice'
+import { 
+   setTeams, 
+   setCurrentTeamIndex, 
+   setHistoryCricketTeams 
+} from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
+//Controllers
 import { handleSwitchStartPlayerOrTeamIndex } from '../handleSwitchStartPlayerOrTeamIndex'
+import { handleSwitchPlayerOrTeamCricket } from './handleSwitchPlayerOrTeamCricket'
 import { handleCheckGameEnd } from '../handleCheckGameEnd'
 import { playSound } from '../playSound'
-import { handleSwitchPlayerOrTeamCricket } from './handleSwitchPlayerOrTeamCricket'
+//Types
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameCricketStates,
+   GameCricketSingleStates, 
+   GameCricketTeamsStates, 
+   PlayerCricket, 
+   TeamCricket, 
+   HistoryEntryCricketSingle,
+   HistoryEntryCricketTeams, 
+} from '@/types/redux/gameCricketTypes'
 
 export const handleScoreButtons = (
    sectorPassed: '20' | '19' | '18' | '17' | '16' | '15' | 'Bull', 
@@ -35,11 +58,9 @@ export const handleScoreButtons = (
    const updatedThrowCount = currentPlayerThrowsCount + 1
     
    if(currentPlayerThrows.length === 3) {
-      dispatch(setError({
-         isError: true,
-         errorMessage: 'You have already thrown three times! You can either undo last throw or submit the score'
-      }))
+      dispatch(setError({isError: true, errorMessage: 'You have already thrown three times! You can either undo last throw or submit the score'}))
       return
+      
    } else {
       const updatedPlayerThrows = [...currentPlayerThrows, label]
       
@@ -172,7 +193,6 @@ export const handleScoreButtons = (
                : setHistoryCricketTeams([...history as HistoryEntryCricketTeams[], newExtraHistoryEntry as HistoryEntryCricketTeams])
          )
         
-
          handleSwitchPlayerOrTeamCricket(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
          dispatch(setCurrentPlayerThrowsCount(0)) 
          dispatch(setCurrentPlayerThrows([]))

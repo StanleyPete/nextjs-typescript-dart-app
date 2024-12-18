@@ -81,26 +81,15 @@ export const handleSubmitThrowSubmitScoreButton = (
    currentPlayerOrTeam.lastScore = throwSum
    currentPlayerOrTeam.totalAttempts += 1
    currentPlayerOrTeam.average =
-    currentPlayerOrTeam.totalThrows / currentPlayerOrTeam.totalAttempts
+   currentPlayerOrTeam.totalThrows / currentPlayerOrTeam.totalAttempts
 
    //Updating history state
-   if (gameType === 'single') {
-      dispatch(
-         setHistoryClassicSingle([
-            ...(history as HistoryEntryClassicSingle[]),
-        newHistoryEntry as HistoryEntryClassicSingle,
-         ])
-      )
-   } else {
-      dispatch(
-         setHistoryClassicTeams([
-            ...(history as HistoryEntryClassicTeams[]),
-        newHistoryEntry as HistoryEntryClassicTeams,
-         ])
-      )
-   }
+   dispatch(
+      gameType === 'single'
+         ? setHistoryClassicSingle([...(history as HistoryEntryClassicSingle[]), newHistoryEntry as HistoryEntryClassicSingle])
+         : setHistoryClassicTeams([...(history as HistoryEntryClassicTeams[]), newHistoryEntry as HistoryEntryClassicTeams])
+   )
 
-   //Sound-effect
    if (throwSum === 0) {
       playSound('no-score', isSoundEnabled)
    } else {
@@ -114,18 +103,12 @@ export const handleSubmitThrowSubmitScoreButton = (
    dispatch(setCurrentThrow(0))
 
    //Switching to the next player
-   handleSwitchPlayerOrTeam(
-      gameType,
-      index,
-      currentPlayerIndexInTeam,
-      playersOrTeams,
-      dispatch
-   )
+   handleSwitchPlayerOrTeam(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
 
    //Updating player's state
-   if (gameType === 'single') {
-      dispatch(setPlayers(gamePlayersOrTeams))
-   } else {
-      dispatch(setTeams(gamePlayersOrTeams))
-   }
+   dispatch(
+      gameType === 'single'
+         ? setPlayers(gamePlayersOrTeams)
+         : setTeams(gamePlayersOrTeams)
+   )
 }

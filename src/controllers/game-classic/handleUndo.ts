@@ -28,7 +28,6 @@ import {
    HistoryEntryClassicTeams 
 } from '@/types/redux/gameClassicTypes'
 
-
 /* 
    USED IN: 
       KeyboardButtons component,
@@ -39,9 +38,7 @@ import {
 export const handleUndo = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerClassic[] | TeamClassic[],
-   index:
-    | GameClassicSingleStates['currentPlayerIndex']
-    | GameClassicTeamsStates['currentTeamIndex'],
+   index: GameClassicSingleStates['currentPlayerIndex'] | GameClassicTeamsStates['currentTeamIndex'],
    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],
    showNumberButtons: GameClassicStates['showNumberButtons'],
    throwValueSum: GameClassicStates['throwValueSum'],
@@ -53,10 +50,9 @@ export const handleUndo = (
    const lastEntry = history[history.length - 1]
    if (!lastEntry) return
    const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
-   const currentPlayerOrTeam =
-    'historyPlayerIndex' in lastEntry
-       ? gamePlayersOrTeams[lastEntry.historyPlayerIndex]
-       : gamePlayersOrTeams[lastEntry.historyTeamIndex]
+   const currentPlayerOrTeam = 'historyPlayerIndex' in lastEntry
+      ? gamePlayersOrTeams[lastEntry.historyPlayerIndex]
+      : gamePlayersOrTeams[lastEntry.historyTeamIndex]
 
    //SCENARIO WHEN PLAYER OR TEAM HAS JUST FINISHED THE LEG
    if (
@@ -78,11 +74,9 @@ export const handleUndo = (
             if (playerOrTeamHistory) {
                playerOrTeam.pointsLeft = playerOrTeamHistory.historyPointsLeft
                playerOrTeam.lastScore = playerOrTeamHistory.historyLastScore
-               playerOrTeam.totalThrows =
-            playerOrTeamHistory.historyTotalThrows === Number(gameMode)
-               ? playerOrTeamHistory.historyTotalThrows -
-                playerOrTeamHistory.historyLastScore
-               : playerOrTeamHistory.historyTotalThrows
+               playerOrTeam.totalThrows = playerOrTeamHistory.historyTotalThrows === Number(gameMode)
+                  ? playerOrTeamHistory.historyTotalThrows - playerOrTeamHistory.historyLastScore
+                  : playerOrTeamHistory.historyTotalThrows
                playerOrTeam.totalAttempts = playerOrTeamHistory.historyTotalAttempts
                playerOrTeam.average = playerOrTeamHistory.historyLastAverage
             }
@@ -92,26 +86,12 @@ export const handleUndo = (
       //Removing last history entries (including additional entries created when player or team finished the leg + updating current player or team index and players or teams states
       if (gameType === 'single' && 'historyPlayerIndex' in lastEntry) {
          dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex))
-         dispatch(
-            setHistoryClassicSingle(
-          history.slice(
-             0,
-             history.length - gamePlayersOrTeams.length
-          ) as HistoryEntryClassicSingle[]
-            )
-         )
+         dispatch(setHistoryClassicSingle(history.slice(0, history.length - gamePlayersOrTeams.length) as HistoryEntryClassicSingle[]))
          dispatch(setPlayers(gamePlayersOrTeams))
          return
       } else if (gameType === 'teams' && 'historyTeamIndex' in lastEntry) {
          dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex))
-         dispatch(
-            setHistoryClassicTeams(
-          history.slice(
-             0,
-             history.length - gamePlayersOrTeams.length
-          ) as HistoryEntryClassicTeams[]
-            )
-         )
+         dispatch(setHistoryClassicTeams(history.slice(0, history.length - gamePlayersOrTeams.length) as HistoryEntryClassicTeams[]))
          dispatch(setTeams(gamePlayersOrTeams))
          return
       }
@@ -129,19 +109,11 @@ export const handleUndo = (
       //Setting current player or team index and removing last history entry
       if (gameType === 'single' && 'historyPlayerIndex' in lastEntry) {
          dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex))
-         dispatch(
-            setHistoryClassicSingle(
-          history.slice(0, -1) as HistoryEntryClassicSingle[]
-            )
-         )
+         dispatch(setHistoryClassicSingle(history.slice(0, -1) as HistoryEntryClassicSingle[]))
       } else if (gameType === 'teams' && 'historyTeamIndex' in lastEntry) {
          dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex))
          dispatch(setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam))
-         dispatch(
-            setHistoryClassicTeams(
-          history.slice(0, -1) as HistoryEntryClassicTeams[]
-            )
-         )
+         dispatch(setHistoryClassicTeams(history.slice(0, -1) as HistoryEntryClassicTeams[]))
       }
    }
 
@@ -157,10 +129,8 @@ export const handleUndo = (
 
          //Updating pointsLeft, totalThrows and throwValueSum
          currentPlayerOrTeam.pointsLeft += updatedThrows[updatedThrows.length - 1]
-         currentPlayerOrTeam.totalThrows -=
-        updatedThrows[updatedThrows.length - 1]
-         const updatedThrowValueSum =
-        throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+         currentPlayerOrTeam.totalThrows -= updatedThrows[updatedThrows.length - 1]
+         const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
 
          dispatch(setThrowValueSum(updatedThrowValueSum))
 
@@ -178,28 +148,17 @@ export const handleUndo = (
          currentPlayerOrTeam.pointsLeft = lastEntry.historyPointsLeft
          currentPlayerOrTeam.lastScore = lastEntry.historyLastScore
          currentPlayerOrTeam.average = lastEntry.historyLastAverage
-         currentPlayerOrTeam.totalThrows =
-        lastEntry.historyTotalThrows - currentPlayerOrTeam.totalThrows
+         currentPlayerOrTeam.totalThrows = lastEntry.historyTotalThrows - currentPlayerOrTeam.totalThrows
          currentPlayerOrTeam.totalAttempts = lastEntry.historyTotalAttempts
 
          //Setting current player or team index and removing last history entry
          if (gameType === 'single' && 'historyPlayerIndex' in lastEntry) {
-            dispatch(
-               setHistoryClassicSingle(
-            history.slice(0, -1) as HistoryEntryClassicSingle[]
-               )
-            )
+            dispatch(setHistoryClassicSingle(history.slice(0, -1) as HistoryEntryClassicSingle[]))
             dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex))
          } else if (gameType === 'teams' && 'historyTeamIndex' in lastEntry) {
-            dispatch(
-               setHistoryClassicTeams(
-            history.slice(0, -1) as HistoryEntryClassicTeams[]
-               )
-            )
+            dispatch(setHistoryClassicTeams(history.slice(0, -1) as HistoryEntryClassicTeams[]))
             dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex))
-            dispatch(
-               setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam)
-            )
+            dispatch(setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam))
          }
       }
       //SCENARIO 3: History availble and currentPlayer has already thrown at least once
@@ -213,8 +172,7 @@ export const handleUndo = (
          //Updating pointsLeft, totalThrows and throwValueSum
          currentPlayer.pointsLeft += updatedThrows[updatedThrows.length - 1]
          currentPlayer.totalThrows -= updatedThrows[updatedThrows.length - 1]
-         const updatedThrowValueSum =
-        throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+         const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
 
          dispatch(setThrowValueSum(updatedThrowValueSum))
 
@@ -228,9 +186,9 @@ export const handleUndo = (
    }
 
    //Updating players state
-   if (gameType === 'single') {
-      dispatch(setPlayers(gamePlayersOrTeams))
-   } else {
-      dispatch(setTeams(gamePlayersOrTeams))
-   }
+   dispatch(
+      gameType === 'single'
+         ? setPlayers(gamePlayersOrTeams)
+         : setTeams(gamePlayersOrTeams)
+   )
 }

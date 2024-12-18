@@ -23,7 +23,6 @@ import {
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GameClassicStates } from '@/types/redux/gameClassicTypes'
 
-
 /* USED IN: 
       SettingsButtons component, 
       GameEndPopUp component 

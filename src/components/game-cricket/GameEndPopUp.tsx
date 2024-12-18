@@ -10,11 +10,11 @@ import { selectDataInGameEndPopUp } from '@/redux/selectors/game-cricket/selectD
 import { handleRestartGameCricket } from '@/controllers/game-cricket/handleRestartGameCricket'
 import { handleUndoCricket } from '@/controllers/game-cricket/handleUndoCricket'
 
- 
-
 const GameEndPopUp = () => {
+
    const dispatch = useDispatch()
    const router = useRouter()
+
    const { gameType, playerNames } = useSelector((state: RootState) => state.gameSettings)
 
    const { 
@@ -44,7 +44,12 @@ const GameEndPopUp = () => {
                   <button 
                      className='play-again' 
                      onClick={() => {
-                        handleRestartGameCricket(gameType, playerNames, isGameEnd, dispatch)
+                        handleRestartGameCricket(
+                           gameType, 
+                           playerNames, 
+                           isGameEnd, 
+                           dispatch
+                        )
                      }}
                   >
                      Play Again
@@ -57,7 +62,13 @@ const GameEndPopUp = () => {
                   <button 
                      className='undo' 
                      onClick={() => {
-                        handleUndoCricket(gameType, playersOrTeams, history, currentPlayerThrowsCount, dispatch); dispatch(setIsGameEnd(false))
+                        handleUndoCricket(
+                           gameType, 
+                           playersOrTeams, 
+                           history, 
+                           currentPlayerThrowsCount, 
+                           dispatch
+                        ); dispatch(setIsGameEnd(false))
                      }}
                   > 
                      Undo

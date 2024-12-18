@@ -4,9 +4,10 @@ import Image from 'next/image'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 //Types
-import { PlayerCricket } from '@/types/components/componentsTypes'
+import { PlayerCricket } from '@/types/redux/gameCricketTypes'
 
 const GameCricketSinglePlayersSection = () => {
+   
    const { players, currentPlayerIndex, } = useSelector((state: RootState) => state.gameCricketSingle)
 
    return (

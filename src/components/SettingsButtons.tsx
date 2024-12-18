@@ -8,10 +8,18 @@ import { handleRestartGameClassic } from '@/controllers/game-classic/handleResta
 import { handleRestartGameCricket } from '@/controllers/game-cricket/handleRestartGameCricket'
 
 const SettingsButtons = () => {
+
    const dispatch = useDispatch()
+
    const router = useRouter()
-   const { gameMode, playerNames, gameType } = useSelector((state: RootState) => state.gameSettings)
+
    const { isGameEnd } = useSelector((state: RootState) => state.gameClassic)
+   
+   const { 
+      gameMode, 
+      playerNames, 
+      gameType 
+   } = useSelector((state: RootState) => state.gameSettings)
 
    return (
       <div className="settings-buttons">

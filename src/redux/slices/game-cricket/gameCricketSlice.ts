@@ -1,5 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { GameCricketStates, PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
+//Types
+import { 
+   GameCricketStates, 
+   PlayerCricket, 
+   TeamCricket 
+} from '@/types/redux/gameCricketTypes'
 
 const initialState: GameCricketStates = {
    startIndex: 0,

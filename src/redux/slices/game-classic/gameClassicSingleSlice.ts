@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import {
+//Types
+import { 
+   GameClassicSingleStates, 
    PlayerClassic,
-   HistoryEntryClassicSingle,
-   GameClassicSingleStates,
-} from '@/types/components/componentsTypes'
+   HistoryEntryClassicSingle 
+} from '@/types/redux/gameClassicTypes'
+
 
 const initialState: GameClassicSingleStates = {
    players: [],

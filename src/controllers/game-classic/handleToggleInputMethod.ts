@@ -23,9 +23,7 @@ import {
 export const handleToggleInputMethod = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerClassic[] | TeamClassic,
-   index:
-    | GameClassicSingleStates['currentPlayerIndex']
-    | GameClassicTeamsStates['currentTeamIndex'],
+   index: GameClassicSingleStates['currentPlayerIndex'] | GameClassicTeamsStates['currentTeamIndex'],
    currentPlayerThrowsCount: GameClassicStates['currentPlayerThrowsCount'],
    throwValueSum: GameClassicStates['throwValueSum'],
    dispatch: AppDispatch

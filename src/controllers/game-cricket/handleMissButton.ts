@@ -1,12 +1,22 @@
+//Redux
 import { AppDispatch } from '@/redux/store'
-import { GameCricketSingleStates, GameCricketStates, GameCricketTeamsStates, HistoryEntryCricketSingle, HistoryEntryCricketTeams, PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
 import { setError } from '@/redux/slices/gameSettingsSlice'
-import { setCurrentPlayerThrowsCount } from '@/redux/slices/game-cricket/gameCricketSlice'
-import { setCurrentPlayerThrows } from '@/redux/slices/game-cricket/gameCricketSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/game-cricket/gameCricketSlice'
 import { setHistoryCricketSingle } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
 import { setHistoryCricketTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
-import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+//Controllers
 import { handleSwitchPlayerOrTeamCricket } from './handleSwitchPlayerOrTeamCricket'
+//Types
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameCricketStates, 
+   GameCricketSingleStates, 
+   GameCricketTeamsStates, 
+   PlayerCricket, 
+   TeamCricket, 
+   HistoryEntryCricketSingle, 
+   HistoryEntryCricketTeams 
+} from '@/types/redux/gameCricketTypes'
 
 export const handleMissButton = (
    gameType: GameSettingsStates['gameType'],
@@ -53,10 +63,7 @@ export const handleMissButton = (
 
    //Scenario when undo button has been hit and currentPlayerThrowsCount === 3
    if(currentPlayerThrowsCount === 3){
-      dispatch(setError({
-         isError: true,
-         errorMessage: 'You have already thrown three times! You can either undo last throw or submit the score'
-      }))
+      dispatch(setError({isError: true,  errorMessage: 'You have already thrown three times! You can either undo last throw or submit the score'}))
       return
    }
 

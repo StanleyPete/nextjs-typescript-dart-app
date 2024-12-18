@@ -103,9 +103,7 @@ export const handleUndoCricket = (
       (playerOrTeam) => playerOrTeam.scores[lastThrowSector] !== 3
    )
    if (isAnyPlayerOrTeamWhichHaveNotCompletedSector) {
-      dispatch(
-         setCompletedSectors({ sector: lastThrowSector, completed: false })
-      )
+      dispatch(setCompletedSectors({sector: lastThrowSector, completed: false }))
    }
 
    //States update:
@@ -113,20 +111,12 @@ export const handleUndoCricket = (
       dispatch(setCurrentPlayerIndex(lastEntry.historyPlayerIndex))
       dispatch(setCurrentPlayerThrows(lastEntry.historyThrows))
       dispatch(setPlayers(gamePlayersOrTeams))
-      dispatch(
-         setHistoryCricketSingle(
-        history.slice(0, history.length - 1) as HistoryEntryCricketSingle[]
-         )
-      )
+      dispatch(setHistoryCricketSingle(history.slice(0, history.length - 1) as HistoryEntryCricketSingle[]))
    } else if (gameType === 'teams' && 'historyTeamIndex' in lastEntry) {
       dispatch(setCurrentTeamIndex(lastEntry.historyTeamIndex))
       dispatch(setCurrentPlayerIndexInTeam(lastEntry.historyPlayerIndexInTeam))
       dispatch(setCurrentPlayerThrows(lastEntry.historyThrows))
       dispatch(setTeams(gamePlayersOrTeams))
-      dispatch(
-         setHistoryCricketTeams(
-        history.slice(0, history.length - 1) as HistoryEntryCricketTeams[]
-         )
-      )
+      dispatch(setHistoryCricketTeams(history.slice(0, history.length - 1) as HistoryEntryCricketTeams[]))
    }
 }

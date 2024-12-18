@@ -10,7 +10,9 @@ import { handleScoreButtons } from '@/controllers/game-cricket/handleScoreButton
 import { handleMissButton } from '@/controllers/game-cricket/handleMissButton'
 
 const ScoreButtonsCricket = () => {
+
    const dispatch = useDispatch()
+
    const {
       gameType,
       gameMode,
@@ -105,7 +107,8 @@ const ScoreButtonsCricket = () => {
                         <div className='player-score'>
                            <span>
                               {(() => {
-                                 const scoreValue = playersOrTeams[1].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
+                                 const scoreValue = 
+                                    playersOrTeams[1].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
                                  if (scoreValue === 0) {
                                     return ''
                                  } else if (scoreValue === 1) {

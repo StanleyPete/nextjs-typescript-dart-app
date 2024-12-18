@@ -6,15 +6,19 @@ import gameClassicTeamsReducer from './slices/game-classic/gameClassicTeamsSlice
 import gameCricketReducer from './slices/game-cricket/gameCricketSlice'
 import gameCricketSingleReducer from './slices/game-cricket/gameCricketSingleSlice'
 import gameCricketTeamsReducer from './slices/game-cricket/gameCricketTeamsSlice'
-import {
-   GameSettingsStates,
+//Types
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
    GameClassicStates,
-   GameClassicSingleStates,
-   GameClassicTeamsStates,
-   GameCricketStates,
-   GameCricketSingleStates,
-   GameCricketTeamsStates,
-} from '@/types/components/componentsTypes'
+   GameClassicSingleStates, 
+   GameClassicTeamsStates 
+} from '@/types/redux/gameClassicTypes'
+import {
+   GameCricketStates, 
+   GameCricketSingleStates, 
+   GameCricketTeamsStates 
+} from '@/types/redux/gameCricketTypes'
+
 
 //Initial store setup
 export const store = configureStore({

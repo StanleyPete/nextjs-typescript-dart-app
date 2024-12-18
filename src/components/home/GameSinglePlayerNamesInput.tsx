@@ -6,7 +6,9 @@ import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
 import { PlayerNamesInputProps } from '@/types/components/componentsTypes'
 
 const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
+
    const dispatch = useDispatch()
+   
    const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
 
    const handleNameChange = (index: number, value: string) => {

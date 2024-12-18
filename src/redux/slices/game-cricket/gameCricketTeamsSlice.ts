@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import {
-   TeamCricket,
-   HistoryEntryCricketTeams,
-   GameCricketTeamsStates,
-} from '@/types/components/componentsTypes'
+//Types
+import { 
+   GameCricketTeamsStates, 
+   TeamCricket, 
+   HistoryEntryCricketTeams
+} from '@/types/redux/gameCricketTypes'
+
 
 const initialState: GameCricketTeamsStates = {
    teams: [],

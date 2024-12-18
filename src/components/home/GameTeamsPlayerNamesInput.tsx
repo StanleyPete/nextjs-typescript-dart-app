@@ -6,7 +6,9 @@ import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
 import { TeamsPlayerInput } from '@/types/components/componentsTypes'
 
 const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInput) => {
+
    const dispatch = useDispatch()
+   
    const { playerNames } = useSelector((state: RootState) => state.gameSettings)
 
    const handleNameChange = (index: number, value: string) => {
