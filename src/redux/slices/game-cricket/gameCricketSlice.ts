@@ -1,9 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import {
-   GameCricketStates,
-   PlayerCricket,
-   TeamCricket,
-} from '@/types/components/componentsTypes'
+import { GameCricketStates, PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
 
 const initialState: GameCricketStates = {
    startIndex: 0,
@@ -16,7 +12,7 @@ const initialState: GameCricketStates = {
       '17': false,
       '16': false,
       '15': false,
-      Bull: false,
+      'Bull': false,
    },
    isGameEnd: false,
    winner: null,

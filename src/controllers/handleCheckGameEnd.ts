@@ -10,6 +10,7 @@ import {
    PlayerClassic, 
    TeamClassic 
 } from '@/types/redux/gameClassicTypes'
+import { GameCricketStates, PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
 
 
 /* USED IN: 
@@ -18,17 +19,17 @@ import {
 */
 
 export const handleCheckGameEnd = (
-   gamePlayersOrTeams: PlayerClassic[] | TeamClassic[],
+   gamePlayersOrTeams: PlayerClassic[] | TeamClassic[] | PlayerCricket[] | TeamCricket[],
    gameWin: GameSettingsStates['gameWin'],
    numberOfLegs: GameSettingsStates['numberOfLegs'],
-   isSoundEnabled: GameClassicStates['isSoundEnabled'],
+   isSoundEnabled: GameClassicStates['isSoundEnabled'] | GameCricketStates['isSoundEnabled'],
    dispatch: AppDispatch
 ) => {
    //GAME WIN SET TO BEST-OF
    if (gameWin === 'best-of') {
       //Sum of legs for all players or teams
       const totalLegs = gamePlayersOrTeams.reduce(
-         (acc: number, playerOrTeam: PlayerClassic | TeamClassic) =>
+         (acc: number, playerOrTeam: PlayerClassic | TeamClassic | PlayerCricket | TeamCricket) =>
             acc + playerOrTeam.legs,
          0
       )
@@ -38,13 +39,13 @@ export const handleCheckGameEnd = (
       //Finding winner player or team
          const maxLegs = Math.max(
             ...gamePlayersOrTeams.map(
-               (playerOrTeam: PlayerClassic | TeamClassic) => playerOrTeam.legs
+               (playerOrTeam: PlayerClassic | TeamClassic | PlayerCricket | TeamCricket) => playerOrTeam.legs
             )
          )
 
          const winner =
         gamePlayersOrTeams.find(
-           (playerOrTeam: PlayerClassic | TeamClassic) =>
+           (playerOrTeam: PlayerClassic | TeamClassic | PlayerCricket | TeamCricket) =>
               playerOrTeam.legs === maxLegs
         ) || null
 
@@ -61,7 +62,7 @@ export const handleCheckGameEnd = (
       //Finding winner player
       const winner =
       gamePlayersOrTeams.find(
-         (playerOrTeam: PlayerClassic | TeamClassic) =>
+         (playerOrTeam: PlayerClassic | TeamClassic | PlayerCricket | TeamCricket) =>
             playerOrTeam.legs === Number(numberOfLegs)
       ) || null
 

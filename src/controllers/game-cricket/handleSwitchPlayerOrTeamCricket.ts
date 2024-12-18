@@ -6,13 +6,13 @@ import {
    setCurrentPlayerIndexInTeam,
 } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 //Types
-import {
-   GameSettingsStates,
-   GameCricketSingleStates,
-   GameCricketTeamsStates,
-   TeamCricket,
-   PlayerCricket,
-} from '@/types/components/componentsTypes'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameCricketSingleStates, 
+   GameCricketTeamsStates, 
+   TeamCricket, 
+   PlayerCricket 
+} from '@/types/redux/gameCricketTypes'
 
 /* 
    USED IN:
@@ -24,9 +24,7 @@ import {
 
 export const handleSwitchPlayerOrTeamCricket = (
    gameType: GameSettingsStates['gameType'],
-   index:
-    | GameCricketSingleStates['currentPlayerIndex']
-    | GameCricketTeamsStates['currentTeamIndex'],
+   index: GameCricketSingleStates['currentPlayerIndex'] | GameCricketTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameCricketTeamsStates['currentPlayerIndexInTeam'],
    playersOrTeams: PlayerCricket[] | TeamCricket[],
    dispatch: AppDispatch

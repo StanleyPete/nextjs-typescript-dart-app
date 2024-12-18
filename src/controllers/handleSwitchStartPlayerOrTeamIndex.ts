@@ -1,12 +1,15 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import { setStartIndex } from '@/redux/slices/game-classic/gameClassicSlice'
+import { setStartIndex as setStartIndexClassic} from '@/redux/slices/game-classic/gameClassicSlice'
+import { setStartIndex as setStartIndexCricket } from '@/redux/slices/game-cricket/gameCricketSlice'
 //Types
 import {
    GameClassicStates, 
    PlayerClassic, 
    TeamClassic 
 } from '@/types/redux/gameClassicTypes'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
 
 /* 
    USED IN:
@@ -22,10 +25,15 @@ import {
 */
 
 export const handleSwitchStartPlayerOrTeamIndex = (
+   gameMode: GameSettingsStates['gameMode'],
    startIndex: GameClassicStates['startIndex'],
-   playersOrTeams: PlayerClassic[] | TeamClassic[],
+   playersOrTeams: PlayerClassic[] | TeamClassic[] | PlayerCricket[] | TeamCricket[],
    dispatch: AppDispatch
 ) => {
    const nextStartPlayerOrTeamIndex = (startIndex + 1) % playersOrTeams.length
-   dispatch(setStartIndex(nextStartPlayerOrTeamIndex))
+   dispatch(
+      gameMode === 'Cricket'
+         ? setStartIndexCricket(nextStartPlayerOrTeamIndex)
+         : setStartIndexClassic(nextStartPlayerOrTeamIndex)
+   )
 }

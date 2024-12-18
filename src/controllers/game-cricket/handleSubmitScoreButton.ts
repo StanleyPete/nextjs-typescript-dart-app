@@ -1,24 +1,21 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   setCurrentPlayerThrowsCount,
-   setCurrentPlayerThrows,
-} from '@/redux/slices/game-cricket/gameCricketSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/game-cricket/gameCricketSlice'
 import { setHistoryCricketSingle } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
 import { setHistoryCricketTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 //Controllers:
 import { handleSwitchPlayerOrTeamCricket } from './handleSwitchPlayerOrTeamCricket'
 //Types
-import {
-   GameSettingsStates,
-   GameCricketStates,
-   GameCricketSingleStates,
-   GameCricketTeamsStates,
-   PlayerCricket,
-   TeamCricket,
-   HistoryEntryCricketSingle,
-   HistoryEntryCricketTeams,
-} from '@/types/components/componentsTypes'
+import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { 
+   GameCricketStates, 
+   GameCricketSingleStates, 
+   GameCricketTeamsStates, 
+   PlayerCricket, 
+   TeamCricket, 
+   HistoryEntryCricketSingle, 
+   HistoryEntryCricketTeams 
+} from '@/types/redux/gameCricketTypes'
 
 export const handleSubmitScoreButton = (
    gameType: GameSettingsStates['gameType'],
