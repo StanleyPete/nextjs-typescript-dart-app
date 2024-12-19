@@ -13,14 +13,10 @@ const SettingsButtons = () => {
 
    const router = useRouter()
 
-   const { isGameEnd } = useSelector((state: RootState) => state.gameClassic)
-   
-   const { 
-      gameMode, 
-      playerNames, 
-      gameType 
-   } = useSelector((state: RootState) => state.gameSettings)
+   const { gameMode, playerNames, gameType } = useSelector((state: RootState) => state.gameSettings)
 
+   const { isGameEnd } = useSelector((state: RootState) => state.game)
+   
    return (
       <div className="settings-buttons">
          <button 

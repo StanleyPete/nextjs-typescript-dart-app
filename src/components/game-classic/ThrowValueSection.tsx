@@ -23,34 +23,17 @@ import {
 } from '@/types/redux/gameClassicTypes'
 
 const ThrowValueSection = () => {
+
    const dispatch = useDispatch()
 
-   const {  
-      gameType,
-      gameMode,
-      numberOfLegs,
-      gameWin 
-   } = useSelector((state: RootState) => state.gameSettings)
+   const { gameType, gameMode, numberOfLegs, gameWin } = useSelector((state: RootState) => state.gameSettings)
 
-   const {
-      startIndex,
-      showNumberButtons,
-      throwValueSum,
-      currentThrow,
-      currentPlayerThrowsCount,
-      currentPlayerThrows,
-      multiplier,
-      isDoubleActive,
-      isSoundEnabled,
-   } = useSelector((state: RootState) => state.gameClassic)
+   const { startIndex, currentPlayerThrowsCount, currentPlayerThrows, isSoundEnabled } = useSelector((state: RootState) => state.game)
+
+   const { showNumberButtons, throwValueSum, currentThrow, multiplier, isDoubleActive } = useSelector((state: RootState) => state.gameClassic)
    
    //Memoized (@/redux/selectors/game-classic/selectDataInThrowValueSectionAndNumberButtons.ts):
-   const { 
-      playersOrTeams, 
-      index, 
-      currentPlayerIndexInTeam, 
-      history 
-   } = useSelector(selectDataInThrowValueSectionAndNumberButtons)
+   const { playersOrTeams, index, currentPlayerIndexInTeam, history } = useSelector(selectDataInThrowValueSectionAndNumberButtons)
    
    return (
       <>

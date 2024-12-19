@@ -1,10 +1,7 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   setCurrentPlayerThrowsCount,
-   setCurrentPlayerThrows,
-   setCompletedSectors,
-} from '@/redux/slices/game-cricket/gameCricketSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/gameSlice'
+import { setCompletedSectors } from '@/redux/slices/game-cricket/gameCricketSlice'
 import {
    setPlayers,
    setCurrentPlayerIndex,
@@ -18,20 +15,25 @@ import {
 } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameStates } from '@/types/redux/gameTypes'
 import { 
-   GameCricketStates, 
    PlayerCricket, 
    TeamCricket, 
    HistoryEntryCricketSingle,
    HistoryEntryCricketTeams 
 } from '@/types/redux/gameCricketTypes'
 
+/* 
+   USED IN: 
+      - ThroValueSectionCricket component
+      - GameEndPopUp component 
+*/
 
 export const handleUndoCricket = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerCricket[] | TeamCricket[],
    history: HistoryEntryCricketSingle[] | HistoryEntryCricketTeams[],
-   currentPlayerThrowsCount: GameCricketStates['currentPlayerThrowsCount'],
+   currentPlayerThrowsCount: GameStates['currentPlayerThrowsCount'],
    dispatch: AppDispatch
 ) => {
    const lastEntry = history[history.length - 1]
@@ -102,7 +104,7 @@ export const handleUndoCricket = (
    const isAnyPlayerOrTeamWhichHaveNotCompletedSector = playersOrTeams.some(
       (playerOrTeam) => playerOrTeam.scores[lastThrowSector] !== 3
    )
-   if (isAnyPlayerOrTeamWhichHaveNotCompletedSector) {
+   if (isAnyPlayerOrTeamWhichHaveNotCompletedSector && lastThrowSector !== '') {
       dispatch(setCompletedSectors({sector: lastThrowSector, completed: false }))
    }
 

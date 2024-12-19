@@ -1,15 +1,15 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
-import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/game-cricket/gameCricketSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/gameSlice'
 import { setHistoryCricketSingle } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
 import { setHistoryCricketTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 //Controllers
 import { handleSwitchPlayerOrTeamCricket } from './handleSwitchPlayerOrTeamCricket'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameStates } from '@/types/redux/gameTypes'
 import { 
-   GameCricketStates, 
    GameCricketSingleStates, 
    GameCricketTeamsStates, 
    PlayerCricket, 
@@ -18,20 +18,22 @@ import {
    HistoryEntryCricketTeams 
 } from '@/types/redux/gameCricketTypes'
 
+/* USED IN: ScoreButtonsCricket component */
+
 export const handleMissButton = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerCricket[] | TeamCricket[],
    index: GameCricketSingleStates['currentPlayerIndex'] | GameCricketTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameCricketTeamsStates['currentPlayerIndexInTeam'],
    history: HistoryEntryCricketSingle[] | HistoryEntryCricketTeams[],
-   currentPlayerThrowsCount: GameCricketStates['currentPlayerThrowsCount'],
-   currentPlayerThrows: GameCricketStates['currentPlayerThrows'],
+   currentPlayerThrowsCount: GameStates['currentPlayerThrowsCount'],
+   currentPlayerThrows: GameStates['currentPlayerThrows'],
    dispatch: AppDispatch
 ) => {
    const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
    const currentPlayerOrTeam = gamePlayersOrTeams[index]
    const updatedThrowCount = currentPlayerThrowsCount + 1
-   const updatedPlayerThrows = [...currentPlayerThrows, '0']
+   const updatedPlayerThrows = [...currentPlayerThrows as string[], '0']
    
    let newHistoryEntry: HistoryEntryCricketSingle | HistoryEntryCricketTeams
    switch(gameType) {
@@ -76,7 +78,7 @@ export const handleMissButton = (
     
    //Scenario when player has not thrown 3 times yet
    if(updatedThrowCount < 3){
-      dispatch(setCurrentPlayerThrows(updatedPlayerThrows))
+      dispatch(setCurrentPlayerThrows(updatedPlayerThrows as string[]))
       dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
    } 
    //Scenario when player has just thrown 3 times and missed

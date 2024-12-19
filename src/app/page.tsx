@@ -6,11 +6,11 @@ import Link from 'next/link'
 import { useSelector, useDispatch } from 'react-redux'
 import { 
    RootState, 
-   addGameClassicSingleReducer, 
-   addGameClassicTeamsReducer,
-   addGameCricketSingleReducer,
-   addGameCricketTeamsReducer, 
-   resetReducer 
+   addGameClassicSingleStates, 
+   addGameClassicTeamsStates,
+   addGameCricketSingleStates,
+   addGameCricketTeamsStates, 
+   resetStates 
 } from '@/redux/store'
 import { 
    setGameType, 
@@ -43,14 +43,7 @@ const Home = () => {
    const dispatch = useDispatch()
    const pathname = usePathname()
    
-   const { 
-      gameType, 
-      playerNames, 
-      gameMode, 
-      gameWin, 
-      numberOfLegs, 
-      isFirstLoad
-   } = useSelector((state: RootState) => state.gameSettings)
+   const { gameType, playerNames, gameMode, gameWin, numberOfLegs, isFirstLoad} = useSelector((state: RootState) => state.gameSettings)
    
    //Game type handler
    const handleGameTypeChange = (type: GameSettingsStates['gameType']) => {
@@ -105,22 +98,22 @@ const Home = () => {
       //States added added dynamically to the redux store based on gameType and gameMode
       if(gameMode === 'Cricket'){
          if (gameType === 'single'){
-            addGameCricketSingleReducer()
+            addGameCricketSingleStates()
             dispatch(initializeCricketPlayers({ playerNames }))
          }
 
          if (gameType === 'teams'){
-            addGameCricketTeamsReducer()
+            addGameCricketTeamsStates()
             dispatch(initializeCricketTeams({ playerNames }))
          }
       } else {
          if (gameType === 'single'){
-            addGameClassicSingleReducer()
+            addGameClassicSingleStates()
             dispatch(initializePlayers({ playerNames, gameMode }))
          }
    
          if (gameType === 'teams'){
-            addGameClassicTeamsReducer()
+            addGameClassicTeamsStates()
             dispatch(initializeTeams({ playerNames, gameMode }))
          }
       }
@@ -146,7 +139,7 @@ const Home = () => {
       if(isFirstLoad){
          dispatch(setIsFirstLoad(false))
       } else if (!isFirstLoad && pathname === '/'){
-         resetReducer()
+         resetStates()
       }
    }, [pathname])
    

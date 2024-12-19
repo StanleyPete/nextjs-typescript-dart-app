@@ -13,15 +13,10 @@ const ThrowValueSectionCricket = () => {
 
    const { gameType } = useSelector((state: RootState) => state.gameSettings)
 
-   const {currentPlayerThrows, currentPlayerThrowsCount } = useSelector((state: RootState) => state.gameCricket)
+   const {currentPlayerThrows, currentPlayerThrowsCount } = useSelector((state: RootState) => state.game)
 
    //Memoized (@/redux/memoizedSelectors.ts):
-   const { 
-      playersOrTeams, 
-      index, 
-      currentPlayerIndexInTeam, 
-      history 
-   } = useSelector(selectDataInThrowValueSection)
+   const { playersOrTeams, index, currentPlayerIndexInTeam, history } = useSelector(selectDataInThrowValueSection)
    
    return (
       <>

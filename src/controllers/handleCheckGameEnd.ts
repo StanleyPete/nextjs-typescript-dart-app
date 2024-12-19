@@ -1,28 +1,28 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import { setIsGameEnd, setWinner } from '@/redux/slices/game-classic/gameClassicSlice'
+import { setIsGameEnd, setWinner } from '@/redux/slices/gameSlice'
 //Controllers
 import { playSound } from '@/controllers/playSound'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { 
-   GameClassicStates, 
-   PlayerClassic, 
-   TeamClassic 
-} from '@/types/redux/gameClassicTypes'
-import { GameCricketStates, PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
+import { GameStates } from '@/types/redux/gameTypes'
+import { PlayerClassic, TeamClassic } from '@/types/redux/gameClassicTypes'
+import { PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
 
 
 /* USED IN: 
-      handleSubmitThrowKeyboardButtons, 
-      handleSubmitThrowNumberButtons 
+      game-classic:
+         - handleSubmitThrowKeyboardButtons 
+         - handleSubmitThrowNumberButtons 
+      game-cricket:
+         - handleScoreButtons
 */
 
 export const handleCheckGameEnd = (
    gamePlayersOrTeams: PlayerClassic[] | TeamClassic[] | PlayerCricket[] | TeamCricket[],
    gameWin: GameSettingsStates['gameWin'],
    numberOfLegs: GameSettingsStates['numberOfLegs'],
-   isSoundEnabled: GameClassicStates['isSoundEnabled'] | GameCricketStates['isSoundEnabled'],
+   isSoundEnabled: GameStates['isSoundEnabled'],
    dispatch: AppDispatch
 ) => {
    //GAME WIN SET TO BEST-OF

@@ -4,7 +4,7 @@ import Image from 'next/image'
 //Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setIsGameEnd } from '@/redux/slices/game-cricket/gameCricketSlice'
+import { setIsGameEnd } from '@/redux/slices/gameSlice'
 import { selectDataInGameEndPopUp } from '@/redux/selectors/game-cricket/selectDataInGameEndPopUp'
 //Controllers
 import { handleRestartGameCricket } from '@/controllers/game-cricket/handleRestartGameCricket'
@@ -13,21 +13,15 @@ import { handleUndoCricket } from '@/controllers/game-cricket/handleUndoCricket'
 const GameEndPopUp = () => {
 
    const dispatch = useDispatch()
+   
    const router = useRouter()
 
    const { gameType, playerNames } = useSelector((state: RootState) => state.gameSettings)
 
-   const { 
-      currentPlayerThrowsCount, 
-      isGameEnd, 
-      winner 
-   } = useSelector((state: RootState) => state.gameCricket)
+   const { currentPlayerThrowsCount, isGameEnd, winner } = useSelector((state: RootState) => state.game)
 
    //Memoized (@/redux/selectors/game-cricket/selectDataInGameEndPopUp.ts):
-   const { 
-      playersOrTeams,  
-      history, 
-   } = useSelector(selectDataInGameEndPopUp)
+   const { playersOrTeams, history } = useSelector(selectDataInGameEndPopUp)
    
    return (
       isGameEnd && (

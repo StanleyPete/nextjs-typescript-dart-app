@@ -1,13 +1,12 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   setStartIndex,
-   setCurrentThrow,
-   setThrowValueSum,
-   setCurrentPlayerThrowsCount,
-   setIsGameEnd,
-   setWinner,
-} from '@/redux/slices/game-classic/gameClassicSlice'
+import { 
+   setStartIndex, 
+   setCurrentPlayerThrowsCount, 
+   setIsGameEnd, 
+   setWinner 
+} from '@/redux/slices/gameSlice'
+import {setCurrentThrow, setThrowValueSum } from '@/redux/slices/game-classic/gameClassicSlice'
 import {
    setCurrentPlayerIndex,
    setHistoryClassicSingle,
@@ -20,18 +19,19 @@ import {
    initializeTeams,
 } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Types
+import { GameStates } from '@/types/redux/gameTypes'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { GameClassicStates } from '@/types/redux/gameClassicTypes'
 
 /* USED IN: 
       SettingsButtons component, 
       GameEndPopUp component 
 */
+
 export const handleRestartGameClassic = (
    gameType: GameSettingsStates['gameType'],
    playerNames: GameSettingsStates['playerNames'],
    gameMode: GameSettingsStates['gameMode'],
-   isGameEnd: GameClassicStates['isGameEnd'],
+   isGameEnd: GameStates['isGameEnd'],
    dispatch: AppDispatch
 ) => {
    if (gameType === 'single') {

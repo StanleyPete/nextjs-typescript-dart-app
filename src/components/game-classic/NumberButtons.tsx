@@ -3,7 +3,7 @@ import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 //Controllers
-import { handleUndo } from '@/controllers/game-classic/handleUndo'
+import { handleUndoClassic } from '@/controllers/game-classic/handleUndoClassic'
 import { handleSubmitThrowNumberButtons } from '@/controllers/game-classic/handleSubmitThrowNumberButtons'
 import { selectDataInThrowValueSectionAndNumberButtons } from '@/redux/selectors/game-classic/selectDataInThrowValueSectionAndNumberButtons'
 //Types
@@ -12,30 +12,14 @@ import { HistoryEntryClassicSingle, HistoryEntryClassicTeams } from '@/types/red
 const NumberButtons = () => {
    const dispatch = useDispatch()
 
-   const {  
-      gameType,
-      gameMode,
-      numberOfLegs,
-      gameWin 
-   } = useSelector((state: RootState) => state.gameSettings)
+   const { gameType, gameMode, numberOfLegs, gameWin } = useSelector((state: RootState) => state.gameSettings)
 
-   const {  
-      startIndex,
-      showNumberButtons, 
-      throwValueSum, 
-      currentPlayerThrowsCount,
-      currentPlayerThrows, 
-      multiplier, 
-      isSoundEnabled 
-   } = useSelector((state: RootState) => state.gameClassic)
+   const { startIndex, currentPlayerThrowsCount, currentPlayerThrows, isSoundEnabled } = useSelector((state: RootState) => state.game)
+
+   const { showNumberButtons, throwValueSum, multiplier } = useSelector((state: RootState) => state.gameClassic)
 
    //Memoized (@/redux/selectors/game-classic/selectDataInThrowValueSectionAndNumberButtons.ts):
-   const { 
-      playersOrTeams,
-      index,
-      currentPlayerIndexInTeam,
-      history 
-   } = useSelector(selectDataInThrowValueSectionAndNumberButtons)
+   const { playersOrTeams, index, currentPlayerIndexInTeam, history } = useSelector(selectDataInThrowValueSectionAndNumberButtons)
 
    const specialButtons = [
       { label: 'Bull (50)', value: 50 },
@@ -110,7 +94,7 @@ const NumberButtons = () => {
          ))}
          <button 
             onClick={() => {
-               handleUndo(
+               handleUndoClassic(
                   gameType,
                   playersOrTeams, 
                   index, 

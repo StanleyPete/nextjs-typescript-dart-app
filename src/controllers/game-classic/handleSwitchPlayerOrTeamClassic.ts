@@ -11,13 +11,11 @@ import {
    TeamClassic 
 } from '@/types/redux/gameClassicTypes'
 
-
 /* 
    USED IN:
       ThrowValueSection component: 
          - handleSubmitThrowKeyboardButtons, 
          - handleSubmitThrowSubmitScoreButton, 
-         
       NumberButtons component:
          - handleSubmitThrowNumberButtons,
 
@@ -26,11 +24,9 @@ import {
       after increasing currentPlayerIndex by 1, 2%2 === 0 which is first teams's index
 */
 
-export const handleSwitchPlayerOrTeam = (
+export const handleSwitchPlayerOrTeamClassic = (
    gameType: GameSettingsStates['gameType'],
-   index:
-    | GameClassicSingleStates['currentPlayerIndex']
-    | GameClassicTeamsStates['currentTeamIndex'],
+   index: GameClassicSingleStates['currentPlayerIndex'] | GameClassicTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameClassicTeamsStates['currentPlayerIndexInTeam'],
    playersOrTeams: PlayerClassic[] | TeamClassic[],
    dispatch: AppDispatch

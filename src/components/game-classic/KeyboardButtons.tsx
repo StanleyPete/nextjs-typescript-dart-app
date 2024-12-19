@@ -5,7 +5,7 @@ import { RootState } from '@/redux/store'
 import { setCurrentThrow, } from '@/redux/slices/game-classic/gameClassicSlice'
 import { selectDataInKeyboardButtonsAndGameEndPopUp } from '@/redux/selectors/game-classic/selectDataInKeyboardButtonsAndGameEndPopUp'
 //Controllers
-import { handleUndo } from '@/controllers/game-classic/handleUndo'
+import { handleUndoClassic } from '@/controllers/game-classic/handleUndoClassic'
 //Types
 import { 
    PlayerClassic, 
@@ -15,21 +15,17 @@ import {
 } from '@/types/redux/gameClassicTypes'
 
 const KeyboardButtons = () => {
+
    const dispatch = useDispatch()
+
    const {gameType, gameMode} = useSelector((state: RootState) => state.gameSettings)
-   const {
-      showNumberButtons,
-      currentThrow,
-      throwValueSum,
-      currentPlayerThrowsCount,
-      currentPlayerThrows
-   } = useSelector((state: RootState) => state.gameClassic)
+
+   const { currentPlayerThrowsCount, currentPlayerThrows }=  useSelector((state: RootState) => state.game)
+
+   const { showNumberButtons, currentThrow, throwValueSum } = useSelector((state: RootState) => state.gameClassic)
+
    //Memoized (@/redux/selectors/game-classic/selectDataInKeyboardButtonsAndGameEndPopUp.ts):
-   const { 
-      playersOrTeams, 
-      index,
-      history, 
-   } = useSelector(selectDataInKeyboardButtonsAndGameEndPopUp)
+   const { playersOrTeams, index, history } = useSelector(selectDataInKeyboardButtonsAndGameEndPopUp)
 
    return (
       <div className='score-input'>
@@ -47,7 +43,7 @@ const KeyboardButtons = () => {
          ))}
          <button 
             onClick={() => {
-               handleUndo(
+               handleUndoClassic(
                   gameType,
                   playersOrTeams as PlayerClassic[] | TeamClassic[], 
                   index, 

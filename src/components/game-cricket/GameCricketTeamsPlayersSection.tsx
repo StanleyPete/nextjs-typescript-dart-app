@@ -8,11 +8,7 @@ import { TeamCricket } from '@/types/redux/gameCricketTypes'
 
 const GameCricketTeamsPlayersSection = () => {
 
-   const { 
-      teams, 
-      currentTeamIndex, 
-      currentPlayerIndexInTeam 
-   } = useSelector((state: RootState) => state.gameCricketTeams)
+   const { teams, currentTeamIndex, currentPlayerIndexInTeam } = useSelector((state: RootState) => state.gameCricketTeams)
 
    return (
       <div className="game-players-section">

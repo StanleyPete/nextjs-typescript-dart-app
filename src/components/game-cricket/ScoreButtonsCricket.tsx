@@ -4,36 +4,25 @@ import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { selectDataInScoreButtons } from '@/redux/selectors/game-cricket/selectDataInScoreButtons'
-import Scores from '@/lib/cricket-scores'
-import { PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
+//Controllers
 import { handleScoreButtons } from '@/controllers/game-cricket/handleScoreButtons'
 import { handleMissButton } from '@/controllers/game-cricket/handleMissButton'
+//Types
+import { PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
+//Lib
+import Scores from '@/lib/cricket-scores'
 
 const ScoreButtonsCricket = () => {
 
    const dispatch = useDispatch()
 
-   const {
-      gameType,
-      gameMode,
-      gameWin,
-      numberOfLegs
-   } = useSelector((state: RootState) => state.gameSettings)
+   const { gameType, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
 
-   const { 
-      completedSectors, 
-      startIndex, 
-      isSoundEnabled, 
-      currentPlayerThrowsCount, 
-      currentPlayerThrows 
-   } = useSelector((state: RootState) => state.gameCricket)
+   const { startIndex, currentPlayerThrowsCount, currentPlayerThrows, isSoundEnabled } = useSelector((state: RootState) => state.game)
 
-   const { 
-      playersOrTeams, 
-      playerOrTeamIndex, 
-      currentPlayerIndexInTeam, 
-      history 
-   } = useSelector(selectDataInScoreButtons)
+   const { completedSectors } = useSelector((state: RootState) => state.gameCricket)
+
+   const { playersOrTeams, playerOrTeamIndex, currentPlayerIndexInTeam, history } = useSelector(selectDataInScoreButtons)
  
    return ( 
       <>
@@ -41,7 +30,7 @@ const ScoreButtonsCricket = () => {
             <>
                <div className='cricket-score-buttons'>
                   {Scores.map((buttons, index) => (
-                     <div  className={`score-row-v2 ${completedSectors[buttons[0] === '25' ? 'Bull' : buttons[0]] ? 'completed-sector' : ''}`} key={index}>
+                     <div  className={`score-row-v2 ${completedSectors[buttons[0] === '25' ? 'Bull' : (buttons[0] as keyof typeof completedSectors)] ? 'completed-sector' : ''}`} key={index}>
                         <div className='player-score'>
                            <span>
                               {(() => {
@@ -82,7 +71,6 @@ const ScoreButtonsCricket = () => {
                                           increment, 
                                           value,
                                           gameType,
-                                          gameMode,
                                           gameWin,
                                           numberOfLegs,
                                           isSoundEnabled,
@@ -159,10 +147,10 @@ const ScoreButtonsCricket = () => {
                {/* Score buttons for > 2 players */}
                <div className="cricket-score-buttons-v2">
                   {Scores.map((buttons, index) => (
-                     <div className={`score-row-v2 ${completedSectors[buttons[0] === '25' ? 'Bull' : buttons[0]] ? 'completed-sector' : ''}`} key={index}>
+                     <div className={`score-row-v2 ${completedSectors[buttons[0] === '25' ? 'Bull' : (buttons[0] as keyof typeof completedSectors)] ? 'completed-sector' : ''}`} key={index}>
                         {/* Sekcja z player-score dla każdego gracza */}
                         <div className="player-scores-v2">
-                           {playersOrTeams.map((_: PlayerCricket[] | TeamCricket[], playerOrTeamIndex: number) => (
+                           {playersOrTeams.map((_: PlayerCricket | TeamCricket, playerOrTeamIndex: number) => (
                               <div key={playerOrTeamIndex} className="player-score-v2">
                                  {(() => {
                                     const scoreValue = playersOrTeams[playerOrTeamIndex].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
@@ -200,7 +188,6 @@ const ScoreButtonsCricket = () => {
                                        increment, 
                                        value,
                                        gameType,
-                                       gameMode,
                                        gameWin,
                                        numberOfLegs,
                                        isSoundEnabled,

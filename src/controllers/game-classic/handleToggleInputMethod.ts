@@ -1,14 +1,12 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   setThrowValueSum,
-   setCurrentPlayerThrows,
-   setCurrentPlayerThrowsCount,
-} from '@/redux/slices/game-classic/gameClassicSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/gameSlice'
+import {setThrowValueSum } from '@/redux/slices/game-classic/gameClassicSlice'
 import { setPlayers } from '@/redux/slices/game-classic/gameClassicSingleSlice'
 import { setTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameStates } from '@/types/redux/gameTypes'
 import { 
    GameClassicStates,
    GameClassicSingleStates,
@@ -24,7 +22,7 @@ export const handleToggleInputMethod = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerClassic[] | TeamClassic,
    index: GameClassicSingleStates['currentPlayerIndex'] | GameClassicTeamsStates['currentTeamIndex'],
-   currentPlayerThrowsCount: GameClassicStates['currentPlayerThrowsCount'],
+   currentPlayerThrowsCount: GameStates['currentPlayerThrowsCount'],
    throwValueSum: GameClassicStates['throwValueSum'],
    dispatch: AppDispatch
 ) => {

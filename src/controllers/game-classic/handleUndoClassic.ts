@@ -1,10 +1,7 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   setThrowValueSum,
-   setCurrentPlayerThrows,
-   setCurrentPlayerThrowsCount,
-} from '@/redux/slices/game-classic/gameClassicSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/gameSlice'
+import { setThrowValueSum } from '@/redux/slices/game-classic/gameClassicSlice'
 import {
    setPlayers,
    setCurrentPlayerIndex,
@@ -18,6 +15,7 @@ import {
 } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameStates } from '@/types/redux/gameTypes'
 import { 
    GameClassicStates, 
    GameClassicSingleStates, 
@@ -35,15 +33,15 @@ import {
       GameEndPopUp component    
 */
 
-export const handleUndo = (
+export const handleUndoClassic = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerClassic[] | TeamClassic[],
    index: GameClassicSingleStates['currentPlayerIndex'] | GameClassicTeamsStates['currentTeamIndex'],
    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],
    showNumberButtons: GameClassicStates['showNumberButtons'],
    throwValueSum: GameClassicStates['throwValueSum'],
-   currentPlayerThrows: GameClassicStates['currentPlayerThrows'],
-   currentPlayerThrowsCount: GameClassicStates['currentPlayerThrowsCount'],
+   currentPlayerThrows: GameStates['currentPlayerThrows'],
+   currentPlayerThrowsCount: GameStates['currentPlayerThrowsCount'],
    gameMode: GameSettingsStates['gameMode'],
    dispatch: AppDispatch
 ) => {
@@ -125,12 +123,12 @@ export const handleUndo = (
 
          //Temporary variables with updated throw count and throws array
          const updatedThrowCount = currentPlayerThrowsCount - 1
-         const updatedThrows = [...currentPlayerThrows]
+         const updatedThrows = [...currentPlayerThrows as number[]]
 
          //Updating pointsLeft, totalThrows and throwValueSum
          currentPlayerOrTeam.pointsLeft += updatedThrows[updatedThrows.length - 1]
          currentPlayerOrTeam.totalThrows -= updatedThrows[updatedThrows.length - 1]
-         const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+         const updatedThrowValueSum = throwValueSum - (currentPlayerThrows as number[])[currentPlayerThrows.length - 1]
 
          dispatch(setThrowValueSum(updatedThrowValueSum))
 
@@ -167,12 +165,12 @@ export const handleUndo = (
 
          //Temporary variables with updated throw count and throws array
          const updatedThrowCount = currentPlayerThrowsCount - 1
-         const updatedThrows = [...currentPlayerThrows]
+         const updatedThrows = [...currentPlayerThrows as number[]]
 
          //Updating pointsLeft, totalThrows and throwValueSum
          currentPlayer.pointsLeft += updatedThrows[updatedThrows.length - 1]
          currentPlayer.totalThrows -= updatedThrows[updatedThrows.length - 1]
-         const updatedThrowValueSum = throwValueSum - currentPlayerThrows[currentPlayerThrows.length - 1]
+         const updatedThrowValueSum = throwValueSum - (currentPlayerThrows as number[])[currentPlayerThrows.length - 1]
 
          dispatch(setThrowValueSum(updatedThrowValueSum))
 

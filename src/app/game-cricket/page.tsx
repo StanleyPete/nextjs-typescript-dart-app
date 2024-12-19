@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setInitialSoundPlayed } from '@/redux/slices/game-cricket/gameCricketSlice'
+import { setInitialSoundPlayed } from '@/redux/slices/gameSlice'
 import { selectDataInGameCricketPage } from '@/redux/selectors/game-cricket/selectDataInGameCricketPage'
 //Components
 import GameCricketSinglePlayersSection from '@/components/game-cricket/GameCricketSinglePlayersSection'
@@ -19,12 +19,14 @@ import { playSound } from '@/controllers/playSound'
 
 const GameCricket = () => {
    const dispatch = useDispatch()
+
    const { gameType } = useSelector((state: RootState) => state.gameSettings)
-   const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.gameCricket)
+
+   const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.game)
+
    //Memoized (@redux/selectors/game-cricket/selectDataInGameCricketPage)
    const { playersOrTeams, history } = useSelector(selectDataInGameCricketPage)
 
-   
    useEffect(() => {
       //Initial sound played only once (when game start)
       if(!initialSoundPlayed){

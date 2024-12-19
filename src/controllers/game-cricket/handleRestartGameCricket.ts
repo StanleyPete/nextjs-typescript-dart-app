@@ -1,12 +1,12 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   setCurrentPlayerThrows,
-   setCurrentPlayerThrowsCount,
-   setIsGameEnd,
-   setStartIndex,
-   setWinner,
-} from '@/redux/slices/game-cricket/gameCricketSlice'
+import { 
+   setCurrentPlayerThrowsCount, 
+   setCurrentPlayerThrows, 
+   setIsGameEnd, 
+   setStartIndex, 
+   setWinner 
+} from '@/redux/slices/gameSlice'
 import {
    initializeCricketPlayers,
    setCurrentPlayerIndex,
@@ -20,7 +20,7 @@ import {
 } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { GameCricketStates } from '@/types/redux/gameCricketTypes'
+import { GameStates } from '@/types/redux/gameTypes'
 
 /* USED IN: 
       SettingsButtons component, 
@@ -29,7 +29,7 @@ import { GameCricketStates } from '@/types/redux/gameCricketTypes'
 export const handleRestartGameCricket = (
    gameType: GameSettingsStates['gameType'],
    playerNames: GameSettingsStates['playerNames'],
-   isGameEnd: GameCricketStates['isGameEnd'],
+   isGameEnd: GameStates['isGameEnd'],
    dispatch: AppDispatch
 ) => {
    if (gameType === 'single') {

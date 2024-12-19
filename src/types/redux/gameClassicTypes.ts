@@ -1,18 +1,11 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 
 export interface GameClassicStates{
-    startIndex: number
     showNumberButtons: boolean
     currentThrow: number
     throwValueSum: number
-    currentPlayerThrowsCount: number
-    currentPlayerThrows: number[]
     multiplier: number
     isDoubleActive: boolean
-    isGameEnd: boolean
-    winner: PlayerClassic | TeamClassic | null
-    isSoundEnabled: boolean
-    initialSoundPlayed: boolean
 }
 
 export interface GameClassicSingleStates {

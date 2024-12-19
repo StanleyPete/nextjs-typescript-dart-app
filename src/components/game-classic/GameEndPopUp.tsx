@@ -4,30 +4,26 @@ import Image from 'next/image'
 //Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setIsGameEnd } from '@/redux/slices/game-classic/gameClassicSlice'
+import { setIsGameEnd } from '@/redux/slices/gameSlice'
 import { selectDataInKeyboardButtonsAndGameEndPopUp } from '@/redux/selectors/game-classic/selectDataInKeyboardButtonsAndGameEndPopUp'
 //Controllers
 import { handleRestartGameClassic } from '@/controllers/game-classic/handleRestartGameClassic'
-import { handleUndo } from '@/controllers/game-classic/handleUndo'
+import { handleUndoClassic } from '@/controllers/game-classic/handleUndoClassic'
 
 const GameEndPopUp = () => {
+
    const dispatch = useDispatch()
+
    const router = useRouter()
+
    const { gameType, gameMode, playerNames } = useSelector((state: RootState) => state.gameSettings)
-   const { 
-      showNumberButtons, 
-      throwValueSum, 
-      currentPlayerThrows, 
-      currentPlayerThrowsCount, 
-      isGameEnd, 
-      winner 
-   } = useSelector((state: RootState) => state.gameClassic)
+
+   const { currentPlayerThrows, currentPlayerThrowsCount, isGameEnd, winner } =  useSelector((state: RootState) => state.game)
+
+   const { showNumberButtons, throwValueSum } = useSelector((state: RootState) => state.gameClassic)
+
    //Memoized (@/redux/memoizedSelectors.ts):
-   const { 
-      playersOrTeams, 
-      index, 
-      history, 
-   } = useSelector(selectDataInKeyboardButtonsAndGameEndPopUp)
+   const { playersOrTeams, index, history } = useSelector(selectDataInKeyboardButtonsAndGameEndPopUp)
    
    return (
       isGameEnd && (
@@ -57,9 +53,8 @@ const GameEndPopUp = () => {
                   <button 
                      className='undo' 
                      onClick={() => {
-                        handleUndo(gameType, playersOrTeams, index, history, showNumberButtons, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount, gameMode, dispatch); dispatch(setIsGameEnd(false))
-                     }
-                     }
+                        handleUndoClassic(gameType, playersOrTeams, index, history, showNumberButtons, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount, gameMode, dispatch); dispatch(setIsGameEnd(false))
+                     }}
                   > 
                      Undo
                   </button>

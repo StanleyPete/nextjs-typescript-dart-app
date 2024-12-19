@@ -3,7 +3,7 @@ import Image from 'next/image'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setIsSoundEnabled } from '@/redux/slices/game-classic/gameClassicSlice'
+import { setIsSoundEnabled } from '@/redux/slices/gameSlice'
 import { selectDataInCurrentPlayerThrowSection } from '@/redux/selectors/selectDataInCurrentPlayerThrowSection'
 import { selectIsSoundEnabled } from '@/redux/selectors/selectDataInCurrentPlayerThrowSection'
 //Types
@@ -19,11 +19,7 @@ const CurrentPlayerThrowSection = () => {
    
    //Memoized (@/redux/selectors/selectDataInCurrentPlayerThrowSection.ts):
    const { isSoundEnabled } = useSelector(selectIsSoundEnabled)
-   const { 
-      playersOrTeams, 
-      index, 
-      currentPlayerIndexInTeam 
-   } = useSelector(selectDataInCurrentPlayerThrowSection)
+   const { playersOrTeams, index, currentPlayerIndexInTeam } = useSelector(selectDataInCurrentPlayerThrowSection)
    
    const currentPlayerOrTeam = playersOrTeams[index]
 

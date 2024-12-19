@@ -1,5 +1,6 @@
 import { combineReducers, configureStore, Reducer } from '@reduxjs/toolkit'
 import gameSettingsReducer from './slices/gameSettingsSlice'
+import gameReducer from './slices/gameSlice'
 import gameClassicReducer from './slices/game-classic/gameClassicSlice'
 import gameClassicSingleReducer from './slices/game-classic/gameClassicSingleSlice'
 import gameClassicTeamsReducer from './slices/game-classic/gameClassicTeamsSlice'
@@ -8,6 +9,7 @@ import gameCricketSingleReducer from './slices/game-cricket/gameCricketSingleSli
 import gameCricketTeamsReducer from './slices/game-cricket/gameCricketTeamsSlice'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameStates } from '@/types/redux/gameTypes'
 import { 
    GameClassicStates,
    GameClassicSingleStates, 
@@ -32,9 +34,10 @@ let rootReducer: Reducer = combineReducers({
 })
 
 //Add Game Classic Single States (only for 301, 501, 701, 1001 modes)
-export const addGameClassicSingleReducer = () => {
+export const addGameClassicSingleStates = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
+      game: gameReducer,
       gameClassic: gameClassicReducer,
       gameClassicSingle: gameClassicSingleReducer,
    })
@@ -43,9 +46,10 @@ export const addGameClassicSingleReducer = () => {
 }
 
 //Add Game Classic Teams States (only for 301, 501, 701, 1001 modes)
-export const addGameClassicTeamsReducer = () => {
+export const addGameClassicTeamsStates = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
+      game: gameReducer,
       gameClassic: gameClassicReducer,
       gameClassicTeams: gameClassicTeamsReducer,
    })
@@ -54,9 +58,10 @@ export const addGameClassicTeamsReducer = () => {
 }
 
 //Add Game Cricket Single States (only for Cricket mode)
-export const addGameCricketSingleReducer = () => {
+export const addGameCricketSingleStates = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
+      game: gameReducer,
       gameCricket: gameCricketReducer,
       gameCricketSingle: gameCricketSingleReducer,
    })
@@ -65,9 +70,10 @@ export const addGameCricketSingleReducer = () => {
 }
 
 //Add Game Cricket Teams States (only for Cricket mode)
-export const addGameCricketTeamsReducer = () => {
+export const addGameCricketTeamsStates = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
+      game: gameReducer,
       gameCricket: gameCricketReducer,
       gameCricketTeams: gameCricketTeamsReducer,
    })
@@ -75,7 +81,7 @@ export const addGameCricketTeamsReducer = () => {
    store.replaceReducer(rootReducer)
 }
 
-export const resetReducer = () => {
+export const resetStates = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
    })
@@ -84,12 +90,13 @@ export const resetReducer = () => {
 }
 
 export type RootState = {
-  gameSettings: GameSettingsStates;
-  gameClassic: GameClassicStates;
-  gameClassicSingle: GameClassicSingleStates;
-  gameClassicTeams: GameClassicTeamsStates;
-  gameCricket: GameCricketStates;
-  gameCricketSingle: GameCricketSingleStates;
-  gameCricketTeams: GameCricketTeamsStates;
+  gameSettings: GameSettingsStates
+  game: GameStates
+  gameClassic: GameClassicStates
+  gameClassicSingle: GameClassicSingleStates
+  gameClassicTeams: GameClassicTeamsStates
+  gameCricket: GameCricketStates
+  gameCricketSingle: GameCricketSingleStates
+  gameCricketTeams: GameCricketTeamsStates
 };
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = typeof store.dispatch

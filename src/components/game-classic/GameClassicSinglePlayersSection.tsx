@@ -9,6 +9,7 @@ import { PlayerClassic } from '@/types/redux/gameClassicTypes'
 import checkoutArray from '@/lib/checkout-table'
 
 const GameClassicSinglePlayersSection = () => {
+   
    const { players, currentPlayerIndex, } = useSelector((state: RootState) => state.gameClassicSingle)
 
    return (

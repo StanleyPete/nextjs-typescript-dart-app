@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setInitialSoundPlayed, } from '@/redux/slices/game-classic/gameClassicSlice'
+import { setInitialSoundPlayed } from '@/redux/slices/gameSlice'
 import { selectDataInGameClassicPage } from '@/redux/selectors/game-classic/selectDataInGameClassicPage'
 //Components
 import GameClassicSinglePlayersSection from '@/components/game-classic/GameClassicSinglePlayersSection'
@@ -29,7 +29,7 @@ const GameClassic = () => {
 
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
 
-   const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.gameClassic)
+   const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.game)
    
    //Memoized (@/redux/selectors/game-classic/selectDataInGameClassicPage.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)

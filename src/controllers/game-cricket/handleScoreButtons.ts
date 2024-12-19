@@ -1,11 +1,8 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
-import { 
-   setCurrentPlayerThrows, 
-   setCurrentPlayerThrowsCount, 
-   setCompletedSectors 
-} from '@/redux/slices/game-cricket/gameCricketSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/gameSlice'
+import { setCompletedSectors } from '@/redux/slices/game-cricket/gameCricketSlice'
 import { 
    setPlayers, 
    setCurrentPlayerIndex, 
@@ -23,8 +20,8 @@ import { handleCheckGameEnd } from '../handleCheckGameEnd'
 import { playSound } from '../playSound'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameStates } from '@/types/redux/gameTypes'
 import { 
-   GameCricketStates,
    GameCricketSingleStates, 
    GameCricketTeamsStates, 
    PlayerCricket, 
@@ -33,23 +30,24 @@ import {
    HistoryEntryCricketTeams, 
 } from '@/types/redux/gameCricketTypes'
 
+/* USED IN: ScoreButtonsCricket component */
+
 export const handleScoreButtons = (
    sectorPassed: '20' | '19' | '18' | '17' | '16' | '15' | 'Bull', 
    label: string, 
    increment: number, 
    value: number,
    gameType: GameSettingsStates['gameType'],
-   gameMode: GameSettingsStates['gameMode'],
    gameWin: GameSettingsStates['gameWin'],
    numberOfLegs: GameSettingsStates['numberOfLegs'],
-   isSoundEnabled: GameCricketStates['isSoundEnabled'],
+   isSoundEnabled: GameStates['isSoundEnabled'],
    playersOrTeams: PlayerCricket[] | TeamCricket[],
    index: GameCricketSingleStates['currentPlayerIndex'] | GameCricketTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameCricketTeamsStates['currentPlayerIndexInTeam'],
-   startIndex: GameCricketStates['startIndex'],
+   startIndex: GameStates['startIndex'],
    history: HistoryEntryCricketSingle[] | HistoryEntryCricketTeams[],
-   currentPlayerThrowsCount: GameCricketStates['currentPlayerThrowsCount'],
-   currentPlayerThrows: GameCricketStates['currentPlayerThrows'],
+   currentPlayerThrowsCount: GameStates['currentPlayerThrowsCount'],
+   currentPlayerThrows: GameStates['currentPlayerThrows'],
    dispatch: AppDispatch
 ) => {
    const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
@@ -62,7 +60,7 @@ export const handleScoreButtons = (
       return
       
    } else {
-      const updatedPlayerThrows = [...currentPlayerThrows, label]
+      const updatedPlayerThrows = [...currentPlayerThrows as string[], label]
       
       let newHistoryEntry: HistoryEntryCricketSingle | HistoryEntryCricketTeams
       switch(gameType) {
@@ -125,7 +123,7 @@ export const handleScoreButtons = (
                : setTeams(gamePlayersOrTeams)
          )
   
-         handleSwitchStartPlayerOrTeamIndex(gameMode, startIndex, playersOrTeams, dispatch)
+         handleSwitchStartPlayerOrTeamIndex(startIndex, playersOrTeams, dispatch)
          dispatch(
             gameType === 'single'
                ? setCurrentPlayerIndex((startIndex + 1) % playersOrTeams.length)
@@ -157,7 +155,7 @@ export const handleScoreButtons = (
       )
        
       if(updatedThrowCount < 3){
-         dispatch(setCurrentPlayerThrows(updatedPlayerThrows))
+         dispatch(setCurrentPlayerThrows(updatedPlayerThrows as string[]))
          dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
       } else {
          let newExtraHistoryEntry: HistoryEntryCricketSingle | HistoryEntryCricketTeams

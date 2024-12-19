@@ -9,6 +9,7 @@ import { TeamClassic } from '@/types/redux/gameClassicTypes'
 import checkoutArray from '@/lib/checkout-table'
 
 const GameTeamsPlayersSection = () => {
+   
    const { teams, currentTeamIndex, currentPlayerIndexInTeam } = useSelector((state: RootState) => state.gameClassicTeams)
 
    return (

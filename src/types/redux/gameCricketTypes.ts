@@ -1,14 +1,7 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 
 export interface GameCricketStates {
-    startIndex: number,
-    currentPlayerThrowsCount: number,
-    currentPlayerThrows: string[],
     completedSectors: Record<'20' | '19' | '18' | '17' | '16' | '15' | 'Bull', boolean>,
-    isGameEnd: boolean,
-    winner: PlayerCricket | TeamCricket | null,
-    isSoundEnabled: boolean,
-    initialSoundPlayed: boolean,
 }
 
 export interface GameCricketSingleStates {

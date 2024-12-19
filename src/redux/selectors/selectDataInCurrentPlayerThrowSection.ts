@@ -2,8 +2,7 @@ import { createSelector } from 'reselect'
 import { RootState } from '@/redux/store'
 
 const selectGameSettings = (state: RootState) => state.gameSettings
-const selectGameClassic = (state: RootState) => state.gameClassic
-const selectGameCricket = (state: RootState) => state.gameCricket
+const selectGame = (state: RootState) => state.game
 const selectGameClassicSingle = (state: RootState) => state.gameClassicSingle
 const selectGameClassicTeams = (state: RootState) => state.gameClassicTeams
 const selectGameCricketSingle = (state: RootState) => state.gameCricketSingle
@@ -11,10 +10,8 @@ const selectGameCricketTeams = (state: RootState) => state.gameCricketTeams
 
 
 export const selectIsSoundEnabled = createSelector(
-   [selectGameSettings, selectGameClassic, selectGameCricket], (gameSettings, gameClassic, gameCricket) => {
-      return gameSettings.gameMode === 'Cricket'
-         ? { isSoundEnabled: gameCricket.isSoundEnabled }
-         : { isSoundEnabled: gameClassic.isSoundEnabled }
+   [selectGame], (game) => {
+      return { isSoundEnabled: game.isSoundEnabled } 
    }
 )
 export const selectDataInCurrentPlayerThrowSection = createSelector(

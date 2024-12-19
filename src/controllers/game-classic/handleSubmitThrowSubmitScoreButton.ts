@@ -1,26 +1,22 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import {
-   setCurrentThrow,
-   setThrowValueSum,
-   setCurrentPlayerThrowsCount,
-   setCurrentPlayerThrows
-} from '@/redux/slices/game-classic/gameClassicSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/gameSlice'
+import { setCurrentThrow, setThrowValueSum } from '@/redux/slices/game-classic/gameClassicSlice'
 import { setPlayers, setHistoryClassicSingle } from '@/redux/slices/game-classic/gameClassicSingleSlice'
 import { setTeams, setHistoryClassicTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 //Controllers
-import { handleSwitchPlayerOrTeam } from '@/controllers/handleSwitchPlayerOrTeam'
+import { handleSwitchPlayerOrTeamClassic } from '@/controllers/game-classic/handleSwitchPlayerOrTeamClassic'
 import { playSound } from '@/controllers/playSound'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { 
-   GameClassicStates, 
-   GameClassicSingleStates, 
-   GameClassicTeamsStates, 
-   PlayerClassic, 
-   TeamClassic, 
-   HistoryEntryClassicSingle, 
-   HistoryEntryClassicTeams 
+import { GameStates } from '@/types/redux/gameTypes'
+import {
+   GameClassicSingleStates,
+   GameClassicTeamsStates,
+   PlayerClassic,
+   TeamClassic,
+   HistoryEntryClassicSingle,
+   HistoryEntryClassicTeams,
 } from '@/types/redux/gameClassicTypes'
 
 /*  
@@ -36,15 +32,15 @@ export const handleSubmitThrowSubmitScoreButton = (
    playersOrTeams: PlayerClassic[] | TeamClassic[],
    index: GameClassicSingleStates['currentPlayerIndex'],
    currentPlayerIndexInTeam: GameClassicTeamsStates['currentPlayerIndexInTeam'],
-   currentPlayerThrows: GameClassicStates['currentPlayerThrows'],
+   currentPlayerThrows: GameStates['currentPlayerThrows'],
    history: HistoryEntryClassicSingle[] | HistoryEntryClassicTeams[],
-   isSoundEnabled: GameClassicStates['isSoundEnabled'],
+   isSoundEnabled: GameStates['isSoundEnabled'],
    dispatch: AppDispatch
 ) => {
    const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
    const currentPlayerOrTeam = gamePlayersOrTeams[index]
 
-   const throwSum = currentPlayerThrows.reduce(
+   const throwSum = (currentPlayerThrows as number[]).reduce(
       (acc: number, throwValue: number) => acc + throwValue,
       0
    )
@@ -81,13 +77,19 @@ export const handleSubmitThrowSubmitScoreButton = (
    currentPlayerOrTeam.lastScore = throwSum
    currentPlayerOrTeam.totalAttempts += 1
    currentPlayerOrTeam.average =
-   currentPlayerOrTeam.totalThrows / currentPlayerOrTeam.totalAttempts
+    currentPlayerOrTeam.totalThrows / currentPlayerOrTeam.totalAttempts
 
    //Updating history state
    dispatch(
       gameType === 'single'
-         ? setHistoryClassicSingle([...(history as HistoryEntryClassicSingle[]), newHistoryEntry as HistoryEntryClassicSingle])
-         : setHistoryClassicTeams([...(history as HistoryEntryClassicTeams[]), newHistoryEntry as HistoryEntryClassicTeams])
+         ? setHistoryClassicSingle([
+            ...(history as HistoryEntryClassicSingle[]),
+          newHistoryEntry as HistoryEntryClassicSingle,
+         ])
+         : setHistoryClassicTeams([
+            ...(history as HistoryEntryClassicTeams[]),
+          newHistoryEntry as HistoryEntryClassicTeams,
+         ])
    )
 
    if (throwSum === 0) {
@@ -103,7 +105,13 @@ export const handleSubmitThrowSubmitScoreButton = (
    dispatch(setCurrentThrow(0))
 
    //Switching to the next player
-   handleSwitchPlayerOrTeam(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
+   handleSwitchPlayerOrTeamClassic(
+      gameType,
+      index,
+      currentPlayerIndexInTeam,
+      playersOrTeams,
+      dispatch
+   )
 
    //Updating player's state
    dispatch(

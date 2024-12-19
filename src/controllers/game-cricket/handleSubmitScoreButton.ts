@@ -1,14 +1,14 @@
 //Redux
 import { AppDispatch } from '@/redux/store'
-import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/game-cricket/gameCricketSlice'
+import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/gameSlice'
 import { setHistoryCricketSingle } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
 import { setHistoryCricketTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 //Controllers:
 import { handleSwitchPlayerOrTeamCricket } from './handleSwitchPlayerOrTeamCricket'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GameStates } from '@/types/redux/gameTypes'
 import { 
-   GameCricketStates, 
    GameCricketSingleStates, 
    GameCricketTeamsStates, 
    PlayerCricket, 
@@ -17,14 +17,16 @@ import {
    HistoryEntryCricketTeams 
 } from '@/types/redux/gameCricketTypes'
 
+/* USED IN: ThroValueSectionCricket component */
+
 export const handleSubmitScoreButton = (
    gameType: GameSettingsStates['gameType'],
    playersOrTeams: PlayerCricket[] | TeamCricket[],
    index: GameCricketSingleStates['currentPlayerIndex'] | GameCricketTeamsStates['currentTeamIndex'],
    currentPlayerIndexInTeam: GameCricketTeamsStates['currentPlayerIndexInTeam'],
    history: HistoryEntryCricketSingle[] | HistoryEntryCricketTeams[],
-   currentPlayerThrowsCount: GameCricketStates['currentPlayerThrowsCount'],
-   currentPlayerThrows: GameCricketStates['currentPlayerThrows'],
+   currentPlayerThrowsCount: GameStates['currentPlayerThrowsCount'],
+   currentPlayerThrows: GameStates['currentPlayerThrows'],
    dispatch: AppDispatch
 ) => {
    const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
@@ -67,7 +69,7 @@ export const handleSubmitScoreButton = (
    else if (currentPlayerThrowsCount < 3) {
       let sector: '20' | '19' | '18' | '17' | '16' | '15' | 'Bull' | ''
 
-      const lastThrow = currentPlayerThrows[currentPlayerThrows.length - 1]
+      const lastThrow = (currentPlayerThrows as string[])[currentPlayerThrows.length - 1]
       if (lastThrow === '25' || lastThrow === '50') {
          sector = 'Bull'
       } else {
