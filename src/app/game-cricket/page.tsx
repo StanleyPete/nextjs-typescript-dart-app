@@ -24,6 +24,8 @@ const GameCricket = () => {
 
    const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.game)
 
+   const { completedSectors } = useSelector((state: RootState) => state.gameCricket)
+
    //Memoized (@redux/selectors/game-cricket/selectDataInGameCricketPage)
    const { playersOrTeams, history } = useSelector(selectDataInGameCricketPage)
 
@@ -34,11 +36,12 @@ const GameCricket = () => {
          dispatch(setInitialSoundPlayed(true))
       }
 
+      console.log(completedSectors)
       //Only for the purpose of reviewing players/teams and history states in console
       console.log('Players: ', playersOrTeams)
       console.log('History: ', history)
 
-   }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled])
+   }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled, completedSectors])
 
 
    return (    

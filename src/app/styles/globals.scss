@@ -499,27 +499,12 @@ body{
 //CRICKET SCORE BUTTONS:
 
 //two-players-view:
-.cricket-score-buttons {
+.cricket-score-buttons-section {
   width: 100%;
   display: flex;
   flex-direction: column;
   margin-top: 10px;
 }
-
-.score-row {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-  padding: 6px 6px;
-}
-
-.score-row:nth-child(odd) {
-  background-color: $cricket-even-buttons-background-color;
-}
-
-
-
 
 
 .miss-button{
@@ -558,7 +543,7 @@ body{
   align-items: center; 
 }
 
-.players-row {
+.players-row-when-more-than-two-players {
   width: 60%;
   display: flex;
   justify-content: space-between; 
@@ -573,7 +558,7 @@ body{
 }
 
 // >2 players view:
-.cricket-score-buttons-v2 {
+.cricket-score-buttons-section-when-more-than-two-players {
   width: 100%; 
   display: flex;
   flex-direction: column;
@@ -583,26 +568,26 @@ body{
         }
 }
 
-.score-row-v2 {
+.score-row {
   display: flex;
   width: 100%; 
   justify-content: space-between;
   background-color: transparent;
   height: 40px;
 }
-.score-row-v2:nth-child(odd) {
+.score-row:nth-child(odd) {
   background-color: $cricket-even-buttons-background-color;
 }
 
 
-.player-scores-v2 {
+.player-scores-section-when-more-than-two-players {
   width: 60%; 
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.player-score-v2 {
+.player-score-when-more-than-two-players {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -613,7 +598,7 @@ body{
  
 }
 
-.cricket-buttons-v2 {
+.cricket-buttons-when-more-than-two-players {
   width: 40%;
   display: flex;
   justify-content: space-around;

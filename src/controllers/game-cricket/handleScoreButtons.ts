@@ -135,8 +135,10 @@ export const handleScoreButtons = (
          return
       }
       if (currentPlayerOrTeam.scores[sectorPassed] === 3) {
-         const isAnyPlayerOrTeamWhichHaveNotCompletedSector = playersOrTeams.some(playerOrTeam => playerOrTeam.scores[sectorPassed] !== 3)
- 
+         const isAnyPlayerOrTeamWhichHaveNotCompletedSector = playersOrTeams.some((playerOrTeam, i) => 
+            i !== index && playerOrTeam.scores[sectorPassed] !== 3
+         )
+
          if(currentPlayerOrTeam.scores[sectorPassed] === 3 && prevScores !== 3 && !isAnyPlayerOrTeamWhichHaveNotCompletedSector){
             playSound(`${sectorPassed}completedclosed`, isSoundEnabled)
             dispatch(setCompletedSectors({ sector: sectorPassed, completed: true }))

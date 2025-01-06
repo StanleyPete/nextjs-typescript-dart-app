@@ -25,12 +25,13 @@ const ScoreButtonsCricket = () => {
    const { playersOrTeams, playerOrTeamIndex, currentPlayerIndexInTeam, history } = useSelector(selectDataInScoreButtons)
  
    return ( 
+      //VIEW WHEN 2 PLAYERS:
       <>
          {playersOrTeams.length === 2 ? (
             <>
-               <div className='cricket-score-buttons'>
+               <div className='cricket-score-buttons-section'>
                   {Scores.map((buttons, index) => (
-                     <div  className={`score-row-v2 ${completedSectors[buttons[0] === '25' ? 'Bull' : (buttons[0] as keyof typeof completedSectors)] ? 'completed-sector' : ''}`} key={index}>
+                     <div  className={`score-row ${completedSectors[buttons[0] === '25' ? 'Bull' : (buttons[0] as keyof typeof completedSectors)] ? 'completed-sector' : ''}`} key={index}>
                         <div className='player-score'>
                            <span>
                               {(() => {
@@ -134,9 +135,10 @@ const ScoreButtonsCricket = () => {
             </>
 
          ) : (
+            //VIEW WHEN MORE THAN TWO PLAYERS (works only in single game type):
             <>
                {/*Player row section:*/}
-               <div className="players-row">
+               <div className="players-row-when-more-than-two-players">
                   {playersOrTeams.map((playerOrTeam: PlayerCricket | TeamCricket, index: number) => (
                      <span key={index} className="player-name">
                         {playerOrTeam.name}
@@ -145,13 +147,13 @@ const ScoreButtonsCricket = () => {
                </div>
               
                {/* Score buttons for > 2 players */}
-               <div className="cricket-score-buttons-v2">
+               <div className="cricket-score-buttons-section-when-more-than-two-players">
                   {Scores.map((buttons, index) => (
-                     <div className={`score-row-v2 ${completedSectors[buttons[0] === '25' ? 'Bull' : (buttons[0] as keyof typeof completedSectors)] ? 'completed-sector' : ''}`} key={index}>
+                     <div className={`score-row ${completedSectors[buttons[0] === '25' ? 'Bull' : (buttons[0] as keyof typeof completedSectors)] ? 'completed-sector' : ''}`} key={index}>
                         {/* Sekcja z player-score dla każdego gracza */}
-                        <div className="player-scores-v2">
+                        <div className="player-scores-section-when-more-than-two-players">
                            {playersOrTeams.map((_: PlayerCricket | TeamCricket, playerOrTeamIndex: number) => (
-                              <div key={playerOrTeamIndex} className="player-score-v2">
+                              <div key={playerOrTeamIndex} className="player-score-when-more-than-two-players">
                                  {(() => {
                                     const scoreValue = playersOrTeams[playerOrTeamIndex].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
                                     if (scoreValue === 0) {
@@ -167,7 +169,7 @@ const ScoreButtonsCricket = () => {
                               </div>
                            ))}
                         </div>
-                        <div className="cricket-buttons-v2">
+                        <div className="cricket-buttons-when-more-than-two-players">
                            {buttons.map((label, i) => {
                               const isTriple = label.startsWith('T')
                               const isDouble = label.startsWith('D')

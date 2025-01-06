@@ -29,7 +29,10 @@ import { initializeCricketTeams } from '@/redux/slices/game-cricket/gameCricketT
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesInput'
 import GameTeamsPlayerNamesInput from '@/components/home/GameTeamsPlayerNamesInput'
+import GameOnlinePlayerNameInput from '@/components/home/GameOnlinePlayerNameInput'
+import CreateAnOnlineGameButton from '@/components/home/CreateAnOnlineGameButton'
 import './styles/home.scss'
+
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
@@ -52,6 +55,8 @@ const Home = () => {
          dispatch(setPlayerNames(['', '', '', '']))
       } else if (type === 'single') {
          dispatch(setPlayerNames(['', '']))
+      } else if (type === 'online') {
+         dispatch(setPlayerNames(['']))
       }
    }
 
@@ -126,10 +131,18 @@ const Home = () => {
       cricket: 'game-cricket',
       online: 'game-online'
    }
-   const gameFolder = gameMode === 'Cricket' ? gameFolders.cricket : gameFolders.classic
+   let gameFolder
+
+   if (gameMode === 'Cricket'){
+      gameFolder = gameFolders.cricket
+   } else if (gameType === 'single' || gameType === 'teams') {
+      gameFolder = gameFolders.classic
+   } else {
+      gameFolder = gameFolders.online
+   }
+
    const gameUrl = `/${gameFolder}`
 
- 
    useEffect(() => {
       /*
          When Home Page is rendered for the first time, isFirstLoad flag is set to false.
@@ -176,9 +189,8 @@ const Home = () => {
                   </div>
                ) 
                : gameType === 'online' ? 
-                  (
-                     <div>Test</div>
-                  ) : null 
+                  ( <GameOnlinePlayerNameInput /> )
+                  : null 
          }
          
          {/* GAME MODE SECTION */}
@@ -231,14 +243,18 @@ const Home = () => {
        
          {/* TO THE GAME BUTTON */}
          <div className='game-start'>
-            <Link href={gameUrl}>
-               <button 
-                  className='game-start-button' 
-                  onClick={handleGameStart}
-               >
-                  To the game!
-               </button>
-            </Link>
+            {gameType === 'single' || gameType === 'teams' ? (
+               <Link href={gameUrl}>
+                  <button 
+                     className='game-start-button' 
+                     onClick={handleGameStart}
+                  >
+        To the game!
+                  </button>
+               </Link>
+            ) : gameType === 'online' ? (
+               <CreateAnOnlineGameButton />
+            ) : null}
          </div>
          
          {/* ERROR POP UP - rendered only if error*/}

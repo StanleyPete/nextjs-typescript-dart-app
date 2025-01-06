@@ -60,12 +60,7 @@ export const handleSubmitThrowKeyboardButtons = (
    //ERROR (invalid scores)
    const invalidScores = [163, 166, 169, 172, 173, 175, 176, 178, 179]
    if (invalidScores.includes(currentThrow)) {
-      dispatch(
-         setError({
-            isError: true,
-            errorMessage: `${currentThrow} is not possible`,
-         })
-      )
+      dispatch(setError({ isError: true, errorMessage: `${currentThrow} is not possible`}))
       dispatch(setCurrentThrow(0))
       return
    }
@@ -80,8 +75,7 @@ export const handleSubmitThrowKeyboardButtons = (
       newHistoryEntry = {
          historyPlayerIndex: index,
          historyPointsLeft: currentPlayerOrTeam.pointsLeft,
-         historyTotalThrows:
-          currentPlayerOrTeam.totalThrows + currentThrow * inputMultiplier,
+         historyTotalThrows: currentPlayerOrTeam.totalThrows + currentThrow * inputMultiplier,
          historyLastScore: currentPlayerOrTeam.lastScore,
          historyLastAverage: currentPlayerOrTeam.average,
          historyTotalAttempts: currentPlayerOrTeam.totalAttempts,

@@ -1,7 +1,7 @@
 export interface GameSettingsStates {
     gameType: 'single' | 'teams' | 'online'
     playerNames: string[]
-    gameMode: number | string;
+    gameMode: number | string
     gameWin: 'best-of' | 'first-to'
     numberOfLegs: number
     isFirstLoad: boolean,
