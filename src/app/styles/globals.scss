@@ -11,6 +11,8 @@ $yellow-color: #b87115;
 $active-player-color: #0c420c;
 $score-buttons-background-color:  #464343;
 $cricket-even-buttons-background-color: #333232;
+$game-options-border-radius: 8px;
+$border-style: 1px solid gray; 
 
 
 @mixin background-gradient($color, $amount) {
@@ -731,4 +733,32 @@ body{
                
         } 
 }
+
+//GAME ONLINE LOBBY:
+.game-online-header{
+  font-size: 22px;
+  text-align: center;
+  color: #858585;
+  margin-bottom: 16px;
+}
+
+.game-online-players {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 4px 10px;
+  height: 36px;
+  border: $border-style;
+  border-radius: $game-options-border-radius;
+}
+
+.player-host{
+  padding: 4px 10px;
+}
+
+.player-joiner{
+  padding: 4px 10px;
+}
+
+
 

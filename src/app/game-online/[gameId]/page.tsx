@@ -1,98 +1,49 @@
 'use client'
-import React  from 'react'
-import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { RootState } from '@/redux/store'
-import { useSelector, useDispatch } from 'react-redux'
-import { 
-   setGameMode, 
-   setGameWin, 
-   setNumberOfLegs,
-} from '../../../redux/slices/gameSettingsSlice'
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import io, { Socket } from 'socket.io-client'
 
-const Lobby = () => {
-   const dispatch = useDispatch()
+let socket: Socket
 
-   const {  gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
+const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
+   const { gameId } = params
+   const router = useRouter()
+   const [gameExists, setGameExists] = useState<boolean>(false)
+    
 
-   //Game mode handler
-   const handleGameMode = (mode: GameSettingsStates['gameMode']) => {
-      dispatch(setGameMode(mode))
-   }
-
-   //Win type handler
-   const handleWinTypeChange = (winType: GameSettingsStates['gameWin']) => {
-      dispatch(setGameWin(winType))
-   }
-
-   //Legs options based on gameWin type
-   const getLegsOptions = (gameWin: GameSettingsStates['gameWin']) => {
-      if (gameWin === 'best-of') {
-         return [1, 3, 5, 7, 9]
-      } else {
-         return [1, 2, 3, 4, 5, 6, 7]
+   useEffect(() => {
+      if (!socket) {
+         socket = io('http://localhost:3001')
       }
-   }
-         
-   //Legs change handler
-   const handleLegsChange = (legs: number) => {
-      dispatch(setNumberOfLegs(legs))
-   }
-   
-   return (
-      <div className='main-container form'>
-         <h3>GAME LOBBY</h3>
+      console.log(`To jest params z [gameId]/page.tsx: ${params}`)
 
-         
-         {/* GAME MODE SECTION */}
-         <div className='game-mode main-form'>
-            <p className='mode header'>Game mode:</p>
-            <div className="game-options">
-               {[301, 501, 701, 1001, 'Cricket'].map((mode) => (
-                  <button
-                     key={mode}
-                     className={`score-button ${gameMode === mode ? 'active' : ''}`}
-                     onClick={() => handleGameMode(mode)}
-                  >
-                     {mode}
-                  </button>
-               ))}
-            </div>
-         </div>
-                 
-         {/* WIN TYPE SECTION */}
-         <div className='win-type main-form'>
-            <p className='type header'>Win type:</p>
-            <div className="game-options">
-               {['best-of', 'first-to'].map((winType) => (
-                  <button 
-                     key={winType}
-                     className={`win-type-button ${gameWin === winType ? 'active' : ''}`} 
-                     onClick={() => handleWinTypeChange(winType as GameSettingsStates['gameWin'])}
-                  >
-                     {winType === 'best-of' ? 'Best Of' : 'First To'}
-                  </button>
-               ))}
-            </div>
-         </div>
-                 
-         {/* NUMBER OF LEGS SECTION*/}
-         <div className='legs-buttons main-form'>
-            <p className='legs header'>Number of legs:</p>
-            <div className="game-options">
-               {getLegsOptions(gameWin).map((legs) => (
-                  <button
-                     key={legs}
-                     className={`legs-button ${numberOfLegs === legs ? 'active' : ''}`}
-                     onClick={() => handleLegsChange(legs)}
-                  >
-                     {legs}
-                  </button>
-               ))}
-            </div>
-         </div>
-      </div>
-   )
+      socket.emit('check-if-game-exists', { gameId })
+
+      socket.on('game-exists', (data) => {
+         if (data.exists) {
+            setGameExists(true)
+            console.log('Game Exists')
+         } else {
+            setGameExists(false)
+            console.log('Game Do not exists')
+         }
+      })
+
+      return () => {
+         socket.disconnect()
+         socket = null
+      }
+   }, [gameId])
+
+   if (gameExists) {
+      return <p>Loading...</p>
+   }
+
+   if (!gameExists) {
+      return <p>Game not found. Please check the URL or create a new game.</p>
+   }
+
 }
 
-export default Lobby
+export default GameOnlineRequest
 

@@ -30,7 +30,7 @@ const CreateAnOnlineGameButton = () => {
             socket.on('game-created', (data) => {
                const { gameId } = data
                console.log(`Game created with ID: ${gameId}`)
-               router.push(`/game-online/${gameId}`)
+               router.push(`/game-online/lobby/${gameId}`)
             })
             
          })

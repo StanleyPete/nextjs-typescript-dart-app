@@ -15,7 +15,7 @@ import { setError } from '../../redux/slices/gameSettingsSlice'
 
 
 const ToTheGameButton = () => {
-
+    
    const dispatch = useDispatch()
    
    const { gameType, playerNames, gameMode } = useSelector((state: RootState) => state.gameSettings)
