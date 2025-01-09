@@ -66,6 +66,9 @@ const Home = () => {
    
    return (
       <div className='main-container form'>
+
+         <h1 className='game-header'>FREE DARTS SCOREBOARD</h1>
+
          {/* GAME TYPE SECTION */}
          <GameTypeSection />
          

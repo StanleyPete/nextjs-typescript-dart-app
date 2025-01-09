@@ -13,6 +13,7 @@ $score-buttons-background-color:  #464343;
 $cricket-even-buttons-background-color: #333232;
 $game-options-border-radius: 8px;
 $border-style: 1px solid gray; 
+$active-button-color: #df4040;
 
 
 @mixin background-gradient($color, $amount) {
@@ -735,7 +736,7 @@ body{
 }
 
 //GAME ONLINE LOBBY:
-.game-online-header{
+.game-header{
   font-size: 22px;
   text-align: center;
   color: #858585;
@@ -758,6 +759,26 @@ body{
 
 .player-joiner{
   padding: 4px 10px;
+}
+
+.url{
+  font-size: 10px;
+  color: #3f3e3e;
+}
+
+.url-section{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copy-icon {
+  cursor: pointer; 
+  transition: transform 0.2s;
+}
+
+.copy-icon:hover {
+  transform: scale(1.1);
 }
 
 

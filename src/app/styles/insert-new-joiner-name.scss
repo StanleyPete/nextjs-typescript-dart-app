@@ -1,0 +1,76 @@
+$border-style: 1px solid gray; 
+$game-options-border-radius: 8px;
+$active-button-color: #df4040;
+
+.main-form{
+    margin-top: 12px;
+  }
+  .game-online-header{
+    margin-bottom: 0px;
+    font-size: 22px;
+    text-align: center;
+    color: #858585;
+  }
+
+  .current-player-in-lobby{
+    margin-top: 0;
+    margin-bottom: 32px;
+    text-align: center;
+    color: #858585;
+    font-size: 13px;
+  }
+  
+  .header{
+    margin-bottom: 6px;
+    color: #858585;
+    font-size: 14px;
+  }
+  
+  .players-section{
+    .player-input{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+          input{
+            width: 90%;
+            height: 36px;
+            padding: 12px;
+            padding-left: 30px;
+            border: $border-style;
+            border-radius: $game-options-border-radius;
+            background: url('../../../public/user.svg');
+            background-size: 16px 16px;
+            background-repeat: no-repeat;
+            background-position: 10px center;
+            outline: none;
+          }
+          input:focus{
+            border: 2px solid $active-button-color;
+          }
+          input.full-width {
+            width: 100%; 
+          }
+        
+          
+    } 
+   
+  }
+
+  .game-start{
+    margin-top: 38px;
+        .game-start-button{
+          width: 100%;
+          height: 38px;
+          font-size: 18px;
+          color: white;
+          border: none;
+          border-radius: $game-options-border-radius;
+          background-color: green;
+          cursor: pointer;
+        }
+        .game-start-button:hover{
+          transform: scale(1.05);
+        }
+  }
+

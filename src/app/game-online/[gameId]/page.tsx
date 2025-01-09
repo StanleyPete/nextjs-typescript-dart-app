@@ -1,13 +1,13 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import io, { Socket } from 'socket.io-client'
+import PageNotFound from '@/components/game-online/PageNotFound'
+import InsertNewJoinerName from '@/components/game-online/InsertNewJoinerName'
 
 let socket: Socket
 
 const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const { gameId } = params
-   const router = useRouter()
    const [gameExists, setGameExists] = useState<boolean>(false)
     
 
@@ -28,20 +28,20 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
             console.log('Game Do not exists')
          }
       })
-
-      return () => {
-         socket.disconnect()
-         socket = null
-      }
+   
    }, [gameId])
 
-   if (gameExists) {
-      return <p>Loading...</p>
-   }
 
-   if (!gameExists) {
-      return <p>Game not found. Please check the URL or create a new game.</p>
-   }
+
+   return (
+      <>
+         {gameExists ? (
+            <InsertNewJoinerName /> 
+         ) : (
+            <PageNotFound /> 
+         )}
+      </>
+   )
 
 }
 
