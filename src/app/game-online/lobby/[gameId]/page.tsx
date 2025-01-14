@@ -6,8 +6,14 @@ import GameModeSection from '@/components/home/GameModeSection'
 import WinTypeSection from '@/components/home/WinTypeSection'
 import NumberOfLegsSection from '@/components/home/NumberOfLegsSection'
 import StartOnlineGameButton from '@/components/game-online/StartOnlineGameButton'
+// import { RootState } from '@/redux/store'
+// import { useSelector} from 'react-redux'
+
+
 
 const Lobby = () => {
+
+   // const socket = useSelector((state: RootState) => state.socket?.socket ?? null)
 
    return (
       <div className='main-container form'>

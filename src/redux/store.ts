@@ -7,6 +7,8 @@ import gameClassicTeamsReducer from './slices/game-classic/gameClassicTeamsSlice
 import gameCricketReducer from './slices/game-cricket/gameCricketSlice'
 import gameCricketSingleReducer from './slices/game-cricket/gameCricketSingleSlice'
 import gameCricketTeamsReducer from './slices/game-cricket/gameCricketTeamsSlice'
+import socketReducer from './slices/game-online/socketSlice'
+
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GameStates } from '@/types/redux/gameTypes'
@@ -20,6 +22,7 @@ import {
    GameCricketSingleStates, 
    GameCricketTeamsStates 
 } from '@/types/redux/gameCricketTypes'
+import { SocketState } from '@/types/redux/socketTypes'
 
 
 //Initial store setup
@@ -81,6 +84,16 @@ export const addGameCricketTeamsStates = () => {
    store.replaceReducer(rootReducer)
 }
 
+//Add Socket States (only game-online)
+export const addSocketState = () => {
+   rootReducer = combineReducers({
+      gameSettings: gameSettingsReducer,
+      socket: socketReducer,
+   })
+
+   store.replaceReducer(rootReducer)
+}
+
 export const resetStates = () => {
    rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
@@ -98,5 +111,6 @@ export type RootState = {
   gameCricket: GameCricketStates
   gameCricketSingle: GameCricketSingleStates
   gameCricketTeams: GameCricketTeamsStates
+  socket: SocketState
 };
 export type AppDispatch = typeof store.dispatch

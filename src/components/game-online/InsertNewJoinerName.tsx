@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import '../../app/styles/insert-new-joiner-name.scss'
 
-const InsertNewJoinerName = () => {
+interface InsertNewJoinerNameProps {
+   currentPlayerInLobby: string;
+}
+
+const InsertNewJoinerName: React.FC<InsertNewJoinerNameProps> = ({ currentPlayerInLobby }) => {
+
    const [playerName, setPlayerName] = useState('')
 
    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -12,7 +17,7 @@ const InsertNewJoinerName = () => {
 
       <div className='main-container'>
          <h1 className='game-online-header'>GAME ONLINE</h1>
-         <p className='current-player-in-lobby'>(Current player in lobby:)</p>
+         <p className='current-player-in-lobby'>(Current player in lobby: {currentPlayerInLobby})</p>
 
          <div className="players-section main-form">
             <p className="players header">Enter your name:</p>

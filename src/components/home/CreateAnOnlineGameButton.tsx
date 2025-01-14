@@ -1,35 +1,48 @@
 'use client'
-
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import io, { Socket } from 'socket.io-client'
-import { useSelector } from 'react-redux'
-import { RootState } from '@/redux/store'
+//Redux
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState, addSocketState  } from '@/redux/store'
+import { setSocket } from '@/redux/slices/game-online/socketSlice'
 
 let socket: Socket
 
 const CreateAnOnlineGameButton = () => {
    const router = useRouter()
+   const dispatch = useDispatch()
    
-   const { playerNames } = useSelector((state: RootState) => state.gameSettings)
+   const { playerNames, gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
 
    const handleCreateOnlineGame = () => {
       if (!socket) {
          socket = io('http://localhost:3001')
 
+         //Add socket state to redux
+         addSocketState()
+
+         //Connection listener
          socket.on('connect', () => {
-            console.log('Connected to WebSocket server with ID:', socket.id)
-            socket.emit(
-               'create-game', 
+            //Updating socket state in redux
+            dispatch(setSocket(socket))
+            
+            //Create game emitter
+            socket.emit('create-game', 
                { 
-                  playerName: playerNames[0], 
-                  clientId: socket.id 
+                  clientId: socket.id, 
+                  playerName: playerNames[0],
+                  settings: {
+                     gameMode,
+                     gameWin,
+                     numberOfLegs
+                  } 
                }
             )
 
             socket.on('game-created', (data) => {
                const { gameId } = data
-               console.log(`Game created with ID: ${gameId}`)
+               // console.log(`Game created with ID: ${gameId}`)
                router.push(`/game-online/lobby/${gameId}`)
             })
             
