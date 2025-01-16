@@ -1,6 +1,7 @@
 import React from 'react'
 import { RootState } from '@/redux/store'
 import { useSelector } from 'react-redux'
+import Image from 'next/image'
 
 const LobbyPlayersSection = () => {
    
@@ -10,8 +11,24 @@ const LobbyPlayersSection = () => {
       <div className="lobby-players-section main-form">
          <p className='header'>Players:</p>
          <div className='game-online-players'>
-            <div className='player-host'>{playerNames[0]}</div>
-            <div className='player-joiner'>Another Player</div>
+            <div className='player-host'>
+               <Image
+                  src='/team-1-user.svg' 
+                  alt="User icon"
+                  width={16}
+                  height={16}
+               />
+               {playerNames[0]} (host)
+            </div>
+            <div className='player-joiner'>
+               <Image
+                  src='/team-2-user.svg' 
+                  alt="User icon"
+                  width={16}
+                  height={16}
+               />
+               <span>Player to join...</span>
+            </div>
          </div>
         
 

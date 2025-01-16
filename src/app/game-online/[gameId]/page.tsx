@@ -3,15 +3,14 @@ import React, { useState, useEffect} from 'react'
 import io, { Socket } from 'socket.io-client'
 import PageNotFound from '@/components/game-online/PageNotFound'
 import '../../styles/insert-new-joiner-name.scss'
-import { RootState } from '@/redux/store'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { addSocketState } from '@/redux/store'
 import { 
    setGameMode, 
    setGameWin, 
    setNumberOfLegs 
 } from '@/redux/slices/gameSettingsSlice'
-import { setSocket } from '@/redux/slices/game-online/socketSlice'
+import { setSocket, setRole } from '@/redux/slices/game-online/socketSlice'
 
 let socket: Socket
 
@@ -22,8 +21,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const [playerName, setPlayerName] = useState('')
    const [currentPlayerInLobby, setCurrentPlayerInLobby] = useState<string>('')
 
-   const { gameMode, gameWin, numberOfLegs, } = useSelector((state: RootState) => state.gameSettings)
-   
+
    const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setPlayerName(event.target.value)
    }
@@ -40,6 +38,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
       socket.on('connect', () => {
          //Updating socket state in redux
          dispatch(setSocket(socket))
+         dispatch(setRole('guest'))
 
          //Check if game exsists emitter
          socket.emit('check-if-game-exists', { gameId })
@@ -59,6 +58,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
 
          socket.on('host-left', () => {
             setCurrentPlayerInLobby('Host left! You are host now!')
+            dispatch(setRole('host'))
          })
 
       })
@@ -82,7 +82,6 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
             <div className='main-container'>
                <h1 className='game-online-header'>GAME ONLINE</h1>
                <p className='current-player-in-lobby'>(Current player in lobby: {currentPlayerInLobby})</p>
-   
                <div className="players-section main-form">
                   <p className="players header">Enter your name:</p>
                   <div className="player-input">

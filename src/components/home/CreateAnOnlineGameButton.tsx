@@ -5,7 +5,7 @@ import io, { Socket } from 'socket.io-client'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, addSocketState  } from '@/redux/store'
-import { setSocket } from '@/redux/slices/game-online/socketSlice'
+import { setSocket, setRole } from '@/redux/slices/game-online/socketSlice'
 
 let socket: Socket
 
@@ -26,6 +26,7 @@ const CreateAnOnlineGameButton = () => {
          socket.on('connect', () => {
             //Updating socket state in redux
             dispatch(setSocket(socket))
+            dispatch(setRole('host'))
             
             //Create game emitter
             socket.emit('create-game', 
@@ -42,7 +43,6 @@ const CreateAnOnlineGameButton = () => {
 
             socket.on('game-created', (data) => {
                const { gameId } = data
-               // console.log(`Game created with ID: ${gameId}`)
                router.push(`/game-online/lobby/${gameId}`)
             })
             

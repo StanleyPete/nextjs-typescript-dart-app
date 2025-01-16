@@ -19,12 +19,13 @@ import { playSound } from '@/controllers/playSound'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 /* 
-   GAME CLASSIC: 
-      - only for 301, 501, 701, 1001 modes
-      - used for both single and teams game types 
+GAME CLASSIC: 
+- only for 301, 501, 701, 1001 modes
+- used for both single and teams game types 
 */
 
 const GameClassic = () => {
+  
    const dispatch = useDispatch()
 
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
@@ -33,7 +34,8 @@ const GameClassic = () => {
    
    //Memoized (@/redux/selectors/game-classic/selectDataInGameClassicPage.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)
-   
+
+
    useEffect(() => { 
       //Initial sound played only once (when game start)
       if(!initialSoundPlayed){
@@ -47,7 +49,7 @@ const GameClassic = () => {
 
    }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled])
 
-   
+
    return (
       <div className='game-container'>
          {gameType === 'single' 

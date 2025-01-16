@@ -63,6 +63,9 @@ const Home = () => {
       }
    }, [pathname])
    
+   useEffect(() => {
+      document.cookie = 'dart-app=dart-app; path=/; SameSite=Strict;'
+   }, [])
    
    return (
       <div className='main-container form'>

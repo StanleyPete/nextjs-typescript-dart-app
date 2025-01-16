@@ -753,13 +753,17 @@ body{
   border-radius: $game-options-border-radius;
 }
 
-.player-host{
+.player-host, .player-joiner{
+  width: 42%;
+  display: flex;
+  align-items: center;
   padding: 4px 10px;
+  font-size: 13px;
+      img {
+        margin-right: 4px;
+      }
 }
 
-.player-joiner{
-  padding: 4px 10px;
-}
 
 .url{
   font-size: 10px;

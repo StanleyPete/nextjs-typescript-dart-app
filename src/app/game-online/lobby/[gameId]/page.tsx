@@ -1,19 +1,24 @@
 'use client'
-import React  from 'react'
+import React from 'react'
 import UrlSection from '@/components/game-online/UrlSection'
 import LobbyPlayersSection from '@/components/game-online/LobbyPlayersSection'
 import GameModeSection from '@/components/home/GameModeSection'
 import WinTypeSection from '@/components/home/WinTypeSection'
 import NumberOfLegsSection from '@/components/home/NumberOfLegsSection'
 import StartOnlineGameButton from '@/components/game-online/StartOnlineGameButton'
-// import { RootState } from '@/redux/store'
-// import { useSelector} from 'react-redux'
-
-
+import { RootState } from '@/redux/store'
+import { useSelector } from 'react-redux'
+import PageNotFound from '@/components/game-online/PageNotFound'
 
 const Lobby = () => {
 
-   // const socket = useSelector((state: RootState) => state.socket?.socket ?? null)
+
+   const isSocketStateAvailable = useSelector((state: RootState) => 'socket' in state)
+
+   // Jeśli klucz "socket" nie istnieje w Redux Store, wyświetl PageNotFound
+   if (!isSocketStateAvailable) {
+      return <PageNotFound />
+   }
 
    return (
       <div className='main-container form'>
