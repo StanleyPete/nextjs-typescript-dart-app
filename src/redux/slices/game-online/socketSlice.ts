@@ -5,6 +5,7 @@ import { SocketState } from '@/types/redux/socketTypes'
 const initialState: SocketState = {
    socket: null, 
    role: null,
+   gameId: null,
 }
 
 
@@ -17,10 +18,13 @@ const socketSlice = createSlice({
       },
       setRole(state, action: PayloadAction<'host' | 'guest' | null>){
          state.role = action.payload
+      },
+      setGameId(state, action: PayloadAction<string>){
+         state.gameId = action.payload
       }
    },
 })
 
-export const { setSocket, setRole } = socketSlice.actions
+export const { setSocket, setRole, setGameId } = socketSlice.actions
 
 export default socketSlice.reducer

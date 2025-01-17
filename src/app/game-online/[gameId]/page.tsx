@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useEffect} from 'react'
+import { useRouter } from 'next/navigation'
 import io, { Socket } from 'socket.io-client'
 import PageNotFound from '@/components/game-online/PageNotFound'
 import '../../styles/insert-new-joiner-name.scss'
@@ -10,17 +11,20 @@ import {
    setGameWin, 
    setNumberOfLegs 
 } from '@/redux/slices/gameSettingsSlice'
-import { setSocket, setRole } from '@/redux/slices/game-online/socketSlice'
+import { setSocket, setRole, setGameId } from '@/redux/slices/game-online/socketSlice'
+
 
 let socket: Socket
 
 const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const dispatch = useDispatch()
+   const router = useRouter()
    const { gameId } = params
    const [gameFound, setGameFound] = useState<boolean>(false)
    const [playerName, setPlayerName] = useState('')
    const [currentPlayerInLobby, setCurrentPlayerInLobby] = useState<string>('')
 
+ 
 
    const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setPlayerName(event.target.value)
@@ -31,11 +35,11 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          socket = io('http://localhost:3001')
       }
  
-      //Add socket state to redux
-      addSocketState()
-
+      
       //Connection listener
       socket.on('connect', () => {
+         //Add socket state to redux
+         addSocketState()
          //Updating socket state in redux
          dispatch(setSocket(socket))
          dispatch(setRole('guest'))
@@ -51,6 +55,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                dispatch(setGameMode(data.settings.gameMode))
                dispatch(setGameWin(data.settings.gameWin))
                dispatch(setNumberOfLegs(data.settings.numberOfLegs))
+               dispatch(setGameId(gameId))
             } else {
                setGameFound(false)
             }
@@ -61,8 +66,9 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
             dispatch(setRole('host'))
          })
 
+         
       })
-
+      
       console.log('UseEffect completed')
 
       return () => {
@@ -74,6 +80,15 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
 
    const joinGame = () => {
       socket.emit('join-game-guest', { gameId, playerName: playerName })
+      
+      socket.once('guest-joined', (data) => {
+         if (data.host) {
+            dispatch(setRole('host'))
+         }
+
+         console.log('Przekierowanie do lobby...', `/game-online/lobby/${gameId}`)
+         router.push(`/game-online/lobby/${gameId}`)
+      })
    }
    
    return (

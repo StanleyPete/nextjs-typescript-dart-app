@@ -1,17 +1,19 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import UrlSection from '@/components/game-online/UrlSection'
 import LobbyPlayersSection from '@/components/game-online/LobbyPlayersSection'
-import GameModeSection from '@/components/home/GameModeSection'
-import WinTypeSection from '@/components/home/WinTypeSection'
-import NumberOfLegsSection from '@/components/home/NumberOfLegsSection'
+import GameModeOnlineSection from '@/components/game-online/GameModeOnlineSection'
+import WinTypeOnlineSection from '@/components/game-online/WinTypeOnlineSection'
+import NumberOfLegsOnlineSection from '@/components/game-online/NumberOfLegsOnlineSection'
 import StartOnlineGameButton from '@/components/game-online/StartOnlineGameButton'
 import { RootState } from '@/redux/store'
 import { useSelector } from 'react-redux'
 import PageNotFound from '@/components/game-online/PageNotFound'
+import '../../../styles/home.scss'
+import ErrorPopUp from '@/components/ErrorPopUp'
+
 
 const Lobby = () => {
-
 
    const isSocketStateAvailable = useSelector((state: RootState) => 'socket' in state)
 
@@ -19,6 +21,8 @@ const Lobby = () => {
    if (!isSocketStateAvailable) {
       return <PageNotFound />
    }
+
+   const { socket, role } = useSelector((state: RootState) => state.socket)
 
    return (
       <div className='main-container form'>
@@ -34,16 +38,19 @@ const Lobby = () => {
          <LobbyPlayersSection />
 
          {/* GAME MODE SECTION */}
-         <GameModeSection />
+         <GameModeOnlineSection />
                  
          {/* WIN TYPE SECTION */}
-         <WinTypeSection />
+         <WinTypeOnlineSection />
                  
          {/* NUMBER OF LEGS SECTION*/}
-         <NumberOfLegsSection />
+         <NumberOfLegsOnlineSection />
 
          {/* NUMBER OF LEGS SECTION*/}
          <StartOnlineGameButton />
+
+         {/*ERROR POP UP*/}
+         <ErrorPopUp />
       </div>
    )
 }
