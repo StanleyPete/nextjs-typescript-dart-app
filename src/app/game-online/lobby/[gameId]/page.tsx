@@ -1,6 +1,6 @@
 'use client'
-import React, { useEffect } from 'react'
-import UrlSection from '@/components/game-online/UrlSection'
+import React from 'react'
+import UrlToCopySection from '@/components/game-online/UrlToCopySection'
 import LobbyPlayersSection from '@/components/game-online/LobbyPlayersSection'
 import GameModeOnlineSection from '@/components/game-online/GameModeOnlineSection'
 import WinTypeOnlineSection from '@/components/game-online/WinTypeOnlineSection'
@@ -11,28 +11,28 @@ import { useSelector } from 'react-redux'
 import PageNotFound from '@/components/game-online/PageNotFound'
 import '../../../styles/home.scss'
 import ErrorPopUp from '@/components/ErrorPopUp'
-
+import GameLobbyHeader from '@/components/game-online/GameLobbyHeader'
 
 const Lobby = () => {
-
-   const isSocketStateAvailable = useSelector((state: RootState) => 'socket' in state)
-
-   // Jeśli klucz "socket" nie istnieje w Redux Store, wyświetl PageNotFound
-   if (!isSocketStateAvailable) {
+   
+   const { socket } = useSelector((state: RootState) => state.socket)
+   const { playerNames } = useSelector((state: RootState) => state.gameSettings)
+   
+   if (!socket) {
       return <PageNotFound />
    }
-
-   const { socket, role } = useSelector((state: RootState) => state.socket)
 
    return (
       <div className='main-container form'>
          {/* GAME LOBBY HEADER */}
-         <h1 className='game-header'>
-            GAME LOBBY
-         </h1>
+         <GameLobbyHeader />
 
-         {/* URL SECTION */}
-         <UrlSection />
+         {/* URL SECTION  / JOIN/LEAVE NOTIFICATION */}
+         {playerNames.length < 2 ? (
+            <UrlToCopySection />
+         ) : (
+            null
+         )}
 
          {/* PLAYERS SECTION */}
          <LobbyPlayersSection />

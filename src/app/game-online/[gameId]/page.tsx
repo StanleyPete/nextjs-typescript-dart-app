@@ -23,7 +23,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const [gameFound, setGameFound] = useState<boolean>(false)
    const [playerName, setPlayerName] = useState('')
    const [currentPlayerInLobby, setCurrentPlayerInLobby] = useState<string>('')
-
+   
  
 
    const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +35,6 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          socket = io('http://localhost:3001')
       }
  
-      
       //Connection listener
       socket.on('connect', () => {
          //Add socket state to redux
@@ -45,9 +44,9 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          dispatch(setRole('guest'))
 
          //Check if game exsists emitter
-         socket.emit('check-if-game-exists', { gameId })
+         socket.emit('check-if-game-exists-req', { gameId })
 
-         socket.on('game-exists', (data) => {
+         socket.on('check-if-game-exists-res', (data) => {
    
             if (data.exists) {
                setGameFound(true)
@@ -61,7 +60,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
             }
          })
 
-         socket.on('host-left', () => {
+         socket.on('host-left-res', () => {
             setCurrentPlayerInLobby('Host left! You are host now!')
             dispatch(setRole('host'))
          })
@@ -69,24 +68,21 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          
       })
       
-      console.log('UseEffect completed')
-
       return () => {
-         socket.off('game-exists')
-         // socket.off('host-left')
+         socket.off('check-if-game-exists-res')
+         socket.off('host-left-res')
       }
 
    }, [])
 
-   const joinGame = () => {
-      socket.emit('join-game-guest', { gameId, playerName: playerName })
+   const joinGameLobby = () => {
+      socket.emit('join-lobby-guest-req', { gameId, playerName: playerName })
       
-      socket.once('guest-joined', (data) => {
+      socket.once('join-lobby-guest-res', (data) => {
          if (data.host) {
             dispatch(setRole('host'))
          }
 
-         console.log('Przekierowanie do lobby...', `/game-online/lobby/${gameId}`)
          router.push(`/game-online/lobby/${gameId}`)
       })
    }
@@ -113,7 +109,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                <div className="game-start">
                   <button 
                      className="game-start-button"
-                     onClick={joinGame}
+                     onClick={joinGameLobby}
                   >
                      Join game lobby
                   </button>

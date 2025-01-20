@@ -7,22 +7,23 @@ import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 const GameModeOnlineSection = () => {
    const dispatch = useDispatch()
    
+   const {socket, role, gameId } = useSelector((state: RootState) => state.socket)
    const {gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
-   const role = useSelector((state: RootState) => state.socket.role)
-   const socket = useSelector((state: RootState) => state.socket.socket)
-   const gameId = useSelector((state: RootState) => state.socket.gameId)
-
+   
+ 
    const handleGameMode = (mode: GameSettingsStates['gameMode']) => {
       if(role === 'host'){
          dispatch(setGameMode(mode))
 
-         const updatedGameSettings = {
-            gameMode: mode,
-            gameWin,
-            numberOfLegs,
+         if(socket) {
+            const updatedGameSettings = {
+               gameMode: mode,
+               gameWin,
+               numberOfLegs,
+            }
+   
+            socket.emit('game-settings-change-req', { gameId, updatedGameSettings } )
          }
-
-         socket.emit('game-settings-change', { gameId, updatedGameSettings } )
 
       } else {
          dispatch(setError({ isError: true, errorMessage: 'You are not host!' }))
@@ -30,15 +31,15 @@ const GameModeOnlineSection = () => {
    }
 
    useEffect(() => {
-      if (role === 'guest') {
-         socket.on('settings-changed', ({ updatedGameSettings }) => {
+      if (role === 'guest' && socket) {
+         socket.on('game-settings-change-res', ({ updatedGameSettings }) => {
             dispatch(setGameMode(updatedGameSettings.gameMode))
             dispatch(setGameWin(updatedGameSettings.gameWin))
             dispatch(setNumberOfLegs(updatedGameSettings.numberOfLegs))
          })
    
          return () => {
-            socket.off('settings-changed')
+            socket.off('game-settings-change-res')
          }
       }
    }, [socket, role, dispatch])

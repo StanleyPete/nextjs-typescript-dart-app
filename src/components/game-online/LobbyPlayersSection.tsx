@@ -2,10 +2,12 @@ import React from 'react'
 import { RootState } from '@/redux/store'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'
+// import { setPlayerNames } from '@/redux/slices/gameSettingsSlice'
 
 const LobbyPlayersSection = () => {
-   
    const { playerNames } = useSelector((state: RootState) => state.gameSettings)
+
+   
 
    return (
       <div className="lobby-players-section main-form">
@@ -27,7 +29,9 @@ const LobbyPlayersSection = () => {
                   width={16}
                   height={16}
                />
-               <span>Player to join...</span>
+               <span>
+                  {playerNames.length === 1 ? 'Player to join' : playerNames[1] || 'Waiting for player...'}
+               </span>
             </div>
          </div>
         

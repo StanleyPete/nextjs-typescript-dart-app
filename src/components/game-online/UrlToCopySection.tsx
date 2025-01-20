@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 
 
-const UrlSection = () => {
+const UrlToCopySection = () => {
    const [currentUrl, setCurrentUrl] = useState<string | null>(null)
 
    const handleCopy = () => {
@@ -42,4 +42,4 @@ const UrlSection = () => {
    )
 }
 
-export default UrlSection
+export default UrlToCopySection
