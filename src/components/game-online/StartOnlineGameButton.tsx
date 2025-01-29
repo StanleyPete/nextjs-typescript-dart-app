@@ -1,8 +1,8 @@
 'use client'
-
 import React from 'react'
+import { GuestReadyProp } from '@/types/components/componentsTypes'
 
-const StartOnlineGameButton = () => {
+const StartOnlineGameButton:React.FC<GuestReadyProp> = ({ guestReady }) => {
    
    return (
       <div className="game-start">

@@ -1,5 +1,6 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import UrlToCopySection from '@/components/game-online/UrlToCopySection'
 import LobbyPlayersSection from '@/components/game-online/LobbyPlayersSection'
 import GameModeOnlineSection from '@/components/game-online/GameModeOnlineSection'
@@ -8,19 +9,30 @@ import NumberOfLegsOnlineSection from '@/components/game-online/NumberOfLegsOnli
 import StartOnlineGameButton from '@/components/game-online/StartOnlineGameButton'
 import { RootState } from '@/redux/store'
 import { useSelector } from 'react-redux'
-import PageNotFound from '@/components/game-online/PageNotFound'
 import '../../../styles/home.scss'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameLobbyHeader from '@/components/game-online/GameLobbyHeader'
+import GuestReadyButton from '@/components/game-online/GuestReadyButton'
 
 const Lobby = () => {
-   
-   const { socket } = useSelector((state: RootState) => state.socket)
+   const router = useRouter()
+   const [guestReady, setGuestReady] = useState<boolean>(false)
+   const { socket, role } = useSelector((state: RootState) => state.socket)
    const { playerNames } = useSelector((state: RootState) => state.gameSettings)
-   
-   if (!socket) {
-      return <PageNotFound />
-   }
+
+   useEffect(() => {
+      if (role === 'host' && socket) {
+         socket.on('guest-ready-res', () => {
+            setGuestReady(prev => !prev) 
+         })
+      }
+   }, [socket, role])
+
+   useEffect(() => {
+      if (!socket) {
+         return router.push('/')
+      }
+   }, [socket, router])
 
    return (
       <div className='main-container form'>
@@ -28,26 +40,30 @@ const Lobby = () => {
          <GameLobbyHeader />
 
          {/* URL SECTION  / JOIN/LEAVE NOTIFICATION */}
-         {playerNames.length < 2 ? (
-            <UrlToCopySection />
-         ) : (
-            null
-         )}
+         {
+            playerNames.length < 2 
+               ? ( <UrlToCopySection />) 
+               : (null)
+         }
 
          {/* PLAYERS SECTION */}
-         <LobbyPlayersSection />
+         <LobbyPlayersSection guestReady={guestReady} />
 
          {/* GAME MODE SECTION */}
-         <GameModeOnlineSection />
+         <GameModeOnlineSection guestReady={guestReady} />
                  
          {/* WIN TYPE SECTION */}
-         <WinTypeOnlineSection />
+         <WinTypeOnlineSection guestReady={guestReady} />
                  
          {/* NUMBER OF LEGS SECTION*/}
-         <NumberOfLegsOnlineSection />
+         <NumberOfLegsOnlineSection guestReady={guestReady}/>
 
-         {/* NUMBER OF LEGS SECTION*/}
-         <StartOnlineGameButton />
+         {/* START GAME / GAME READY BUTTONS*/}
+         {
+            role === 'host' 
+               ? (<StartOnlineGameButton guestReady={guestReady}/>)
+               : (<GuestReadyButton setGuestReady={setGuestReady} />)
+         }
 
          {/*ERROR POP UP*/}
          <ErrorPopUp />

@@ -4,12 +4,13 @@ import { useRouter } from 'next/navigation'
 import io, { Socket } from 'socket.io-client'
 import PageNotFound from '@/components/game-online/PageNotFound'
 import '../../styles/insert-new-joiner-name.scss'
-import { useDispatch } from 'react-redux'
-import { addSocketState } from '@/redux/store'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState, addSocketState } from '@/redux/store'
 import { 
    setGameMode, 
    setGameWin, 
-   setNumberOfLegs 
+   setNumberOfLegs, 
+   setPlayerNames
 } from '@/redux/slices/gameSettingsSlice'
 import { setSocket, setRole, setGameId } from '@/redux/slices/game-online/socketSlice'
 
@@ -23,6 +24,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const [gameFound, setGameFound] = useState<boolean>(false)
    const [playerName, setPlayerName] = useState('')
    const [currentPlayerInLobby, setCurrentPlayerInLobby] = useState<string>('')
+   const { playerNames } = useSelector((state: RootState) => state.gameSettings)
    
  
 
@@ -50,6 +52,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    
             if (data.exists) {
                setGameFound(true)
+               dispatch(setPlayerNames([data.host, playerName]))
                setCurrentPlayerInLobby(data.host)
                dispatch(setGameMode(data.settings.gameMode))
                dispatch(setGameWin(data.settings.gameWin))
@@ -62,6 +65,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
 
          socket.on('host-left-res', () => {
             setCurrentPlayerInLobby('Host left! You are host now!')
+            dispatch(setPlayerNames([playerName, '']))
             dispatch(setRole('host'))
          })
 
@@ -75,14 +79,25 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
 
    }, [])
 
+   useEffect(() => {
+      console.log(playerNames)
+
+   }, [playerNames])
+
+
+
+   
+
    const joinGameLobby = () => {
       socket.emit('join-lobby-guest-req', { gameId, playerName: playerName })
       
       socket.once('join-lobby-guest-res', (data) => {
          if (data.host) {
             dispatch(setRole('host'))
+            dispatch(setPlayerNames([playerName]))
+         } else {
+            dispatch(setPlayerNames([playerNames[0], playerName]))
          }
-
          router.push(`/game-online/lobby/${gameId}`)
       })
    }

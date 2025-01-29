@@ -3,15 +3,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setNumberOfLegs, setError, setGameMode, setGameWin } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GuestReadyProp } from '@/types/components/componentsTypes'
 
-const NumberOfLegsOnlineSection = () => {
+const NumberOfLegsOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
    const dispatch = useDispatch()
    
    const {socket, role, gameId } = useSelector((state: RootState) => state.socket)
    const {gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
  
    const handleNumberOfLegs = (legs: number) => {
-      if(role === 'host'){
+      if(role === 'host' && !guestReady){
          dispatch(setNumberOfLegs(legs))      
 
          if(socket) {
@@ -25,6 +26,10 @@ const NumberOfLegsOnlineSection = () => {
          }
 
       } else {
+         dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready! You cannot change settings now' }))
+      }
+
+      if (role === 'guest'){
          dispatch(setError({ isError: true, errorMessage: 'You are not host!' }))
       }
    }

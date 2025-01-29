@@ -3,15 +3,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setGameWin, setError, setGameMode, setNumberOfLegs } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { GuestReadyProp } from '@/types/components/componentsTypes'
 
-const WinTypeOnlineSection = () => {
+const WinTypeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
    const dispatch = useDispatch()
    
    const {socket, role, gameId } = useSelector((state: RootState) => state.socket)
    const {gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
 
    const handleWinType = (winType: GameSettingsStates['gameWin']) => {
-      if(role === 'host'){
+      if(role === 'host' && !guestReady){
          dispatch(setGameWin(winType))
 
          if(socket){
@@ -25,6 +26,10 @@ const WinTypeOnlineSection = () => {
          }
             
       } else {
+         dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready! You cannot change settings now' }))
+      }
+
+      if (role === 'guest'){
          dispatch(setError({ isError: true, errorMessage: 'You are not host!' }))
       }
    }
