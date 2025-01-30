@@ -1,33 +1,22 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setGameMode, setError, setGameWin, setNumberOfLegs } from '../../redux/slices/gameSettingsSlice'
+import { setGameMode, setError } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GuestReadyProp } from '@/types/components/componentsTypes'
 
 const GameModeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
    const dispatch = useDispatch()
-   
-   const {socket, role, gameId } = useSelector((state: RootState) => state.socket)
-   const {gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
+   const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
+   const { gameMode } = useSelector((state: RootState) => state.gameSettings)
    
  
    const handleGameMode = (mode: GameSettingsStates['gameMode']) => {
-      if(role === 'host' && !guestReady){
-         dispatch(setGameMode(mode))
-
-         if(socket) {
-            const updatedGameSettings = {
-               gameMode: mode,
-               gameWin,
-               numberOfLegs,
-            }
-   
-            socket.emit('game-settings-change-req', { gameId, updatedGameSettings } )
-         }
-
-      } else {
-         dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready! You cannot change settings now' }))
+      if(socket && role === 'host' && !guestReady){
+         const updatedGameSettings = { gameMode: mode }
+         socket.emit('game-settings-change-request', { gameId, updatedGameSettings } )
+      } else if ( socket && role === 'host' && guestReady) {
+         dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready. You cannot change settings now!' }))
       }
 
       if (role === 'guest'){
@@ -35,16 +24,33 @@ const GameModeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
       }
    }
 
+   //HOST LISTENER
    useEffect(() => {
-      if (role === 'guest' && socket) {
-         socket.on('game-settings-change-res', ({ updatedGameSettings }) => {
+      if (role === 'host' && socket) {
+         socket.on('game-settings-changed', ({ updatedGameSettings }) => {
             dispatch(setGameMode(updatedGameSettings.gameMode))
-            dispatch(setGameWin(updatedGameSettings.gameWin))
-            dispatch(setNumberOfLegs(updatedGameSettings.numberOfLegs))
+         })
+
+         socket.on('game-settings-change-failed', ({ message }) => {
+            dispatch(setError({ isError: true, errorMessage: message }))
          })
    
          return () => {
-            socket.off('game-settings-change-res')
+            socket.off('game-settings-changed')
+            socket.off('game-settings-change-failed')
+         }
+      }
+   }, [socket, role, dispatch])
+   
+   //GUEST LISTENER
+   useEffect(() => {
+      if (role === 'guest' && socket) {
+         socket.on('game-settings-changed', ({ updatedGameSettings }) => {
+            dispatch(setGameMode(updatedGameSettings.gameMode))
+         })
+   
+         return () => {
+            socket.off('game-settings-changed')
          }
       }
    }, [socket, role, dispatch])

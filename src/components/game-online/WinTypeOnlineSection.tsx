@@ -1,32 +1,22 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setGameWin, setError, setGameMode, setNumberOfLegs } from '../../redux/slices/gameSettingsSlice'
+import { setGameWin, setError } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GuestReadyProp } from '@/types/components/componentsTypes'
 
 const WinTypeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
    const dispatch = useDispatch()
-   
-   const {socket, role, gameId } = useSelector((state: RootState) => state.socket)
-   const {gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
+   const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
+   const { gameWin } = useSelector((state: RootState) => state.gameSettings)
 
+   //WIND TYPE CHANGE HANDLER:
    const handleWinType = (winType: GameSettingsStates['gameWin']) => {
-      if(role === 'host' && !guestReady){
-         dispatch(setGameWin(winType))
-
-         if(socket){
-            const updatedGameSettings = {
-               gameMode,
-               gameWin: winType,
-               numberOfLegs,
-            }
-         
-            socket.emit('game-settings-change-req', { gameId, updatedGameSettings } )
-         }
-            
-      } else {
-         dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready! You cannot change settings now' }))
+      if( socket && role === 'host' && !guestReady){
+         const updatedGameSettings = { gameWin: winType }
+         socket.emit('game-settings-change-request', { gameId, updatedGameSettings } )  
+      } else if ( socket && role === 'host' && guestReady) {
+         dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready. You cannot change settings now!' }))
       }
 
       if (role === 'guest'){
@@ -34,16 +24,34 @@ const WinTypeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
       }
    }
 
+   //HOST LISTENER
+   useEffect(() => {
+      if (role === 'host' && socket) {
+         socket.on('game-settings-changed', ({ updatedGameSettings }) => {
+            dispatch(setGameWin(updatedGameSettings.gameWin))
+         })
+
+         socket.on('game-settings-change-failed', ({ message }) => {
+            dispatch(setError({ isError: true, errorMessage: message }))
+         })
+   
+         return () => {
+            socket.off('game-settings-changed')
+            socket.off('game-settings-change-failed')
+         }
+      }
+   }, [socket, role, dispatch])
+
+
+   //GUEST LISTENER
    useEffect(() => {
       if (role === 'guest' && socket) {
-         socket.on('game-settings-change-res', ({ updatedGameSettings }) => {
-            dispatch(setGameMode(updatedGameSettings.gameMode))
-            dispatch(setGameWin(updatedGameSettings.gameWin))
-            dispatch(setNumberOfLegs(updatedGameSettings.numberOfLegs))
+         socket.on('game-settings-changed', ({ updatedGameSettings }) => {
+            dispatch(setGameWin(updatedGameSettings.gameWin)) 
          })
 
          return () => {
-            socket.off('game-settings-change-res')
+            socket.off('game-settings-changed')
          }
       }
    }, [socket, role, dispatch])
