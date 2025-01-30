@@ -2,8 +2,7 @@
 import React, { useState, useEffect} from 'react'
 import { useRouter } from 'next/navigation'
 import io, { Socket } from 'socket.io-client'
-import PageNotFound from '@/components/game-online/PageNotFound'
-import '../../styles/insert-new-joiner-name.scss'
+//Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, addSocketState } from '@/redux/store'
 import { 
@@ -12,8 +11,12 @@ import {
    setNumberOfLegs, 
    setPlayerNames
 } from '@/redux/slices/gameSettingsSlice'
-import { setSocket, setRole, setGameId } from '@/redux/slices/game-online/socketSlice'
-
+import { 
+   setSocket, 
+   setRole, 
+   setGameId 
+} from '@/redux/slices/game-online/socketSlice'
+import '../../styles/insert-new-joiner-name.scss'
 
 let socket: Socket
 
@@ -21,77 +24,20 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const dispatch = useDispatch()
    const router = useRouter()
    const { gameId } = params
-   const [gameFound, setGameFound] = useState<boolean>(false)
-   const [playerName, setPlayerName] = useState('')
-   const [currentPlayerInLobby, setCurrentPlayerInLobby] = useState<string>('')
+   const [isLoading, setIsLoading] = useState(true)
+   const [ gameFound, setGameFound ] = useState<boolean>(false)
+   const [ playerName, setPlayerName ] = useState('')
+   const [ currentPlayerInLobby, setCurrentPlayerInLobby ] = useState<string>('')
    const { playerNames } = useSelector((state: RootState) => state.gameSettings)
    
- 
-
    const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setPlayerName(event.target.value)
    }
-    
-   useEffect(() => {
-      if (!socket) {
-         socket = io('http://localhost:3001')
-      }
- 
-      //Connection listener
-      socket.on('connect', () => {
-         //Add socket state to redux
-         addSocketState()
-         //Updating socket state in redux
-         dispatch(setSocket(socket))
-         dispatch(setRole('guest'))
-
-         //Check if game exsists emitter
-         socket.emit('check-if-game-exists-req', { gameId })
-
-         socket.on('check-if-game-exists-res', (data) => {
-   
-            if (data.exists) {
-               setGameFound(true)
-               dispatch(setPlayerNames([data.host, playerName]))
-               setCurrentPlayerInLobby(data.host)
-               dispatch(setGameMode(data.settings.gameMode))
-               dispatch(setGameWin(data.settings.gameWin))
-               dispatch(setNumberOfLegs(data.settings.numberOfLegs))
-               dispatch(setGameId(gameId))
-            } else {
-               setGameFound(false)
-            }
-         })
-
-         socket.on('host-left-res', () => {
-            setCurrentPlayerInLobby('Host left! You are host now!')
-            dispatch(setPlayerNames([playerName, '']))
-            dispatch(setRole('host'))
-         })
-
-         
-      })
-      
-      return () => {
-         socket.off('check-if-game-exists-res')
-         socket.off('host-left-res')
-      }
-
-   }, [])
-
-   useEffect(() => {
-      console.log(playerNames)
-
-   }, [playerNames])
-
-
-
-   
 
    const joinGameLobby = () => {
-      socket.emit('join-lobby-guest-req', { gameId, playerName: playerName })
+      socket.emit('join-lobby-guest-request', { gameId, playerName: playerName })
       
-      socket.once('join-lobby-guest-res', (data) => {
+      socket.once('join-lobby-guest-response', (data) => {
          if (data.host) {
             dispatch(setRole('host'))
             dispatch(setPlayerNames([playerName]))
@@ -101,10 +47,54 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          router.push(`/game-online/lobby/${gameId}`)
       })
    }
+    
+   useEffect(() => {
+      if (!socket) {
+         socket = io('http://localhost:3001')
+      }
    
+      socket.on('connect', () => {
+         addSocketState()
+         dispatch(setSocket(socket))
+         dispatch(setRole('guest'))
+
+         socket.emit('check-if-game-exists-request', { gameId })
+
+         socket.on('check-if-game-exists-response', (data) => {
+            if (data.exists) {
+               setIsLoading(false)
+               setGameFound(true)
+               setCurrentPlayerInLobby(data.host)
+               dispatch(setPlayerNames([data.host, playerName]))
+               dispatch(setGameMode(data.settings.gameMode))
+               dispatch(setGameWin(data.settings.gameWin))
+               dispatch(setNumberOfLegs(data.settings.numberOfLegs))
+               dispatch(setGameId(gameId))
+            } else {
+               setIsLoading(false)
+               setGameFound(false)
+            }
+         })
+
+         socket.on('host-left-response', () => {
+            setCurrentPlayerInLobby('Host left! You are host now!')
+            dispatch(setPlayerNames([playerName, '']))
+            dispatch(setRole('host'))
+         })     
+      })
+      
+      return () => {
+         socket.off('check-if-game-exists-response')
+         socket.off('host-left-response')
+      }
+
+   }, [])
+     
    return (
       <>
-         {gameFound ? (
+         {isLoading ? (
+            <p style={{ color: 'white' }}>Loading...</p>
+         ) : gameFound ? (
             <div className='main-container'>
                <h1 className='game-online-header'>GAME ONLINE</h1>
                <p className='current-player-in-lobby'>(Current player in lobby: {currentPlayerInLobby})</p>
@@ -120,7 +110,6 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                      />
                   </div>
                </div>
-   
                <div className="game-start">
                   <button 
                      className="game-start-button"
@@ -128,12 +117,10 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                   >
                      Join game lobby
                   </button>
-   
                </div>
-            
             </div> 
          ) : (
-            <PageNotFound /> 
+            <p style={{ color: 'white' }}>Page not found</p>
          )}
       </>
    )
