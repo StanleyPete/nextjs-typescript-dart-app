@@ -751,48 +751,62 @@ body{
   justify-content: space-around;
   align-items: center;
   padding: 4px 10px;
-  height: 36px;
+  height: 58px;
   border: $border-style;
   border-radius: $game-options-border-radius;
+          .game-online-player-details{
+            width: 49%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 4px;
+            font-size: 13px;
+                      .game-online-player-header{
+                        display: flex;
+                        align-items: baseline;
+                                  img {
+                                    margin-right: 4px;
+                                  }
+                                  .player-online-header{
+                                    font-size: 10px;
+                                    color: gray;
+                                  }
+                      }
+                      .player-name{
+                        font-size: 14px;
+                      }
+                      .readiness-status-section{
+                        display: flex;
+                        align-items: center;
+                                  img {
+                                    margin-right: 2px;
+                                  }
+                                  .ready-status {
+                                    font-family: $font-family-bold;
+                                    font-size: 10px;
+                                    color: $red-color;
+                                  }
+                                  
+                                  .ready {
+                                    color: $green-color;
+                                  }
+                                  
+                                  .not-ready {
+                                    color: $red-color;
+                                  }
+                      }
+
+          }
+
+}
+.align-start{
+  align-items: start;
 }
 
-.player-host, .player-guest{
-  width: 49%;
-  display: flex;
-  align-items: center;
-  padding: 4px 4px;
-  font-size: 13px;
-      img {
-        margin-right: 4px;
-      }
-}
-.player-online-header{
- 
-  font-size: 10px;
-  color: gray; 
-}
-.player-guest-info {
-  display: flex;
-  align-items: center;
-}
 
-.player-guest-info img {
-  margin-right: 1px;
-}
 
-.ready-status {
-  font-family: $font-family-bold;
-  font-size: 10px;
-  color: $red-color;
-}
 
-.ready {
-  color: $green-color;
-}
 
-.not-ready {
-  color: $red-color;
-}
 
 
 

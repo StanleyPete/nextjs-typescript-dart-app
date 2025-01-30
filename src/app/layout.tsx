@@ -10,6 +10,12 @@ const exoRegular = localFont({
    weight: '100 900',
 })
 
+const exoExtraBold = localFont({
+   src: './fonts/Exo-ExtraBold.ttf',
+   variable: '--font-exo-extra-bold',
+   weight: '800 900'
+})
+
 export const metadata: Metadata = {
    title: 'Dart Score App',
    description: 'Dart Score application',
@@ -22,7 +28,7 @@ export default function RootLayout({
 }>) {
    return (
       <html lang="en">
-         <body className={`${exoRegular.variable}`}>
+         <body className={`${exoRegular.variable} ${exoExtraBold.variable}`}>
             <ReduxProvider>
                {children}
             </ReduxProvider>
