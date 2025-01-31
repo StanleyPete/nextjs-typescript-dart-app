@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setNumberOfLegs } from '../../redux/slices/gameSettingsSlice'
@@ -15,12 +15,17 @@ const NumberOfLegsSection = () => {
    }
 
    const getLegsOptions = (gameWin: GameSettingsStates['gameWin']) => {
-      if (gameWin === 'best-of') {
-         return [1, 3, 5, 7, 9]
-      } else {
-         return [1, 2, 3, 4, 5, 6, 7]
-      }
+      return gameWin === 'best-of' ? [1, 3, 5, 7, 9] : [1, 2, 3, 4, 5, 6, 7]
    }
+
+   const legsOptionsAvailable = getLegsOptions(gameWin)
+
+   // UseEffect declared in order to set default numberOfLegs value in case changing winType from first-to to best-of when numberOfLegs is set to even number
+   useEffect(() => {
+      if (!legsOptionsAvailable.includes(numberOfLegs)) {
+         dispatch(setNumberOfLegs(legsOptionsAvailable[0]))
+      }
+   }, [gameWin, legsOptionsAvailable, numberOfLegs, dispatch])
 
    return (
       <div className='legs-buttons main-form'>
