@@ -8,14 +8,17 @@ import WinTypeOnlineSection from '@/components/game-online/WinTypeOnlineSection'
 import NumberOfLegsOnlineSection from '@/components/game-online/NumberOfLegsOnlineSection'
 import StartOnlineGameButton from '@/components/game-online/StartOnlineGameButton'
 import { RootState } from '@/redux/store'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import '../../../styles/home.scss'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameLobbyHeader from '@/components/game-online/GameLobbyHeader'
 import GuestReadyButton from '@/components/game-online/GuestReadyButton'
+import { setPlayerNames } from '@/redux/slices/gameSettingsSlice'
+import { setRole } from '@/redux/slices/game-online/socketSlice'
 
 const Lobby = () => {
    const router = useRouter()
+   const dispatch = useDispatch()
    const [guestReady, setGuestReady] = useState<boolean>(false)
    const { socket, role } = useSelector((state: RootState) => state.socket)
    const { playerNames } = useSelector((state: RootState) => state.gameSettings)
@@ -29,10 +32,24 @@ const Lobby = () => {
    }, [socket, role])
 
    useEffect(() => {
+      if (role === 'guest' && socket) {
+         socket.on('host-left-response', () => {
+            dispatch(setRole('host'))
+            dispatch(setPlayerNames([playerNames[1]]))
+         })
+      }
+   }, [socket, role, dispatch, playerNames])
+
+
+   useEffect(() => {
       if (!socket) {
          return router.push('/')
       }
    }, [socket, router])
+
+   useEffect(() => {
+      console.log(playerNames)
+   },[playerNames])
 
    return (
       <div className='main-container form'>

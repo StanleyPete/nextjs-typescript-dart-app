@@ -52,7 +52,7 @@ const GameLobbyHeader = () => {
    //GUEST
    useEffect(() => {
       if (role === 'guest' && socket) {
-         socket.on('host-left-res', () => {
+         socket.on('host-left-response', () => {
             const updatedPlayerNames = [playerNames[1]]
             dispatch(setPlayerNames(updatedPlayerNames))
             dispatch(setRole('host'))
@@ -66,7 +66,7 @@ const GameLobbyHeader = () => {
          })
 
          return () => {
-            socket.off('host-left-res')
+            socket.off('host-left-response')
          }
       }
    }, [socket, role, playerNames, dispatch])

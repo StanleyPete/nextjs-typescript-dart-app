@@ -11,7 +11,7 @@ import { initializePlayers } from '@/redux/slices/game-classic/gameClassicSingle
 import { initializeTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 import { initializeCricketPlayers } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
 import { initializeCricketTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
-import { setError } from '../../redux/slices/gameSettingsSlice'
+import { setError } from '@/redux/slices/gameSettingsSlice'
 
 
 const ToTheGameButton = () => {

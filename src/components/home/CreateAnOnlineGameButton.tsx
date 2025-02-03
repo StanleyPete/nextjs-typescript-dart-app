@@ -6,6 +6,7 @@ import io, { Socket } from 'socket.io-client'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, addSocketState  } from '@/redux/store'
 import { setSocket, setRole, setGameId } from '@/redux/slices/game-online/socketSlice'
+import { setError } from '@/redux/slices/gameSettingsSlice'
 
 let socket: Socket
 
@@ -15,7 +16,20 @@ const CreateAnOnlineGameButton = () => {
    
    const { playerNames, gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
 
-   const handleCreateOnlineGame = () => {
+   const validatePlayerNames = () => {
+      if (playerNames.some((name: string) => name.trim() === '')) {
+         dispatch(setError({ isError: true, errorMessage: 'Please enter your name!' }))
+         return false
+      }
+      return true
+   }
+
+   const handleCreateOnlineGame = (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (!validatePlayerNames()) {
+         event.preventDefault()
+         return
+      }
+
       if (!socket) {
          socket = io('http://localhost:3001')
 
