@@ -62,12 +62,17 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          return
       }
 
-      socket.emit('join-lobby-guest-request', { 
-         gameId, 
-         playerName: role === 'guest' ? playerNames[1] : playerNames[0] 
-      })
+      socket.emit('join-lobby-guest-request', 
+         { 
+            gameId,
+            playerName: role === 'guest' ? playerNames[1] : playerNames[0] 
+         }
+      )
       
       socket.once('join-lobby-guest-response', (data) => {
+         dispatch(setGameMode(data.gameSettings.gameMode))
+         dispatch(setGameWin(data.gameSettings.gameWin))
+         dispatch(setNumberOfLegs(data.gameSettings.numberOfLegs))
          if (data.host) {
             dispatch(setRole('host'))
             dispatch(setPlayerNames([playerNames[0]]))
@@ -88,7 +93,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
 
          socket.emit('check-if-game-exists-request', { gameId })
 
-         socket.on('check-if-game-exists-response', (data) => {
+         socket.once('check-if-game-exists-response', (data) => {
             if (data.exists) {
                setIsLoading(false)
                setGameFound(true)
@@ -104,7 +109,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
             }
          })
 
-         socket.on('host-left-response', () => {
+         socket.once('host-left-response', () => {
             setCurrentPlayerInLobby('Host left! You are host now!')
             dispatch(setRole('host'))
             dispatch(setPlayerNames([playerNames[1]]))

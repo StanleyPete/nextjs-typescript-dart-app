@@ -1,14 +1,12 @@
-import React from 'react'
+import React  from 'react'
 import { RootState } from '@/redux/store'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'
 import { GuestReadyProp } from '@/types/components/componentsTypes'
 
-
 const LobbyPlayersSection: React.FC<GuestReadyProp> = ({ guestReady }) => {
    const { playerNames } = useSelector((state: RootState) => state.gameSettings)
    
-
    return (
       <div className="lobby-players-section main-form">
          <p className="header">Players:</p>

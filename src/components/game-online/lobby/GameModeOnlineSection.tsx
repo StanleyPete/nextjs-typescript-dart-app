@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setGameWin, setError } from '../../redux/slices/gameSettingsSlice'
+import { setGameMode, setError } from '../../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GuestReadyProp } from '@/types/components/componentsTypes'
 
-const WinTypeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
+const GameModeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
    const dispatch = useDispatch()
    const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
-   const { gameWin } = useSelector((state: RootState) => state.gameSettings)
-
-   //WIND TYPE CHANGE HANDLER:
-   const handleWinType = (winType: GameSettingsStates['gameWin']) => {
-      if( socket && role === 'host' && !guestReady){
-         const updatedGameSettings = { gameWin: winType }
-         socket.emit('game-settings-change-request', { gameId, updatedGameSettings } )  
+   const { gameMode } = useSelector((state: RootState) => state.gameSettings)
+    
+   const handleGameMode = (mode: GameSettingsStates['gameMode']) => {
+      if(socket && role === 'host' && !guestReady){
+         const updatedGameSettings = { gameMode: mode }
+         socket.emit('game-settings-change-request', { gameId, updatedGameSettings } )
       } else if ( socket && role === 'host' && guestReady) {
          dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready. You cannot change settings now!' }))
       }
@@ -28,7 +27,7 @@ const WinTypeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
    useEffect(() => {
       if (role === 'host' && socket) {
          socket.on('game-settings-changed', ({ updatedGameSettings }) => {
-            dispatch(setGameWin(updatedGameSettings.gameWin))
+            dispatch(setGameMode(updatedGameSettings.gameMode))
          })
 
          socket.on('game-settings-change-failed', ({ message }) => {
@@ -41,32 +40,31 @@ const WinTypeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
          }
       }
    }, [socket, role, dispatch])
-
-
+   
    //GUEST LISTENER
    useEffect(() => {
       if (role === 'guest' && socket) {
          socket.on('game-settings-changed', ({ updatedGameSettings }) => {
-            dispatch(setGameWin(updatedGameSettings.gameWin)) 
+            dispatch(setGameMode(updatedGameSettings.gameMode))
          })
-
+   
          return () => {
             socket.off('game-settings-changed')
          }
       }
    }, [socket, role, dispatch])
-
+ 
    return (
-      <div className='win-type main-form'>
-         <p className='type header'>Win type:</p>
+      <div className='game-mode main-form'>
+         <p className='mode header'>Game mode:</p>
          <div className="game-options">
-            {['best-of', 'first-to'].map((winType) => (
-               <button 
-                  key={winType}
-                  className={`win-type-button ${gameWin === winType ? 'active' : ''}`} 
-                  onClick={() => handleWinType(winType as GameSettingsStates['gameWin'])}
+            {[301, 501, 701, 1001].map((mode) => (
+               <button
+                  key={mode}
+                  className={`score-button ${gameMode === mode ? 'active' : ''}`}
+                  onClick={() => handleGameMode(mode)}
                >
-                  {winType === 'best-of' ? 'Best Of' : 'First To'}
+                  {mode}
                </button>
             ))}
          </div>
@@ -74,4 +72,4 @@ const WinTypeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
    )
 }
 
-export default WinTypeOnlineSection
+export default GameModeOnlineSection

@@ -43,15 +43,14 @@ const CreateAnOnlineGameButton = () => {
             dispatch(setRole('host'))
             
             //Create game emitter
-            socket.emit('create-game', 
-               { 
-                  clientId: socket.id, 
+            socket.emit('create-game-request',
+               {  
                   playerName: playerNames[0],
                   settings: {
                      gameMode,
                      gameWin,
-                     numberOfLegs
-                  } 
+                     numberOfLegs, 
+                  },
                }
             )
 

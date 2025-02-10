@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 //Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setNumberOfLegs, setError} from '../../redux/slices/gameSettingsSlice'
+import { setNumberOfLegs, setError} from '../../../redux/slices/gameSettingsSlice'
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GuestReadyProp } from '@/types/components/componentsTypes'

@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 
 const GuestReadyButton: React.FC<SetGuestReadyProp> = ({ setGuestReady }) => {
-
    const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
 
    const handleGuestReadyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
