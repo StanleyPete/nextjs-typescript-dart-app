@@ -10,6 +10,7 @@ import gameCricketTeamsReducer from './slices/game-cricket/gameCricketTeamsSlice
 import socketReducer from './slices/game-online/socketSlice'
 import gameOnlineReducer from './slices/game-online/gameOnlineSlice'
 
+
 //Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GameStates } from '@/types/redux/gameTypes'
@@ -27,6 +28,7 @@ import { SocketState } from '@/types/redux/socketTypes'
 import { GameOnlineStates } from '@/types/redux/gameOnlineTypes'
 
 
+
 //Initial store setup
 export const store = configureStore({
    reducer: {
@@ -37,6 +39,8 @@ export const store = configureStore({
 let rootReducer: Reducer = combineReducers({
    gameSettings: gameSettingsReducer,
 })
+
+
 
 //Add Game Classic Single States (only for 301, 501, 701, 1001 modes)
 export const addGameClassicSingleStates = () => {
@@ -85,6 +89,8 @@ export const addGameCricketTeamsStates = () => {
 
    store.replaceReducer(rootReducer)
 }
+
+
 
 //Add Socket States (only game-online)
 export const addSocketState = () => {

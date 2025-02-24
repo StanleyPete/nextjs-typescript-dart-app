@@ -1,6 +1,7 @@
 export interface GameOnlineStates {
     players: PlayerOnline[]
     currentPlayerIndex: number
+    currentPlayer: string
     startIndex: number,
     showNumberButtons: boolean,
     currentThrow: number,
@@ -17,10 +18,14 @@ export interface GameOnlineStates {
 }
 
 export interface PlayerOnline {
-    name: string
+    name: string,
+    ready: boolean
+    role: string,
     legs: number
     pointsLeft: number
     lastScore: number
+    totalThrows: number
+    attempts: number
     average: number
     
 }

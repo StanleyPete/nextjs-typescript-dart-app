@@ -11,6 +11,8 @@ const initialState: GameSettingsStates = {
    gameMode: 501,
    gameWin: 'best-of',
    numberOfLegs: 3,
+   numberOfPlayers: 2,
+   throwTime: 30,
    isFirstLoad: true,
    error: {
       isError: false,
@@ -40,6 +42,12 @@ const gameSettingsSlice = createSlice({
       setNumberOfLegs(state, action: PayloadAction<number>) {
          state.numberOfLegs = action.payload
       },
+      setNumberOfPlayers(state, action: PayloadAction<number>) {
+         state.numberOfPlayers = action.payload
+      },
+      setThrowTime(state, action: PayloadAction<number>) {
+         state.throwTime = action.payload
+      },  
       setIsFirstLoad: (state, action: PayloadAction<boolean>) => {
          state.isFirstLoad = action.payload
       },
@@ -55,6 +63,8 @@ export const {
    setGameType,
    setGameWin,
    setNumberOfLegs,
+   setNumberOfPlayers,
+   setThrowTime,
    setIsFirstLoad,
    setError,
 } = gameSettingsSlice.actions

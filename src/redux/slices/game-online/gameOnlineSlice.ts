@@ -7,6 +7,7 @@ import { GameOnlineStates, PlayerOnline } from '@/types/redux/gameOnlineTypes'
 const initialState: GameOnlineStates = {
    players: [],
    currentPlayerIndex: 0,
+   currentPlayer: 'host',
    startIndex: 0,
    showNumberButtons: false,
    currentThrow: 0,
@@ -31,6 +32,9 @@ const gameOnlineSlice = createSlice({
       },
       setCurrentPlayerIndex(state, action: PayloadAction<number>) {
          state.currentPlayerIndex = action.payload
+      },
+      setCurrentPlayer(state, action: PayloadAction<string>) {
+         state.currentPlayer = action.payload
       },
       setStartIndex(state, action: PayloadAction<number>) {
          state.startIndex = action.payload
@@ -71,7 +75,11 @@ const gameOnlineSlice = createSlice({
       setInitialSoundPlayed(state, action: PayloadAction<boolean>) {
          state.initialSoundPlayed = action.payload
       },
-
+      updatePlayerReadiness(state, action: PayloadAction<{ index: number; ready: boolean }>) {
+         if (state.players[action.payload.index]) {
+            state.players[action.payload.index].ready = action.payload.ready
+         }
+      },
       updatePlayerLegs(state, action: PayloadAction<{ index: number; legs: number }>) {
          if (state.players[action.payload.index]) {
             state.players[action.payload.index].legs = action.payload.legs
@@ -99,6 +107,7 @@ const gameOnlineSlice = createSlice({
 export const {
    setPlayers,
    setCurrentPlayerIndex,
+   setCurrentPlayer,
    setStartIndex,
    setShowNumberButtons,
    setIsGameEnd,

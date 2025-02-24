@@ -4,6 +4,8 @@ export interface GameSettingsStates {
     gameMode: number | string
     gameWin: 'best-of' | 'first-to'
     numberOfLegs: number
+    numberOfPlayers: number,
+    throwTime: number,
     isFirstLoad: boolean,
     error: {
         isError: boolean
