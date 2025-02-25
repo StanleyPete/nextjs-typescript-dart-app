@@ -10,7 +10,8 @@ import {
    setGameWin, 
    setNumberOfLegs, 
    setPlayerNames,
-   setError
+   setError,
+   setNumberOfPlayers
 } from '@/redux/slices/gameSettingsSlice'
 import { 
    setSocket, 
@@ -19,6 +20,8 @@ import {
 } from '@/redux/slices/game-online/socketSlice'
 import '../../styles/insert-new-joiner-name.scss'
 import ErrorPopUp from '@/components/ErrorPopUp'
+import { setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
+import { PlayerOnline } from '@/types/redux/gameOnlineTypes'
 
 let socket: Socket
 
@@ -26,32 +29,21 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const dispatch = useDispatch()
    const router = useRouter()
    const { gameId } = params
-   const [isLoading, setIsLoading] = useState(true)
+   const [ isLoading, setIsLoading] = useState(true)
    const [ gameFound, setGameFound ] = useState<boolean>(false)
-   const [ currentPlayerInLobby, setCurrentPlayerInLobby ] = useState<string>('')
+   const [ message, setMessage] = useState<string>('')
+   const [ currentPlayersInLobby, setCurrentPlayersInLobby ] = useState<string[]>([])
    const { playerNames } = useSelector((state: RootState) => state.gameSettings)
-   const { role } = useSelector((state: RootState) => state.socket) || 'guest'
+   const { role } = useSelector((state: RootState) => state.socket) || 'guest' 
    
-   const handlePlayerNameChange = (role: string, event: React.ChangeEvent<HTMLInputElement>) => {
-      if (role === 'guest') {
-         dispatch(setPlayerNames([playerNames[0], event.target.value]))
-      } else {
-         dispatch(setPlayerNames([event.target.value]))
-      }
+   const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => { 
+      dispatch(setPlayerNames([event.target.value]))
    }
 
    const validatePlayerNames = () => {
-      if (role === 'guest'){
-         if (playerNames.some((name: string) => name.trim() === '')) {
-            dispatch(setError({ isError: true, errorMessage: 'Please enter your name!' }))
-            return false
-         }
-        
-      } else {
-         if(playerNames[0] === '') {
-            dispatch(setError({ isError: true, errorMessage: 'Please enter your name!' }))
-            return false
-         }
+      if (playerNames.some((name: string) => name.trim() === '')) {
+         dispatch(setError({ isError: true, errorMessage: 'Please enter your name!' }))
+         return false
       }
       return true
    }
@@ -62,21 +54,25 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          return
       }
 
-      socket.emit('join-lobby-guest-request', 
-         { 
-            gameId,
-            playerName: role === 'guest' ? playerNames[1] : playerNames[0] 
-         }
-      )
+      socket.emit('join-lobby-guest-request', { gameId, playerName: playerNames[0] })
       
-      socket.once('join-lobby-guest-response', (data) => {
+      socket.once('guest-joined-lobby', (data) => {
+         dispatch(setNumberOfPlayers(data.gameSettings.maxNumberOfPlayers))
          dispatch(setGameMode(data.gameSettings.gameMode))
          dispatch(setGameWin(data.gameSettings.gameWin))
-         dispatch(setNumberOfLegs(data.gameSettings.numberOfLegs))
-         if (data.host) {
-            dispatch(setRole('host'))
-            dispatch(setPlayerNames([playerNames[0]]))
-         } 
+         dispatch(setNumberOfLegs(data.gameSettings.numberOfLegs)) 
+         const formattedPlayers: PlayerOnline[] = data.gamePlayers.map((player: any) => ({
+            name: player.playerName,
+            ready: player.ready,
+            role: player.role,
+            legs: player.legs,
+            pointsLeft: player.pointsLeft,
+            lastScore: player.lastScore,
+            totalThrows: player.totalThrowsValue,
+            attempts: player.attempts,
+            average: player.average
+         }))
+         dispatch(setPlayers(formattedPlayers))
          router.push(`/game-online/lobby/${gameId}`)
       })
    }
@@ -94,38 +90,39 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          socket.emit('check-if-game-exists-request', { gameId })
 
          socket.once('check-if-game-exists-response', (data) => {
-            if (data.exists) {
-               setIsLoading(false)
-               setGameFound(true)
-               setCurrentPlayerInLobby(data.host)
-               dispatch(setPlayerNames([data.host, '']))
-               dispatch(setGameMode(data.settings.gameMode))
-               dispatch(setGameWin(data.settings.gameWin))
-               dispatch(setNumberOfLegs(data.settings.numberOfLegs))
-               dispatch(setGameId(gameId))
-            } else {
-               setIsLoading(false)
-               setGameFound(false)
-            }
+            setIsLoading(false)
+            setGameFound(true)
+            setCurrentPlayersInLobby(data.currentPlayers)
+            dispatch(setGameId(gameId))
          })
 
-         socket.once('host-left-response', () => {
-            setCurrentPlayerInLobby('Host left! You are host now!')
-            dispatch(setRole('host'))
-            dispatch(setPlayerNames([playerNames[1]]))
-         })     
+         socket.on('current-players-in-lobby-update', (data) => {
+            setCurrentPlayersInLobby(data.currentPlayers)
+         })
+
+         socket.on('host-left', (data) => {
+            setGameFound(false)
+            setMessage(data.message)
+         })
+         
+         socket.on('game-is-full', (data) => {
+            setIsLoading(false)
+            setMessage(data.message)
+         })
       })
       
       return () => {
+         socket.off('game-is-full')
+         socket.off('host-left')
          socket.off('check-if-game-exists-response')
-         socket.off('host-left-response')
+         socket.off('current-players-in-lobby-update')
       }
 
    }, [])
 
-   useEffect(() => {
-      console.log(playerNames)
-   },[playerNames])
+   // useEffect(() => {
+   //    console.log(playerNames)
+   // },[playerNames])
      
    return (
       <>
@@ -134,7 +131,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          ) : gameFound ? (
             <div className='main-container'>
                <h1 className='game-online-header'>GAME ONLINE</h1>
-               <p className='current-player-in-lobby'>(Current player in lobby: {currentPlayerInLobby})</p>
+               <p className='current-player-in-lobby'>Current players in lobby: {currentPlayersInLobby.length > 0 ? currentPlayersInLobby.join(', ') : 'None'}</p>
                <div className="players-section main-form">
                   <p className="players header">Enter your name:</p>
                   <div className="player-input">
@@ -143,7 +140,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                         type="text"
                         value={role === 'guest' ? playerNames[1] : playerNames[0]}
                         placeholder='Player name...' 
-                        onChange={(e) => handlePlayerNameChange(role || 'guest', e)}
+                        onChange={(e) => handlePlayerNameChange(e)}
                      />
                   </div>
                </div>
@@ -157,7 +154,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                </div>
             </div> 
          ) : (
-            <p style={{ color: 'white' }}>Page not found</p>
+            <p style={{ color: 'white' }}>{message}</p>
          )}
          < ErrorPopUp />
       </>

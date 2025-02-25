@@ -1,29 +1,23 @@
 import React, { useEffect } from 'react'
-//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setNumberOfLegs, setError} from '../../../redux/slices/gameSettingsSlice'
-//Types
+import { setError} from '../../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { GuestReadyProp } from '@/types/components/componentsTypes'
 
-const NumberOfLegsOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
+
+const NumberOfLegsOnlineSection = () => {
    const dispatch = useDispatch()
    const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
    const { gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
    
    //NUMBER OF LEGS HANDLER:
    const handleNumberOfLegs = (legs: number) => {
-      if (socket && role === 'host' && !guestReady) {
+      if (role === 'host') {
          const updatedGameSettings = { numberOfLegs: legs }
-         socket.emit('game-settings-change-request', { gameId, updatedGameSettings } )
-      } else if ( socket && role === 'host' && guestReady) {
-         dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready. You cannot change settings now!' }))
-      }
-
-      if (role === 'guest') {
+         socket?.emit('game-settings-change-request', { gameId, updatedGameSettings } )
+      } else {
          dispatch(setError({ isError: true, errorMessage: 'You are not host!' }))
-      }
+      }   
    }
 
    const getLegsOptions = (gameWin: GameSettingsStates['gameWin']) => {
@@ -34,42 +28,12 @@ const NumberOfLegsOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
 
    // UseEffect declared in order to set default numberOfLegs value in case changing winType from first-to to best-of when numberOfLegs is set to even number
    useEffect(() => {
-      if (role === 'host' && socket && !guestReady && !legsOptionsAvailable.includes(numberOfLegs)) {
+      if (role === 'host' && !legsOptionsAvailable.includes(numberOfLegs)) {
          const updatedGameSettings = { numberOfLegs: legsOptionsAvailable[0] }
-         socket.emit('game-settings-change-request', { gameId, updatedGameSettings } )
+         socket?.emit('game-settings-change-request', { gameId, updatedGameSettings } )
       }
    }, [gameWin, legsOptionsAvailable, numberOfLegs, dispatch, socket, role])
 
-   //HOST LISTENER
-   useEffect(() => {
-      if (role === 'host' && socket) {
-         socket.on('game-settings-changed', ({ updatedGameSettings }) => {
-            dispatch(setNumberOfLegs(updatedGameSettings.numberOfLegs))
-         })
-
-         socket.on('game-settings-change-failed', ({ message }) => {
-            dispatch(setError({ isError: true, errorMessage: message }))
-         })
-   
-         return () => {
-            socket.off('game-settings-changed')
-            socket.off('game-settings-change-failed')
-         }
-      }
-   }, [socket, role, dispatch])
-
-   //GUEST LISTENER
-   useEffect(() => {
-      if (role === 'guest' && socket) {
-         socket.on('game-settings-changed', ({ updatedGameSettings }) => {
-            dispatch(setNumberOfLegs(updatedGameSettings.numberOfLegs))
-         })
-   
-         return () => {
-            socket.off('game-settings-changed')
-         }
-      }
-   }, [socket, role, dispatch])
 
    return (
       <div className='legs-buttons main-form'>

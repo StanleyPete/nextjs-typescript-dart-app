@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState, addSocketState  } from '@/redux/store'
 import { setSocket, setRole, setGameId } from '@/redux/slices/game-online/socketSlice'
 import { setError } from '@/redux/slices/gameSettingsSlice'
+import { setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
 
 let socket: Socket
 
@@ -14,7 +15,7 @@ const CreateAnOnlineGameButton = () => {
    const router = useRouter()
    const dispatch = useDispatch()
    
-   const { playerNames, gameMode, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
+   const { playerNames, gameMode, gameWin, numberOfLegs, numberOfPlayers, throwTime } = useSelector((state: RootState) => state.gameSettings)
 
    const validatePlayerNames = () => {
       if (playerNames.some((name: string) => name.trim() === '')) {
@@ -49,7 +50,9 @@ const CreateAnOnlineGameButton = () => {
                   settings: {
                      gameMode,
                      gameWin,
-                     numberOfLegs, 
+                     numberOfLegs,
+                     numberOfPlayers,
+                     throwTime 
                   },
                }
             )
@@ -57,6 +60,17 @@ const CreateAnOnlineGameButton = () => {
             socket.on('game-created', (data) => {
                const { gameId } = data
                dispatch(setGameId(gameId))
+               const gamePlayer = {
+                  name: playerNames[0],
+                  ready: true,
+                  legs: numberOfLegs,
+                  pointsLeft: Number(gameMode),
+                  lastScore: 0,
+                  totalThrows: 0,
+                  attempts: 0,
+                  average: 0
+               }
+               dispatch(setPlayers([gamePlayer]))
                router.push(`/game-online/lobby/${gameId}`)
             })
             

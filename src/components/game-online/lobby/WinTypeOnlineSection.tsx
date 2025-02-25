@@ -1,60 +1,24 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setGameWin, setError } from '../../../redux/slices/gameSettingsSlice'
+import { setError } from '../../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { GuestReadyProp } from '@/types/components/componentsTypes'
 
-const WinTypeOnlineSection:React.FC<GuestReadyProp> = ({ guestReady }) => {
+
+const WinTypeOnlineSection = () => {
    const dispatch = useDispatch()
    const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
    const { gameWin } = useSelector((state: RootState) => state.gameSettings)
 
    //WIND TYPE CHANGE HANDLER:
    const handleWinType = (winType: GameSettingsStates['gameWin']) => {
-      if( socket && role === 'host' && !guestReady){
+      if(role === 'host'){
          const updatedGameSettings = { gameWin: winType }
-         socket.emit('game-settings-change-request', { gameId, updatedGameSettings } )  
-      } else if ( socket && role === 'host' && guestReady) {
-         dispatch(setError({ isError: true, errorMessage: 'Your opponent is ready. You cannot change settings now!' }))
-      }
-
-      if (role === 'guest'){
+         socket?.emit('game-settings-change-request', { gameId, updatedGameSettings } )  
+      } else {
          dispatch(setError({ isError: true, errorMessage: 'You are not host!' }))
       }
    }
-
-   //HOST LISTENER
-   useEffect(() => {
-      if (role === 'host' && socket) {
-         socket.on('game-settings-changed', ({ updatedGameSettings }) => {
-            dispatch(setGameWin(updatedGameSettings.gameWin))
-         })
-
-         socket.on('game-settings-change-failed', ({ message }) => {
-            dispatch(setError({ isError: true, errorMessage: message }))
-         })
-   
-         return () => {
-            socket.off('game-settings-changed')
-            socket.off('game-settings-change-failed')
-         }
-      }
-   }, [socket, role, dispatch])
-
-
-   //GUEST LISTENER
-   useEffect(() => {
-      if (role === 'guest' && socket) {
-         socket.on('game-settings-changed', ({ updatedGameSettings }) => {
-            dispatch(setGameWin(updatedGameSettings.gameWin)) 
-         })
-
-         return () => {
-            socket.off('game-settings-changed')
-         }
-      }
-   }, [socket, role, dispatch])
 
    return (
       <div className='win-type main-form'>

@@ -20,7 +20,6 @@ export interface GameOnlineStates {
 export interface PlayerOnline {
     name: string,
     ready: boolean
-    role: string,
     legs: number
     pointsLeft: number
     lastScore: number

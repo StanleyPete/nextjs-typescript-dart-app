@@ -1,17 +1,14 @@
 'use client'
 import React from 'react'
-import { SetGuestReadyProp } from '@/types/components/componentsTypes'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 
-const GuestReadyButton: React.FC<SetGuestReadyProp> = ({ setGuestReady }) => {
+const GuestReadyButton = () => {
    const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
 
-   const handleGuestReadyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+   const handleGuestReadyChange = () => {
       if (socket && role === 'guest') {
-         const isChecked = event.target.checked
          socket.emit('guest-ready', { gameId }) 
-         setGuestReady(isChecked)
       }
    }
 

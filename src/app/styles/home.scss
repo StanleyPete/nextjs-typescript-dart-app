@@ -13,12 +13,13 @@ $active-button-color: #df4040;
   display: flex;
   justify-content: space-evenly;
   padding: 4px 10px;
-  height: 36px;
+  height: 32px;
   border: $border-style;
   border-radius: $game-options-border-radius;
 }
 
 .game-options button {
+  font-size: 12px;
   padding: 4px 10px;
   border: none;
   border-radius: $game-options-border-radius;
@@ -35,7 +36,7 @@ $active-button-color: #df4040;
 .header{
     margin-bottom: 6px;
     color: #858585;
-    font-size: 14px;
+    font-size: 12px;
 }
   
 .players-section{
@@ -45,6 +46,7 @@ $active-button-color: #df4040;
         align-items: center;
         margin-top: 6px;
             input{
+              font-size: 12px;
               width: 90%;
               height: 36px;
               padding: 12px;

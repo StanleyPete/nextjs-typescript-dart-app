@@ -3,37 +3,29 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import { RootState } from '@/redux/store'
 import { useSelector, useDispatch } from 'react-redux'
-import { GuestReadyProp } from '@/types/components/componentsTypes'
-import { setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
+import { setError } from '@/redux/slices/gameSettingsSlice'
 
-const StartOnlineGameButton:React.FC<GuestReadyProp> = ({ guestReady }) => {
+const StartOnlineGameButton= () => {
    const router = useRouter()
    const dispatch = useDispatch()
    const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
-   const { playerNames, gameMode } = useSelector((state: RootState) => state.gameSettings)
+   const { numberOfPlayers } = useSelector((state: RootState) => state.gameSettings)
+   const { players } = useSelector((state: RootState) => state.gameOnline)
+   
+   const areAllPlayersReady = players.every(player => player.ready === true)
+   const areAllPlayersInTheLobby = players.length === numberOfPlayers
+   
 
    const handleStartGame = () => {
-      if (socket && role === 'host' && guestReady) {
-         socket.emit('start-game', { gameId })
+      if (!(areAllPlayersInTheLobby && areAllPlayersReady)) {
+          dispatch(setError({ isError: true, errorMessage: 'You cannot start the game. ' }))
+         return
+      }
+      if (role === 'host') {
+         socket?.emit('start-game', { gameId })
 
-         socket.once('game-start', () => {
-            const gamePlayers = [
-               {
-                  name: playerNames[0],
-                  legs: 0,
-                  pointsLeft: Number(gameMode),
-                  lastScore: 0,
-                  average: 0,
-               },
-               {
-                  name: playerNames[1],
-                  legs: 0,
-                  pointsLeft: Number(gameMode),
-                  lastScore: 0,
-                  average: 0,
-               },
-            ]
-            dispatch(setPlayers(gamePlayers))
+         socket?.once('game-start', () => {
+            
             router.push(`../game/${gameId}`)
          })
       }
@@ -43,14 +35,8 @@ const StartOnlineGameButton:React.FC<GuestReadyProp> = ({ guestReady }) => {
       <div className="game-start">
          <button
             className="game-start-button" 
-            style={{
-               filter: !guestReady ? 'brightness(0.6)' : 'none',
-               boxShadow: !guestReady ? 'inset 0px 4px 10px rgba(0, 0, 0, 0.5)' : '0px 4px 10px rgba(0, 0, 0, 0.3)',
-               cursor: !guestReady ? 'not-allowed' : 'pointer',
-               transition: 'all 0.2s ease-in-out'
-            }}
-            disabled={!guestReady}
             onClick={handleStartGame}
+            disabled={!(areAllPlayersInTheLobby && areAllPlayersReady)}
          >
          Start game!
          </button>

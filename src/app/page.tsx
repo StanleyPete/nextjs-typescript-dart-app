@@ -18,6 +18,8 @@ import ToTheGameButton from '@/components/home/ToTheGameButton'
 import CreateAnOnlineGameButton from '@/components/home/CreateAnOnlineGameButton'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import './styles/home.scss'
+import NumberOfPlayersSection from '@/components/home/NumberOfPlayersSection'
+import ThrowTimeSection from '@/components/home/ThrowTimeSection'
 
 
 /* 
@@ -75,6 +77,11 @@ const Home = () => {
          {/* GAME TYPE SECTION */}
          <GameTypeSection />
          
+         { gameType === 'online' 
+            ? (<NumberOfPlayersSection />) 
+            : null
+         }
+
          {/* PLAYER NAMES INPUT SECTION*/}
          {gameType === 'single' 
             ? (<GameSinglePlayerNamesInput maxPlayers={4} />) 
@@ -87,10 +94,12 @@ const Home = () => {
                      <GameTeamsPlayerNamesInput teamIndex={1} playerIndexes={[2, 3]} />
                   </div>
                ) 
-               : gameType === 'online' ? 
-                  ( <GameOnlinePlayerNameInput /> )
+               : gameType === 'online' 
+                  ? ( <GameOnlinePlayerNameInput /> )
                   : null 
          }
+
+       
          
          {/* GAME MODE SECTION */}
          <GameModeSection />
@@ -100,6 +109,11 @@ const Home = () => {
          
          {/* NUMBER OF LEGS SECTION*/}
          <NumberOfLegsSection />
+
+         { gameType === 'online' 
+            ? (<ThrowTimeSection />) 
+            : null
+         }
        
          {/* TO THE GAME BUTTON */}
          <div className='game-start'>
