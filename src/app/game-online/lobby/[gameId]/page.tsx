@@ -1,6 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useEffect } from 'react'
 import UrlToCopySection from '@/components/game-online/lobby/UrlToCopySection'
 import LobbyPlayersSection from '@/components/game-online/lobby/LobbyPlayersSection'
 import GameModeOnlineSection from '@/components/game-online/lobby/GameModeOnlineSection'
@@ -15,7 +14,8 @@ import GuestReadyButton from '@/components/game-online/lobby/GuestReadyButton'
 import { setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
 import { PlayerOnline } from '@/types/redux/gameOnlineTypes'
 import { setRole } from '@/redux/slices/game-online/socketSlice'
-import { setGameMode, setNumberOfLegs, setGameWin, setError } from '@/redux/slices/gameSettingsSlice'
+import { setGameMode, setNumberOfLegs, setGameWin, setError, setThrowTime } from '@/redux/slices/gameSettingsSlice'
+import ThrowTimeOnlineSection from '@/components/game-online/lobby/ThrowTimeOnlineSection'
 
 const Lobby = () => {
    // const router = useRouter()
@@ -49,6 +49,7 @@ const Lobby = () => {
          dispatch(setGameMode(data.updatedGameSettings.gameMode))
          dispatch(setNumberOfLegs(data.updatedGameSettings.numberOfLegs))
          dispatch(setGameWin(data.updatedGameSettings.gameWin))
+         dispatch(setThrowTime(data.updatedGameSettings.throwTime))
       }
 
       const onGameSettingsChanged = (data: { updatedGameSettings: any, gamePlayers: any[] }) => {
@@ -85,34 +86,18 @@ const Lobby = () => {
 
    return (
       <div className='main-container form'>
-         {/* GAME LOBBY HEADER */}
-         <h1 className='game-header'>
-            GAME LOBBY
-         </h1>
-
-         {/* URL SECTION  / JOIN/LEAVE NOTIFICATION */}
+         <h1 className='game-header'>GAME LOBBY</h1>
          { players.length < numberOfPlayers 
             ? ( <UrlToCopySection />) 
             : (null) }
-
-         {/* PLAYERS SECTION */}
          <LobbyPlayersSection />
-
-         {/* GAME MODE SECTION */}
          <GameModeOnlineSection />
-                 
-         {/* WIN TYPE SECTION */}
          <WinTypeOnlineSection />
-                 
-         {/* NUMBER OF LEGS SECTION*/}
          <NumberOfLegsOnlineSection />
-
-         {/* START GAME / GAME READY BUTTONS*/}
+         <ThrowTimeOnlineSection />
          { role === 'host' 
             ? (<StartOnlineGameButton />)
             : (<GuestReadyButton />) }
-
-         {/*ERROR POP UP*/}
          <ErrorPopUp />
       </div>
    )

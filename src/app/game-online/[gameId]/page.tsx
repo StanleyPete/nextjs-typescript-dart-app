@@ -11,7 +11,8 @@ import {
    setNumberOfLegs, 
    setPlayerNames,
    setError,
-   setNumberOfPlayers
+   setNumberOfPlayers,
+   setThrowTime
 } from '@/redux/slices/gameSettingsSlice'
 import { 
    setSocket, 
@@ -61,6 +62,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          dispatch(setGameMode(data.gameSettings.gameMode))
          dispatch(setGameWin(data.gameSettings.gameWin))
          dispatch(setNumberOfLegs(data.gameSettings.numberOfLegs)) 
+         dispatch(setThrowTime(data.gameSettings.throwTime))
          const formattedPlayers: PlayerOnline[] = data.gamePlayers.map((player: any) => ({
             name: player.playerName,
             ready: player.ready,
