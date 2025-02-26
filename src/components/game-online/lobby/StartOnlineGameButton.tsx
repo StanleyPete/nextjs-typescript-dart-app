@@ -18,7 +18,7 @@ const StartOnlineGameButton= () => {
 
    const handleStartGame = () => {
       if (!(areAllPlayersInTheLobby && areAllPlayersReady)) {
-          dispatch(setError({ isError: true, errorMessage: 'You cannot start the game. ' }))
+         dispatch(setError({ isError: true, errorMessage: 'You cannot start the game! All players have to join the game and declare their readiness.' }))
          return
       }
       if (role === 'host') {
@@ -36,7 +36,6 @@ const StartOnlineGameButton= () => {
          <button
             className="game-start-button" 
             onClick={handleStartGame}
-            disabled={!(areAllPlayersInTheLobby && areAllPlayersReady)}
          >
          Start game!
          </button>

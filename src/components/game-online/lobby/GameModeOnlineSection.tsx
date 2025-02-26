@@ -10,7 +10,7 @@ const GameModeOnlineSection = () => {
    const { gameMode } = useSelector((state: RootState) => state.gameSettings)
     
    const handleGameMode = (mode: GameSettingsStates['gameMode']) => {
-      if(role === 'host'){
+      if (role === 'host') {
          const updatedGameSettings = { gameMode: mode }
          socket?.emit('game-settings-change-request', { gameId, updatedGameSettings } )
       } else {

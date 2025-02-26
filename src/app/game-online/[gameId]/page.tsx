@@ -21,7 +21,7 @@ import {
 } from '@/redux/slices/game-online/socketSlice'
 import '../../styles/insert-new-joiner-name.scss'
 import ErrorPopUp from '@/components/ErrorPopUp'
-import { setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
+import { setGameNotStartedTimeoutEndTime, setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
 import { PlayerOnline } from '@/types/redux/gameOnlineTypes'
 
 let socket: Socket
@@ -63,6 +63,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
          dispatch(setGameWin(data.gameSettings.gameWin))
          dispatch(setNumberOfLegs(data.gameSettings.numberOfLegs)) 
          dispatch(setThrowTime(data.gameSettings.throwTime))
+         dispatch(setGameNotStartedTimeoutEndTime(data.gameSettings.gameNotStartedTimeoutEndTime))
          const formattedPlayers: PlayerOnline[] = data.gamePlayers.map((player: any) => ({
             name: player.playerName,
             ready: player.ready,

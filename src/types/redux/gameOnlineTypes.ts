@@ -15,6 +15,7 @@ export interface GameOnlineStates {
     isInputPreffered: boolean
     isSoundEnabled: boolean,
     initialSoundPlayed: boolean,
+    gameNotStartedTimeoutEndTime: number
 }
 
 export interface PlayerOnline {

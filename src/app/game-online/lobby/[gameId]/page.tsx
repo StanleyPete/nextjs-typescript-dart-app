@@ -16,6 +16,7 @@ import { PlayerOnline } from '@/types/redux/gameOnlineTypes'
 import { setRole } from '@/redux/slices/game-online/socketSlice'
 import { setGameMode, setNumberOfLegs, setGameWin, setError, setThrowTime } from '@/redux/slices/gameSettingsSlice'
 import ThrowTimeOnlineSection from '@/components/game-online/lobby/ThrowTimeOnlineSection'
+import TimeoutSection from '@/components/game-online/lobby/TimeoutSection'
 
 const Lobby = () => {
    // const router = useRouter()
@@ -87,6 +88,7 @@ const Lobby = () => {
    return (
       <div className='main-container form'>
          <h1 className='game-header'>GAME LOBBY</h1>
+         <TimeoutSection />
          { players.length < numberOfPlayers 
             ? ( <UrlToCopySection />) 
             : (null) }

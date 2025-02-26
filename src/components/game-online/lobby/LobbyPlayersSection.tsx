@@ -18,15 +18,15 @@ const LobbyPlayersSection = () => {
                   {/* Player Header*/}
                   <div className="game-online-player-header">
                      <Image
-                           src={
-                              index === 0
-                                 ? '/user-online-host.svg'
-                                 : !players[index] 
+                        src={
+                           index === 0
+                              ? '/user-online-host.svg'
+                              : !players[index] 
                                  ? '/user-online-empty-seat.svg'
                                  : players[index].ready 
-                                 ? '/user-online-guest-ready.svg'
-                                 : '/user-online-guest-not-ready.svg' 
-                           }
+                                    ? '/user-online-guest-ready.svg'
+                                    : '/user-online-guest-not-ready.svg' 
+                        }
                         alt="User icon"
                         width={22}
                         height={22}

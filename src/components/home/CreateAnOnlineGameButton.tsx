@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState, addSocketState  } from '@/redux/store'
 import { setSocket, setRole, setGameId } from '@/redux/slices/game-online/socketSlice'
 import { setError } from '@/redux/slices/gameSettingsSlice'
-import { setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
+import { setGameNotStartedTimeoutEndTime, setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
 
 let socket: Socket
 
@@ -58,7 +58,7 @@ const CreateAnOnlineGameButton = () => {
             )
 
             socket.on('game-created', (data) => {
-               const { gameId } = data
+               const { gameId, timeoutEndTime } = data
                dispatch(setGameId(gameId))
                const gamePlayer = {
                   name: playerNames[0],
@@ -71,6 +71,7 @@ const CreateAnOnlineGameButton = () => {
                   average: 0
                }
                dispatch(setPlayers([gamePlayer]))
+               dispatch(setGameNotStartedTimeoutEndTime(timeoutEndTime))
                router.push(`/game-online/lobby/${gameId}`)
             })
             

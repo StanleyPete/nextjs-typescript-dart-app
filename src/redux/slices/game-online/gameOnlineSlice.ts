@@ -21,6 +21,7 @@ const initialState: GameOnlineStates = {
    isInputPreffered: true,
    isSoundEnabled: true,
    initialSoundPlayed: false,
+   gameNotStartedTimeoutEndTime: 0
 }
 
 const gameOnlineSlice = createSlice({
@@ -75,6 +76,9 @@ const gameOnlineSlice = createSlice({
       setInitialSoundPlayed(state, action: PayloadAction<boolean>) {
          state.initialSoundPlayed = action.payload
       },
+      setGameNotStartedTimeoutEndTime(state, action: PayloadAction<number>) {
+         state.gameNotStartedTimeoutEndTime = action.payload
+      },
       updatePlayerReadiness(state, action: PayloadAction<{ index: number; ready: boolean }>) {
          if (state.players[action.payload.index]) {
             state.players[action.payload.index].ready = action.payload.ready
@@ -121,6 +125,7 @@ export const {
    setCurrentPlayerThrows,
    setIsInputPreffered,
    setInitialSoundPlayed,
+   setGameNotStartedTimeoutEndTime,
    updatePlayerLegs,
    updatePlayerPointsLeft,
    updatePlayerLastScore,
