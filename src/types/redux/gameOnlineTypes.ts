@@ -1,7 +1,7 @@
 export interface GameOnlineStates {
-    players: PlayerOnline[]
-    currentPlayerIndex: number
-    currentPlayer: string
+    players: PlayerOnline[],
+    currentPlayerIndex: number,
+    isItYourTurn: boolean,
     startIndex: number,
     showNumberButtons: boolean,
     currentThrow: number,
@@ -15,7 +15,10 @@ export interface GameOnlineStates {
     isInputPreffered: boolean
     isSoundEnabled: boolean,
     initialSoundPlayed: boolean,
-    gameNotStartedTimeoutEndTime: number
+    gameCreatedStartTime: number,
+    gameCreatedTimerDuartion: number,
+    currentPlayerTurnStartTime: number,
+    currentPlayerTurnTimerDuartion: number,
 }
 
 export interface PlayerOnline {

@@ -7,7 +7,7 @@ import { GameOnlineStates, PlayerOnline } from '@/types/redux/gameOnlineTypes'
 const initialState: GameOnlineStates = {
    players: [],
    currentPlayerIndex: 0,
-   currentPlayer: 'host',
+   isItYourTurn: false,
    startIndex: 0,
    showNumberButtons: false,
    currentThrow: 0,
@@ -21,7 +21,10 @@ const initialState: GameOnlineStates = {
    isInputPreffered: true,
    isSoundEnabled: true,
    initialSoundPlayed: false,
-   gameNotStartedTimeoutEndTime: 0
+   gameCreatedStartTime: 0,
+   gameCreatedTimerDuartion: 0,
+   currentPlayerTurnStartTime: 0,
+   currentPlayerTurnTimerDuartion: 0,
 }
 
 const gameOnlineSlice = createSlice({
@@ -34,8 +37,8 @@ const gameOnlineSlice = createSlice({
       setCurrentPlayerIndex(state, action: PayloadAction<number>) {
          state.currentPlayerIndex = action.payload
       },
-      setCurrentPlayer(state, action: PayloadAction<string>) {
-         state.currentPlayer = action.payload
+      setIsItYourTurn(state, action: PayloadAction<boolean>) {
+         state.isItYourTurn = action.payload
       },
       setStartIndex(state, action: PayloadAction<number>) {
          state.startIndex = action.payload
@@ -76,9 +79,19 @@ const gameOnlineSlice = createSlice({
       setInitialSoundPlayed(state, action: PayloadAction<boolean>) {
          state.initialSoundPlayed = action.payload
       },
-      setGameNotStartedTimeoutEndTime(state, action: PayloadAction<number>) {
-         state.gameNotStartedTimeoutEndTime = action.payload
+      setGameCreatedStartTime(state, action: PayloadAction<number>) {
+         state.gameCreatedStartTime = action.payload
       },
+      setGameCreatedTimerDuartion(state, action: PayloadAction<number>) {
+         state.gameCreatedTimerDuartion = action.payload
+      },
+      setCurrentPlayerTurnStartTime(state, action: PayloadAction<number>) {
+         state.currentPlayerTurnStartTime = action.payload
+      },
+      setCurrentPlayerTurnTimerDuartion(state, action: PayloadAction<number>) {
+         state.currentPlayerTurnTimerDuartion = action.payload
+      },
+
       updatePlayerReadiness(state, action: PayloadAction<{ index: number; ready: boolean }>) {
          if (state.players[action.payload.index]) {
             state.players[action.payload.index].ready = action.payload.ready
@@ -111,7 +124,7 @@ const gameOnlineSlice = createSlice({
 export const {
    setPlayers,
    setCurrentPlayerIndex,
-   setCurrentPlayer,
+   setIsItYourTurn,
    setStartIndex,
    setShowNumberButtons,
    setIsGameEnd,
@@ -125,7 +138,10 @@ export const {
    setCurrentPlayerThrows,
    setIsInputPreffered,
    setInitialSoundPlayed,
-   setGameNotStartedTimeoutEndTime,
+   setGameCreatedStartTime,
+   setGameCreatedTimerDuartion,
+   setCurrentPlayerTurnStartTime,
+   setCurrentPlayerTurnTimerDuartion,
    updatePlayerLegs,
    updatePlayerPointsLeft,
    updatePlayerLastScore,

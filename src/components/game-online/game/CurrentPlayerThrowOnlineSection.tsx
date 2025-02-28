@@ -4,11 +4,12 @@ import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setIsSoundEnabled } from '@/redux/slices/game-online/gameOnlineSlice'
+import CurrentPlayerTurnTimeoutSection from './CurrentPlayerTurnTimeoutSection'
 
 const CurrentPlayerThrowOnlineSection = () => {
    const dispatch = useDispatch()
 
-   const {players, currentPlayerIndex, isSoundEnabled} = useSelector((state: RootState) => state.gameOnline)
+   const {players, currentPlayerIndex, isSoundEnabled, isItYourTurn} = useSelector((state: RootState) => state.gameOnline)
   
 
    //Sound toggle handler
@@ -31,8 +32,8 @@ const CurrentPlayerThrowOnlineSection = () => {
          {/* Current player's turn message */}
          <span className="current-player-throw-message">
             {`${players[currentPlayerIndex].name.toUpperCase()}'S TURN TO THROW!`}
-            
          </span>
+         {isItYourTurn ? <CurrentPlayerTurnTimeoutSection /> : null}
          
       </p>
    )

@@ -1,6 +1,13 @@
 .opponent-turn-to-throw {
-    height: 377px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    height: 377px;
+    color: white;
+                .timeout{
+                    font-size: 64px;
+                    margin-top: 28px;
+                    color: white;
+                }
 }

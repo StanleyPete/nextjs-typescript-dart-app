@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 
-const TimeoutSection = () => {
-   const { gameCreatedStartTime, gameCreatedTimerDuartion } = useSelector((state: RootState) => state.gameOnline)
+const CurrentPlayerTurnTimeoutSection = () => {
+   const { currentPlayerTurnStartTime, currentPlayerTurnTimerDuartion } = useSelector((state: RootState) => state.gameOnline)
    const [ timeRemaining, setTimeRemaining ] = useState<number | null>(null)
    
    
    useEffect(() => {
-      if (!gameCreatedStartTime) return 
+      if (!currentPlayerTurnStartTime) return 
 
-      const calculatedEndTime = gameCreatedStartTime + gameCreatedTimerDuartion
+      const calculatedEndTime = currentPlayerTurnStartTime + currentPlayerTurnTimerDuartion
 
       setTimeRemaining(calculatedEndTime - Date.now())
 
@@ -29,7 +29,7 @@ const TimeoutSection = () => {
       }, 1000) 
 
       return () => clearInterval(intervalId) 
-   }, [gameCreatedStartTime])
+   }, [currentPlayerTurnStartTime, currentPlayerTurnTimerDuartion])
 
    // 
    const formatTime = (milliseconds: number) => {
@@ -45,11 +45,11 @@ const TimeoutSection = () => {
    return (
       <div className="timeout">
          {timeRemaining !== null 
-            ? <p>Timeout in: {formatTime(timeRemaining)}</p>
+            ? <p>{formatTime(timeRemaining)}</p>
             : <p>Loading timeout...</p>
          }
       </div>
    )
 }
 
-export default TimeoutSection
+export default CurrentPlayerTurnTimeoutSection
