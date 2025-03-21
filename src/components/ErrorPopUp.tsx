@@ -5,15 +5,9 @@ import { RootState } from '@/redux/store'
 import { setError } from '../redux/slices/gameSettingsSlice'
 
 const ErrorPopUp = () => {
-
    const dispatch = useDispatch()
-   
    const { isError, errorMessage } = useSelector((state: RootState) => state.gameSettings.error)
-
-   //Close error handler
-   const closeError = () => {
-      dispatch(setError({ isError: false, errorMessage: '' })) 
-   }
+   const closeError = () => { dispatch(setError({ isError: false, errorMessage: '' })) }
 
    return (
       isError && (

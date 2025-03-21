@@ -25,16 +25,11 @@ GAME CLASSIC:
 */
 
 const GameClassic = () => {
-  
    const dispatch = useDispatch()
-
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
-
    const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.game)
-   
    //Memoized (@/redux/selectors/game-classic/selectDataInGameClassicPage.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)
-
 
    useEffect(() => { 
       //Initial sound played only once (when game start)

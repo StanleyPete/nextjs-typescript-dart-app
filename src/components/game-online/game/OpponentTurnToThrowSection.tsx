@@ -1,6 +1,6 @@
 import React from 'react'
-import '../../../app/styles/opponent-turn-to-throw.scss'
 import CurrentPlayerTurnTimeoutSection from './CurrentPlayerTurnTimeoutSection'
+import '../../../app/styles/opponent-turn-to-throw.scss'
 
 const OpponentTurnToThrow = () => {
    return (

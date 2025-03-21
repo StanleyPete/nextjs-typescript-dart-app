@@ -1,11 +1,9 @@
 'use client'
 import React, { useEffect } from 'react'
-//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setInitialSoundPlayed } from '@/redux/slices/gameSlice'
 import { selectDataInGameCricketPage } from '@/redux/selectors/game-cricket/selectDataInGameCricketPage'
-//Components
 import GameCricketSinglePlayersSection from '@/components/game-cricket/GameCricketSinglePlayersSection'
 import GameCricketTeamsPlayersSection from '@/components/game-cricket/GameCricketTeamsPlayersSection'
 import SettingsButtons from '@/components/SettingsButtons'
@@ -14,18 +12,13 @@ import GameEndPopUp from '@/components/game-cricket/GameEndPopUp'
 import ThrowValueSectionCricket from '@/components/game-cricket/ThrowValueSectionCricket'
 import ScoreButtonsCricket from '@/components/game-cricket/ScoreButtonsCricket'
 import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
-//Controllers
 import { playSound } from '@/controllers/playSound'
 
 const GameCricket = () => {
    const dispatch = useDispatch()
-
    const { gameType } = useSelector((state: RootState) => state.gameSettings)
-
    const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.game)
-
    const { completedSectors } = useSelector((state: RootState) => state.gameCricket)
-
    //Memoized (@redux/selectors/game-cricket/selectDataInGameCricketPage)
    const { playersOrTeams, history } = useSelector(selectDataInGameCricketPage)
 

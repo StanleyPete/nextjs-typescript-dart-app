@@ -1,21 +1,14 @@
-//Redux
 import { AppDispatch } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
 import { setCurrentThrow } from '@/redux/slices/game-online/gameOnlineSlice'
 import { GameOnlineStates } from '@/types/redux/gameOnlineTypes'
-import { SocketState } from '@/types/redux/socketTypes'
-
-/* USED IN: 
-      ThrowValueSection component when showNumberButtons === false, 
-      Handles BUTTONS from 0 - 9
-*/
+import { socketService } from '@/socket/socket'
 
 export const handleSubmitThrowKeyboardButtonsOnline = (
    currentThrow: GameOnlineStates['currentThrow'],
    inputMultiplier: number,
    dispatch: AppDispatch,
-   socket: SocketState['socket'],
-   gameId: SocketState['gameId']
+   gameId: GameOnlineStates['gameId']
 ) => {
    // ERROR (currentThrow over 180)
    if (currentThrow > 180) {
@@ -33,12 +26,9 @@ export const handleSubmitThrowKeyboardButtonsOnline = (
    }
 
    const playerThrow = currentThrow * inputMultiplier
-  
-   socket?.emit('submit-score', {
-      gameId: gameId,
-      score: playerThrow
-   })
    
+   socketService.emitSubmitScoreKeyboardButtons(gameId, playerThrow)
+
    dispatch(setCurrentThrow(0))
    return
 }

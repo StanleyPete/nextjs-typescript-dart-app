@@ -54,6 +54,12 @@ const gameSettingsSlice = createSlice({
       setError: (state, action: PayloadAction<ErrorState>) => {
          state.error = action.payload
       },
+      setGameSettingsChange: (state, action: PayloadAction<any>) => {
+         state.gameMode = action.payload.gameMode
+         state.numberOfLegs = action.payload.numberOfLegs
+         state.gameWin = action.payload.gameWin
+         state.throwTime = action.payload.throwTime
+      }
    },
 })
 
@@ -67,5 +73,6 @@ export const {
    setThrowTime,
    setIsFirstLoad,
    setError,
+   setGameSettingsChange,
 } = gameSettingsSlice.actions
 export default gameSettingsSlice.reducer

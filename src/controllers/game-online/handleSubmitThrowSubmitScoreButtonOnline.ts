@@ -4,14 +4,6 @@ import { setPlayers, setCurrentThrow, setThrowValueSum, setCurrentPlayerThrowsCo
 import { playSound } from '@/controllers/playSound'
 import { GameOnlineStates, PlayerOnline } from '@/types/redux/gameOnlineTypes'
 
-/*  
-   USED IN: 
-      ThrowValueSection component
-     
-   SUBMIT THROW HANDLER FOR SUBMIT SCORE BUTTON:
-      Created for better user experience, i.e. when player has thrown 0 or missed any of 3 darts - no need to enter 0 values in the input field or click on button with 0 value
-*/
-
 export const handleSubmitThrowSubmitScoreButtonOnline = (
    players: PlayerOnline[],
    index: GameOnlineStates['currentPlayerIndex'],

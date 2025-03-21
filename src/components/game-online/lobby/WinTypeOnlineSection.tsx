@@ -3,21 +3,23 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setError } from '../../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { socketService } from '@/socket/socket'
 
 
 const WinTypeOnlineSection = () => {
    const dispatch = useDispatch()
-   const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
-   const { gameWin } = useSelector((state: RootState) => state.gameSettings)
+   const role =  useSelector((state: RootState) => state.gameOnline.role)
+   const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
+   const gameWin = useSelector((state: RootState) => state.gameSettings.gameWin)
 
-   //WIND TYPE CHANGE HANDLER:
    const handleWinType = (winType: GameSettingsStates['gameWin']) => {
       if(role === 'host'){
          const updatedGameSettings = { gameWin: winType }
-         socket?.emit('game-settings-change-request', { gameId, updatedGameSettings } )  
-      } else {
-         dispatch(setError({ isError: true, errorMessage: 'You are not host!' }))
-      }
+         socketService.emitUpdateGameSettings(gameId, updatedGameSettings)
+         return
+      } 
+      
+      return dispatch(setError({ isError: true, errorMessage: 'You are not host!' }))
    }
 
    return (

@@ -29,7 +29,7 @@ const CurrentPlayerThrowSection = () => {
    }
    
    return (
-      <p className="current-player-throw">
+      <div className="current-player-throw">
 
          {/* Button to toggle sound */}
          <button className="sound-button" onClick={toggleSound}>
@@ -50,7 +50,7 @@ const CurrentPlayerThrowSection = () => {
             }
          </span>
          
-      </p>
+      </div>
    )
 }
 

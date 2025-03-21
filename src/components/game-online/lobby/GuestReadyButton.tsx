@@ -1,15 +1,15 @@
 'use client'
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { useSelector } from 'react-redux'
+import { socketService } from '@/socket/socket'
 
 const GuestReadyButton = () => {
-   const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
-
+   const role =  useSelector((state: RootState) => state.gameOnline.role)
+   const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
+   
    const handleGuestReadyChange = () => {
-      if (socket && role === 'guest') {
-         socket.emit('guest-ready', { gameId }) 
-      }
+      if (role === 'guest') return socketService.emitGuestReady(gameId)
    }
 
    return (

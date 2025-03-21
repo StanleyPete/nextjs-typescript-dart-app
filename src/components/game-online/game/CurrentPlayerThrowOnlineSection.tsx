@@ -1,24 +1,24 @@
 import React from 'react'
 import Image from 'next/image'
-//Redux
-import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { useSelector, useDispatch } from 'react-redux'
 import { setIsSoundEnabled } from '@/redux/slices/game-online/gameOnlineSlice'
 import CurrentPlayerTurnTimeoutSection from './CurrentPlayerTurnTimeoutSection'
 
 const CurrentPlayerThrowOnlineSection = () => {
    const dispatch = useDispatch()
+   const players = useSelector((state: RootState) => state.gameOnline.players)
+   const currentPlayerIndex = useSelector((state: RootState) => state.gameOnline.currentPlayerIndex)
+   const isSoundEnabled = useSelector((state: RootState) => state.gameOnline.isSoundEnabled)
+   const isItYourTurn = useSelector((state: RootState) => state.gameOnline.isItYourTurn)
 
-   const {players, currentPlayerIndex, isSoundEnabled, isItYourTurn} = useSelector((state: RootState) => state.gameOnline)
-  
-
-   //Sound toggle handler
    const toggleSound = () => {
-      dispatch(setIsSoundEnabled(!isSoundEnabled))
+      const currentIsSoundEnabled = isSoundEnabled
+      dispatch(setIsSoundEnabled(!currentIsSoundEnabled))
    }
    
    return (
-      <p className="current-player-throw">
+      <div className="current-player-throw">
          {/* Button to toggle sound */}
          <button className="sound-button" onClick={toggleSound}>
             <Image
@@ -35,7 +35,7 @@ const CurrentPlayerThrowOnlineSection = () => {
          </span>
          {isItYourTurn ? <CurrentPlayerTurnTimeoutSection /> : null}
          
-      </p>
+      </div>
    )
 }
 

@@ -1,22 +1,27 @@
 import React from 'react'
 import Image from 'next/image'
-//Redux
-import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { useSelector, useDispatch } from 'react-redux'
 import { setCurrentThrow, setMultiplier, setIsDoubleActive } from '@/redux/slices/game-online/gameOnlineSlice'
 import { handleToggleInputMethodOnline } from '@/controllers/game-online/handleToggleInputMethod'
 import { handleThrowValueChangeOnline } from '@/controllers/game-online/handleThrowValueChange'
 import { handleSubmitThrowKeyboardButtonsOnline } from '@/controllers/game-online/handleSubmitThrowKeyboardButtonsOnline'
 import { handleSubmitThrowSubmitScoreButtonOnline } from '@/controllers/game-online/handleSubmitThrowSubmitScoreButtonOnline'
 
-
 const ThrowValueSectionOnline = () => {
    const dispatch = useDispatch()
+   const players = useSelector((state: RootState) => state.gameOnline.players)
+   const gameId = useSelector((state: RootState) => state.gameOnline.gameId)
+   const currentPlayerIndex = useSelector((state: RootState) => state.gameOnline.currentPlayerIndex)
+   const showNumberButtons = useSelector((state: RootState) => state.gameOnline.showNumberButtons)
+   const throwValueSum = useSelector((state: RootState) => state.gameOnline.throwValueSum)
+   const currentThrow = useSelector((state: RootState) => state.gameOnline.currentThrow)
+   const multiplier = useSelector((state: RootState) => state.gameOnline.multiplier)
+   const currentPlayerThrowsCount = useSelector((state: RootState) => state.gameOnline.currentPlayerThrowsCount)
+   const currentPlayerThrows = useSelector((state: RootState) => state.gameOnline.currentPlayerThrows)
+   const isSoundEnabled = useSelector((state: RootState) => state.gameOnline.isSoundEnabled)
+   const isDoubleActive = useSelector((state: RootState) => state.gameOnline.isDoubleActive)
 
-   const socket = useSelector((state: RootState) => state.socket.socket)
-   const gameId = useSelector((state: RootState) => state.socket.gameId)
-   const { players, currentPlayerIndex, showNumberButtons, throwValueSum, currentThrow, multiplier, isDoubleActive, currentPlayerThrowsCount, currentPlayerThrows, isSoundEnabled, } = useSelector((state: RootState) => state.gameOnline)
-   
    return (
       <>
          <div className="throw-value-section">
@@ -85,7 +90,6 @@ const ThrowValueSectionOnline = () => {
                         currentThrow,
                         multiplierNumber,
                         dispatch,
-                        socket, 
                         gameId
                      ) 
                   } else {

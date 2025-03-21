@@ -1,4 +1,8 @@
 export interface GameOnlineStates {
+    isConnected: boolean
+    isGameStarted: boolean
+    gameId: string,
+    role: string,
     players: PlayerOnline[],
     currentPlayerIndex: number,
     isItYourTurn: boolean,

@@ -3,15 +3,15 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 
 const TimeoutSection = () => {
-   const { gameCreatedStartTime, gameCreatedTimerDuartion } = useSelector((state: RootState) => state.gameOnline)
+   const gameCreatedStartTime = useSelector((state: RootState) => state.gameOnline.gameCreatedStartTime)
+   const gameCreatedTimerDuartion = useSelector((state: RootState) => state.gameOnline.gameCreatedTimerDuartion)
    const [ timeRemaining, setTimeRemaining ] = useState<number | null>(null)
-   
    
    useEffect(() => {
       if (!gameCreatedStartTime) return 
 
       const calculatedEndTime = gameCreatedStartTime + gameCreatedTimerDuartion
-
+      
       setTimeRemaining(calculatedEndTime - Date.now())
 
       const intervalId = setInterval(() => {
@@ -31,7 +31,7 @@ const TimeoutSection = () => {
       return () => clearInterval(intervalId) 
    }, [gameCreatedStartTime])
 
-   // 
+   
    const formatTime = (milliseconds: number) => {
       // Converting into minutes:
       const minutes = Math.floor(milliseconds / 60000) 
@@ -41,7 +41,6 @@ const TimeoutSection = () => {
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
    }
   
-
    return (
       <div className="timeout">
          {timeRemaining !== null 

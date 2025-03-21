@@ -4,10 +4,10 @@ import { RootState } from '@/redux/store'
 import { setGameMode } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
-const GameModeSection = () => {
 
+const GameModeSection = () => {
    const dispatch = useDispatch()
-   
+
    const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode)
    const gameType = useSelector((state:RootState) => state.gameSettings.gameType)
 

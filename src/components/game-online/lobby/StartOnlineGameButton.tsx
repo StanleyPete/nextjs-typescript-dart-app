@@ -1,34 +1,24 @@
 'use client'
 import React from 'react'
-import { useRouter } from 'next/navigation'
 import { RootState } from '@/redux/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { setError } from '@/redux/slices/gameSettingsSlice'
+import { socketService } from '@/socket/socket'
 
 const StartOnlineGameButton= () => {
-   const router = useRouter()
    const dispatch = useDispatch()
-   const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
-   const { numberOfPlayers } = useSelector((state: RootState) => state.gameSettings)
-   const { players } = useSelector((state: RootState) => state.gameOnline)
-   
+   const role =  useSelector((state: RootState) => state.gameOnline.role)
+   const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
+   const numberOfPlayers = useSelector((state: RootState) => state.gameSettings.numberOfPlayers)
+   const players =  useSelector((state: RootState) => state.gameOnline.players)
    const areAllPlayersReady = players.every(player => player.ready === true)
    const areAllPlayersInTheLobby = players.length === numberOfPlayers
    
-
    const handleStartGame = () => {
-      if (!(areAllPlayersInTheLobby && areAllPlayersReady)) {
-         dispatch(setError({ isError: true, errorMessage: 'You cannot start the game! All players have to join the game and declare their readiness.' }))
-         return
-      }
-      if (role === 'host') {
-         socket?.emit('start-game', { gameId })
-
-         socket?.once('game-start', () => {
-            
-            router.push(`../game/${gameId}`)
-         })
-      }
+      if (!(areAllPlayersInTheLobby && areAllPlayersReady)) return dispatch(setError({ isError: true,  errorMessage: 'You cannot start the game! All players have to join the game and declare their readiness.' 
+      }))
+         
+      if (role === 'host') return socketService.emitStartGame(gameId)
    }
    
    return (

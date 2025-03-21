@@ -7,11 +7,8 @@ import gameClassicTeamsReducer from './slices/game-classic/gameClassicTeamsSlice
 import gameCricketReducer from './slices/game-cricket/gameCricketSlice'
 import gameCricketSingleReducer from './slices/game-cricket/gameCricketSingleSlice'
 import gameCricketTeamsReducer from './slices/game-cricket/gameCricketTeamsSlice'
-import socketReducer from './slices/game-online/socketSlice'
 import gameOnlineReducer from './slices/game-online/gameOnlineSlice'
-
-
-//Types
+import joinRoomReducer from './slices/game-online/joinRoomSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GameStates } from '@/types/redux/gameTypes'
 import { 
@@ -24,9 +21,8 @@ import {
    GameCricketSingleStates, 
    GameCricketTeamsStates 
 } from '@/types/redux/gameCricketTypes'
-import { SocketState } from '@/types/redux/socketTypes'
 import { GameOnlineStates } from '@/types/redux/gameOnlineTypes'
-
+import { joinRoomTypes } from '@/types/redux/joinRoomTypes'
 
 
 //Initial store setup
@@ -92,12 +88,12 @@ export const addGameCricketTeamsStates = () => {
 
 
 
-//Add Socket States (only game-online)
-export const addSocketState = () => {
+//Add Game Online States: 
+export const addGameOnlineStates = () => {
    rootReducer = combineReducers({
-      socket: socketReducer,
       gameSettings: gameSettingsReducer,
       gameOnline: gameOnlineReducer,
+      joinRoom: joinRoomReducer
    })
 
    store.replaceReducer(rootReducer)
@@ -120,7 +116,7 @@ export type RootState = {
   gameCricket: GameCricketStates
   gameCricketSingle: GameCricketSingleStates
   gameCricketTeams: GameCricketTeamsStates
-  socket: SocketState
   gameOnline: GameOnlineStates
+  joinRoom: joinRoomTypes
 };
 export type AppDispatch = typeof store.dispatch

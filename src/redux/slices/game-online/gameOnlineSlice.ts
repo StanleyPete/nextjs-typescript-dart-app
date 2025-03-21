@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-//Types
-
 import { GameOnlineStates, PlayerOnline } from '@/types/redux/gameOnlineTypes'
 
 
 const initialState: GameOnlineStates = {
+   isConnected: false,
+   isGameStarted: false,
+   gameId: '',
+   role: '',
    players: [],
    currentPlayerIndex: 0,
    isItYourTurn: false,
@@ -31,6 +33,18 @@ const gameOnlineSlice = createSlice({
    name: 'gameOnline',
    initialState,
    reducers: {
+      setIsConnected(state, action: PayloadAction<boolean>) {
+         state.isConnected = action.payload
+      },
+      setIsGameStarted(state, action: PayloadAction<boolean>) {
+         state.isGameStarted = action.payload
+      },
+      setGameId(state, action: PayloadAction<string>){
+         state.gameId = action.payload
+      },
+      setRole(state, action: PayloadAction<'host' | 'guest'>){
+         state.role = action.payload
+      },
       setPlayers(state, action: PayloadAction<PlayerOnline[]>) {
          state.players = action.payload
       },
@@ -122,6 +136,10 @@ const gameOnlineSlice = createSlice({
 })
 
 export const {
+   setIsConnected,
+   setIsGameStarted,
+   setGameId,
+   setRole,
    setPlayers,
    setCurrentPlayerIndex,
    setIsItYourTurn,

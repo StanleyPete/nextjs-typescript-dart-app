@@ -1,35 +1,26 @@
 import React from 'react'
-//Redux
-import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { useSelector, useDispatch } from 'react-redux'
 import { setCurrentThrow } from '@/redux/slices/game-online/gameOnlineSlice'
 
 const KeyboardButtonsOnline = () => {
    const dispatch = useDispatch()
-   const { currentThrow } = useSelector((state: RootState) => state.gameOnline)
+   const currentThrow = useSelector((state: RootState) => state.gameOnline.currentThrow)
+
+   const handleClick = (value: number) => {
+      const newValue = Number(`${currentThrow}${value}`)
+      dispatch(setCurrentThrow(newValue))
+   }
 
    return (
-      <div className='score-input'>
-         {/* Buttons 0-9 */}
-         {Array.from({ length: 9 }, (_, i) => (
-            <button 
-               key={i} 
-               onClick={() => {
-                  const newValue = Number(`${currentThrow}${i+1}`)
-                  dispatch(setCurrentThrow(newValue))
-               }}
-            >
-               {i+1}
-            </button>
-         ))}
-         <button
-            onClick={() => {
-               const newValue = Number(`${currentThrow}${0}`)
-               dispatch(setCurrentThrow(newValue))
-            }}
-         >
-            0
-         </button>
+      <div className="score-buttons-section">
+         <div className="score-input">
+            {[...Array.from({ length: 9 }, (_, i) => i + 1), 0].map((num) => (
+               <button key={num} onClick={() => handleClick(num)}>
+                  {num}
+               </button>
+            ))}
+         </div>
       </div>
    )
 }

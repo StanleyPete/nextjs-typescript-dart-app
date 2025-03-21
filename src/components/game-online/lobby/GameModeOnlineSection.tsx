@@ -3,19 +3,22 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setError } from '../../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import { socketService } from '@/socket/socket'
 
 const GameModeOnlineSection = () => {
    const dispatch = useDispatch()
-   const { socket, role, gameId } = useSelector((state: RootState) => state.socket)
-   const { gameMode } = useSelector((state: RootState) => state.gameSettings)
-    
+   const role =  useSelector((state: RootState) => state.gameOnline.role)
+   const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
+   const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode)
+
    const handleGameMode = (mode: GameSettingsStates['gameMode']) => {
       if (role === 'host') {
          const updatedGameSettings = { gameMode: mode }
-         socket?.emit('game-settings-change-request', { gameId, updatedGameSettings } )
-      } else {
-         dispatch(setError({ isError: true, errorMessage: 'You are not the host!' }))
-      }
+         socketService.emitUpdateGameSettings(gameId, updatedGameSettings)
+         return
+      } 
+
+      return dispatch(setError({ isError: true, errorMessage: 'You are not the host!' }))
    }
 
    return (

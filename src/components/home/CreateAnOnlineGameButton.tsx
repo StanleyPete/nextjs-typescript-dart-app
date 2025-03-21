@@ -1,21 +1,25 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import io, { Socket } from 'socket.io-client'
-//Redux
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState, addSocketState  } from '@/redux/store'
-import { setSocket, setRole, setGameId } from '@/redux/slices/game-online/socketSlice'
+import { RootState, addGameOnlineStates  } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
-import { setGameCreatedStartTime, setGameCreatedTimerDuartion, setPlayers } from '@/redux/slices/game-online/gameOnlineSlice'
-
-let socket: Socket
+import { socketService } from '@/socket/socket'
 
 const CreateAnOnlineGameButton = () => {
-   const router = useRouter()
    const dispatch = useDispatch()
+   const router = useRouter()
    
-   const { playerNames, gameMode, gameWin, numberOfLegs, numberOfPlayers, throwTime } = useSelector((state: RootState) => state.gameSettings)
+   const { 
+      playerNames, 
+      gameMode, 
+      gameWin, 
+      numberOfLegs, 
+      numberOfPlayers, 
+      throwTime 
+   } = useSelector((state: RootState) => state.gameSettings)
+   const isConnected = useSelector((state: RootState) => state.gameOnline?.isConnected ?? false)
+   const gameId = useSelector((state: RootState) => state.gameOnline?.gameId ?? null)
 
    const validatePlayerNames = () => {
       if (playerNames.some((name: string) => name.trim() === '')) {
@@ -31,62 +35,18 @@ const CreateAnOnlineGameButton = () => {
          return
       }
 
-      if (!socket) {
-         socket = io('http://localhost:3001')
-
-         //Add socket state to redux
-         addSocketState()
-
-         //Connection listener
-         socket.on('connect', () => {
-            //Updating socket state in redux
-            dispatch(setSocket(socket))
-            dispatch(setRole('host'))
-            
-            //Create game emitter
-            socket.emit('create-game-request',
-               {  
-                  playerName: playerNames[0],
-                  settings: {
-                     gameMode,
-                     gameWin,
-                     numberOfLegs,
-                     numberOfPlayers,
-                     throwTime 
-                  },
-               }
-            )
-
-            socket.on('game-created', (data) => {
-               const { gameId, gameCreatedStartTime, gameCreatedTimerDuartion } = data
-               dispatch(setGameId(gameId))
-               const gamePlayer = {
-                  name: playerNames[0],
-                  ready: true,
-                  legs: numberOfLegs,
-                  pointsLeft: Number(gameMode),
-                  lastScore: 0,
-                  totalThrows: 0,
-                  attempts: 0,
-                  average: 0
-               }
-               dispatch(setPlayers([gamePlayer]))
-               dispatch(setGameCreatedStartTime(gameCreatedStartTime))
-               dispatch(setGameCreatedTimerDuartion(gameCreatedTimerDuartion))
-               router.push(`/game-online/lobby/${gameId}`)
-            })
-            
-         })
-
-         socket.on('disconnect', () => {
-            console.log('Disconnected from WebSocket server')
-         })
-
-         socket.on('connect_error', (error) => {
-            console.error('WebSocket connection error:', error)
-         })
-      } 
+      addGameOnlineStates()
+      socketService.connectAndCreateGame(
+         playerNames[0], 
+         { gameMode, gameWin, numberOfLegs, numberOfPlayers,throwTime }
+      )
    }
+
+   useEffect(() => {
+      if (isConnected && gameId) {
+         router.push(`/game-online/lobby/${gameId}`)
+      }
+   }, [isConnected, gameId])
 
    return (
       <button

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { useSelector } from 'react-redux'
 
 const CurrentPlayerTurnTimeoutSection = () => {
-   const { currentPlayerTurnStartTime, currentPlayerTurnTimerDuartion } = useSelector((state: RootState) => state.gameOnline)
+   const currentPlayerTurnStartTime = useSelector((state: RootState) => state.gameOnline.currentPlayerTurnStartTime)
+   const currentPlayerTurnTimerDuartion = useSelector((state: RootState) => state.gameOnline.currentPlayerTurnTimerDuartion)
    const [ timeRemaining, setTimeRemaining ] = useState<number | null>(null)
-   
    
    useEffect(() => {
       if (!currentPlayerTurnStartTime) return 
@@ -22,7 +22,7 @@ const CurrentPlayerTurnTimeoutSection = () => {
             //Clear interval when timeout
             clearInterval(intervalId)
             setTimeRemaining(0)
-            window.location.href = 'http://localhost:3000'
+            //Send submit Score 
          } else {
             setTimeRemaining(remainingTime)
          }
@@ -45,8 +45,8 @@ const CurrentPlayerTurnTimeoutSection = () => {
    return (
       <div className="timeout">
          {timeRemaining !== null 
-            ? <p>{formatTime(timeRemaining)}</p>
-            : <p>Loading timeout...</p>
+            ? <span>{formatTime(timeRemaining)}</span>
+            : <span>Loading timeout...</span>
          }
       </div>
    )

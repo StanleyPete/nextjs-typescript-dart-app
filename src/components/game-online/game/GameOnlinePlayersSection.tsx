@@ -1,17 +1,14 @@
 import React from 'react'
 import Image from 'next/image'
-//Redux
-import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-//Types
+import { useSelector } from 'react-redux'
 import { PlayerOnline } from '@/types/redux/gameOnlineTypes'
-//Lib
 import checkoutArray from '@/lib/checkout-table'
 
 const GameOnlinePlayersSection = () => {
-   
-   const { players, currentPlayerIndex } = useSelector((state: RootState) => state.gameOnline)
-   
+   const players = useSelector((state: RootState) => state.gameOnline.players)
+   const currentPlayerIndex = useSelector((state: RootState) => state.gameOnline.currentPlayerIndex)
+
    return (
       <div className="game-players-section">
          {players.length === 2 ? (
