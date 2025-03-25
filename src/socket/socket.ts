@@ -124,6 +124,14 @@ class SocketService {
          store.dispatch(setMultiplier(1))
       })
 
+      this.socket?.on('undo-submitted', (data) => {
+         const formattedPlayers = this.formatPlayers(data.gamePlayers)
+         store.dispatch(setPlayers(formattedPlayers))
+         const currentPlayerThrows = (store.getState() as RootState).gameOnline.currentPlayerThrows
+         const updatedThrows = currentPlayerThrows.slice(0, -1)
+         store.dispatch(setCurrentPlayerThrows(updatedThrows))
+      })
+
       this.socket?.on('input-method-changed', (data) => {
          const showNumberButtons = (store.getState() as RootState).gameOnline.showNumberButtons
          store.dispatch(setShowNumberButtons(!showNumberButtons))
@@ -138,6 +146,7 @@ class SocketService {
 
 
    }
+
    private formatPlayers(gamePlayers: any[]): PlayerOnline[] {
       return gamePlayers.map((player) => ({
          name: player.playerName,
@@ -269,6 +278,12 @@ class SocketService {
    public emitSubmitScoreNumberButtonsBeforeThirdThrow(gameId: string) {
       if (this.socket) {
          this.socket.emit('submit-score-number-buttons-before-third-throw', { gameId})
+      } 
+   }
+
+   public emitUndo(gameId: string) {
+      if (this.socket) {
+         this.socket.emit('undo', { gameId})
       } 
    }
 

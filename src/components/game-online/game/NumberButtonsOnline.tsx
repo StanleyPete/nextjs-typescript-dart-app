@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { handleSubmitThrowNumberButtonsOnline } from '@/controllers/game-online/handleSubmitThrowNumberButtonsOnline'
+import { handleUndo } from '@/controllers/game-online/handleUndo'
 
 const NumberButtonsOnline = () => {
    const gameId = useSelector((state: RootState) => state.gameOnline.gameId)
@@ -51,9 +52,7 @@ const NumberButtonsOnline = () => {
             ))}
 
             {/* UNDO BUTTON */}
-            <button 
-               onClick={() => { handleUndo() }}
-            >
+            <button onClick={() => { handleUndo(gameId) }} >
                Undo
             </button>
            
