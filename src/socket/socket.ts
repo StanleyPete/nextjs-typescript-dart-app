@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client'
 import { store } from '@/redux/store'
 import { RootState } from '@/redux/store'
-import { setGameId, setRole, setPlayers, setGameCreatedStartTime, setGameCreatedTimerDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrowsCount, setCurrentPlayerThrows, setThrowValueSum, setCurrentThrow, setShowNumberButtons } from '@/redux/slices/game-online/gameOnlineSlice'
+import { setGameId, setRole, setPlayers, setGameCreatedStartTime, setGameCreatedTimerDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrows, setCurrentThrow, setShowNumberButtons } from '@/redux/slices/game-online/gameOnlineSlice'
 import { setIsLoading, setCurrentPlayersInLobby, setGameFound, setMessage, setIsLobbyJoined } from '@/redux/slices/game-online/joinRoomSlice'
 import { setGameSettingsChange, setError } from '@/redux/slices/gameSettingsSlice'
 import { setNumberOfPlayers, setGameMode, setGameWin, setNumberOfLegs, setThrowTime } from '@/redux/slices/gameSettingsSlice'
@@ -86,9 +86,7 @@ class SocketService {
          store.dispatch(setCurrentPlayerTurnStartTime(data.currentPlayerTurnStartTime))
          store.dispatch(setIsItYourTurn(data.isItPlayersTurn))
          store.dispatch(setMultiplier(1))
-         store.dispatch(setCurrentPlayerThrowsCount(0))
          store.dispatch(setCurrentPlayerThrows([]))
-         store.dispatch(setThrowValueSum(0))
          store.dispatch(setCurrentThrow(0))
          const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
          playSound('no-score', isSoundEnabled )
@@ -103,9 +101,7 @@ class SocketService {
          store.dispatch(setCurrentPlayerTurnStartTime(data.currentPlayerTurnStartTime))
          store.dispatch(setIsItYourTurn(data.isItPlayersTurn))
          store.dispatch(setMultiplier(1))
-         store.dispatch(setCurrentPlayerThrowsCount(0))
          store.dispatch(setCurrentPlayerThrows([]))
-         store.dispatch(setThrowValueSum(0))
          store.dispatch(setCurrentThrow(0))
          const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
          if (data.score === 0){
@@ -138,9 +134,7 @@ class SocketService {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setMultiplier(1))
-         store.dispatch(setCurrentPlayerThrowsCount(0))
          store.dispatch(setCurrentPlayerThrows([]))
-         store.dispatch(setThrowValueSum(0))
          store.dispatch(setCurrentThrow(0))
       })
 
