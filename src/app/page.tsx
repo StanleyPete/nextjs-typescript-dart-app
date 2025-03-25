@@ -31,7 +31,6 @@ import ThrowTimeSection from '@/components/home/ThrowTimeSection'
 const Home = () => {
    const dispatch = useDispatch()
    const pathname = usePathname()
-   
    const { gameType, gameMode, isFirstLoad} = useSelector((state: RootState) => state.gameSettings)
    
    //Preparing URL
@@ -71,18 +70,11 @@ const Home = () => {
    
    return (
       <div className='main-container form'>
-
          <h1 className='game-header'>FREE DARTS SCOREBOARD</h1>
-
-         {/* GAME TYPE SECTION */}
          <GameTypeSection />
-         
          { gameType === 'online' 
             ? (<NumberOfPlayersSection />) 
-            : null
-         }
-
-         {/* PLAYER NAMES INPUT SECTION*/}
+            : null }
          {gameType === 'single' 
             ? (<GameSinglePlayerNamesInput maxPlayers={4} />) 
             : gameType === 'teams' ? 
@@ -98,35 +90,20 @@ const Home = () => {
                   ? ( <GameOnlinePlayerNameInput /> )
                   : null 
          }
-
-       
-         
-         {/* GAME MODE SECTION */}
          <GameModeSection />
-         
-         {/* WIN TYPE SECTION */}
          <WinTypeSection />
-         
-         {/* NUMBER OF LEGS SECTION*/}
          <NumberOfLegsSection />
-
          { gameType === 'online' 
             ? (<ThrowTimeSection />) 
             : null
          }
-       
-         {/* TO THE GAME BUTTON */}
          <div className='game-start'>
-            {gameType === 'single' || gameType === 'teams' ? (
-               <Link href={gameUrl}>
-                  <ToTheGameButton />
-               </Link>
-            ) : gameType === 'online' ? (
-               <CreateAnOnlineGameButton />
-            ) : null}
+            { gameType === 'single' || gameType === 'teams' 
+               ? ( <Link href={gameUrl}> <ToTheGameButton /> </Link> ) 
+               : gameType === 'online' 
+                  ? ( <CreateAnOnlineGameButton /> ) 
+                  : null }
          </div>
-         
-         {/* ERROR POP UP - rendered only if error*/}
          <ErrorPopUp />
 
       </div>

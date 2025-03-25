@@ -108,7 +108,11 @@ class SocketService {
          store.dispatch(setThrowValueSum(0))
          store.dispatch(setCurrentThrow(0))
          const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
-         playSound(String(data.score), isSoundEnabled )
+         if (data.score === 0){
+            playSound('no-score', isSoundEnabled)
+         } else {
+            playSound(String(data.score), isSoundEnabled )
+         }
       })
 
       this.socket?.on('score-submitted-number-buttons', (data) => {
@@ -262,17 +266,15 @@ class SocketService {
       } 
    }
 
-   public emitToggleInputMethod(gameId: string) {
+   public emitSubmitScoreNumberButtonsBeforeThirdThrow(gameId: string) {
       if (this.socket) {
-         this.socket.emit('toggle-input-method', { gameId })
+         this.socket.emit('submit-score-number-buttons-before-third-throw', { gameId})
       } 
    }
 
-   
-
-   public emitSubmitNoScore(gameId: string) {
+   public emitToggleInputMethod(gameId: string) {
       if (this.socket) {
-         this.socket.emit('submit-no-score', { gameId })
+         this.socket.emit('toggle-input-method', { gameId })
       } 
    }
 

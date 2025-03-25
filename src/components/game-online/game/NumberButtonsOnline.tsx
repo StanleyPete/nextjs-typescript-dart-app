@@ -15,7 +15,8 @@ const NumberButtonsOnline = () => {
    return (
       <div className="score-buttons-section">
          <div className='score-buttons'>
-            {/* Score buttons */}
+
+            {/* NUMBER BUTTONS: 1-20 */}
             {Array.from({ length: 20 }, (_, i) => {
                const baseValue = i + 1
                const displayValue = multiplier > 1 ? baseValue * multiplier : null
@@ -33,7 +34,7 @@ const NumberButtonsOnline = () => {
                )
             })}
 
-            {/* Bull, Outer, Miss and Undo buttons */}
+            {/* BULL, OUTER, MISS BUTTONS */}
             {specialButtons.map(({ label, value }) => (
                <button 
                   key={label} 
@@ -48,6 +49,13 @@ const NumberButtonsOnline = () => {
                   {label}
                </button>
             ))}
+
+            {/* UNDO BUTTON */}
+            <button 
+               onClick={() => { handleUndo() }}
+            >
+               Undo
+            </button>
            
          </div>
 

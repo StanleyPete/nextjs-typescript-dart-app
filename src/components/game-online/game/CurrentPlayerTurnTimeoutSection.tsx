@@ -22,7 +22,6 @@ const CurrentPlayerTurnTimeoutSection = () => {
             //Clear interval when timeout
             clearInterval(intervalId)
             setTimeRemaining(0)
-            //Send submit Score 
          } else {
             setTimeRemaining(remainingTime)
          }
