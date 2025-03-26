@@ -8,6 +8,8 @@ export interface GameOnlineStates {
     isItYourTurn: boolean,
     showNumberButtons: boolean,
     currentThrow: number,
+    isGameEnd: boolean,
+    winner: any,
     isDoubleActive: boolean,
     multiplier: number
     currentPlayerThrows: number[],

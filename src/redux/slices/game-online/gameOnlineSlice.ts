@@ -11,6 +11,8 @@ const initialState: GameOnlineStates = {
    isItYourTurn: false,
    showNumberButtons: false,
    currentThrow: 0,
+   isGameEnd: false,
+   winner: null,
    isDoubleActive: false,
    multiplier: 1,
    currentPlayerThrows: [],
@@ -52,6 +54,12 @@ const gameOnlineSlice = createSlice({
       setCurrentThrow(state, action: PayloadAction<number>) {
          state.currentThrow = action.payload
       },
+      setIsGameEnd(state, action: PayloadAction<boolean>) {
+         state.isGameEnd = action.payload
+      },
+      setWinner(state, action: PayloadAction<any>) {
+         state.winner = action.payload
+      },
       setIsDoubleActive(state, action: PayloadAction<boolean>) {
          state.isDoubleActive = action.payload
       },
@@ -91,6 +99,8 @@ export const {
    setIsSoundEnabled,
    setIsDoubleActive,
    setCurrentThrow,
+   setIsGameEnd,
+   setWinner,
    setMultiplier,
    setCurrentPlayerThrows,
    setGameCreatedStartTime,

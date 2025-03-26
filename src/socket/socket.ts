@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client'
 import { store } from '@/redux/store'
 import { RootState } from '@/redux/store'
-import { setGameId, setRole, setPlayers, setGameCreatedStartTime, setGameCreatedTimerDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrows, setCurrentThrow, setShowNumberButtons } from '@/redux/slices/game-online/gameOnlineSlice'
+import { setGameId, setRole, setPlayers, setGameCreatedStartTime, setGameCreatedTimerDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrows, setCurrentThrow, setShowNumberButtons, setIsGameEnd, setWinner, setIsDoubleActive } from '@/redux/slices/game-online/gameOnlineSlice'
 import { setIsLoading, setCurrentPlayersInLobby, setGameFound, setMessage, setIsLobbyJoined } from '@/redux/slices/game-online/joinRoomSlice'
 import { setGameSettingsChange, setError } from '@/redux/slices/gameSettingsSlice'
 import { setNumberOfPlayers, setGameMode, setGameWin, setNumberOfLegs, setThrowTime } from '@/redux/slices/gameSettingsSlice'
@@ -86,6 +86,7 @@ class SocketService {
          store.dispatch(setCurrentPlayerTurnStartTime(data.currentPlayerTurnStartTime))
          store.dispatch(setIsItYourTurn(data.isItPlayersTurn))
          store.dispatch(setMultiplier(1))
+         store.dispatch(setIsDoubleActive(false))
          store.dispatch(setCurrentPlayerThrows([]))
          store.dispatch(setCurrentThrow(0))
          const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
@@ -101,6 +102,7 @@ class SocketService {
          store.dispatch(setCurrentPlayerTurnStartTime(data.currentPlayerTurnStartTime))
          store.dispatch(setIsItYourTurn(data.isItPlayersTurn))
          store.dispatch(setMultiplier(1))
+         store.dispatch(setIsDoubleActive(false))
          store.dispatch(setCurrentPlayerThrows([]))
          store.dispatch(setCurrentThrow(0))
          const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
@@ -134,8 +136,34 @@ class SocketService {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setMultiplier(1))
+         store.dispatch(setIsDoubleActive(false))
          store.dispatch(setCurrentPlayerThrows([]))
          store.dispatch(setCurrentThrow(0))
+      })
+
+      this.socket?.on('leg-end', (data) => {
+         const formattedPlayers = this.formatPlayers(data.gamePlayers)
+         store.dispatch(setPlayers(formattedPlayers))
+         store.dispatch(setCurrentPlayerIndex(data.currentPlayerIndex))
+         store.dispatch(setIsItYourTurn(data.isItPlayersTurn))
+         store.dispatch(setCurrentPlayerTurnStartTime(data.currentPlayerTurnStartTime))
+         store.dispatch(setCurrentPlayerThrows([]))
+         store.dispatch(setMultiplier(1))
+         store.dispatch(setIsDoubleActive(false))
+         const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
+         playSound('and-the-leg', isSoundEnabled)
+      })
+
+      this.socket?.on('game-end', (data) => {
+         const formattedPlayers = this.formatPlayers(data.gamePlayers)
+         store.dispatch(setPlayers(formattedPlayers))
+         store.dispatch(setCurrentPlayerThrows([]))
+         store.dispatch(setMultiplier(1))
+         store.dispatch(setIsDoubleActive(false))
+         store.dispatch(setIsGameEnd(true))
+         store.dispatch(setWinner(data.winner))
+         const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
+         playSound('and-the-game', isSoundEnabled)
       })
 
 
@@ -257,9 +285,9 @@ class SocketService {
       } 
    }
 
-   public emitSubmitScoreKeyboardButtons(gameId: string, score: number) {
+   public emitSubmitScoreKeyboardButtons(gameId: string, score: number, multiplier: number) {
       if (this.socket) {
-         this.socket.emit('submit-score-keyboard-buttons', { gameId, score })
+         this.socket.emit('submit-score-keyboard-buttons', { gameId, score, multiplier })
       } 
    }
 

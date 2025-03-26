@@ -1,20 +1,14 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
-//Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-//Controllers
 import { handleRestartGameClassic } from '@/controllers/game-classic/handleRestartGameClassic'
 import { handleRestartGameCricket } from '@/controllers/game-cricket/handleRestartGameCricket'
 
 const SettingsButtons = () => {
-
    const dispatch = useDispatch()
-
    const router = useRouter()
-
    const { gameMode, playerNames, gameType } = useSelector((state: RootState) => state.gameSettings)
-
    const { isGameEnd } = useSelector((state: RootState) => state.game)
    
    return (

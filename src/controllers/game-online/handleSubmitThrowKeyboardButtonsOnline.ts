@@ -27,7 +27,7 @@ export const handleSubmitThrowKeyboardButtonsOnline = (
 
    const playerThrow = currentThrow * inputMultiplier
    
-   socketService.emitSubmitScoreKeyboardButtons(gameId, playerThrow)
+   socketService.emitSubmitScoreKeyboardButtons(gameId, playerThrow, inputMultiplier)
 
    dispatch(setCurrentThrow(0))
    return

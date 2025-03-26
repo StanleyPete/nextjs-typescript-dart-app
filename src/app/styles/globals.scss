@@ -456,6 +456,11 @@ body{
   background-color: $green-color;
 }
 
+.button-double{
+  border-bottom-left-radius: $main-container-border-radius;
+  border-bottom-right-radius: $main-container-border-radius;
+}
+
 
 
 

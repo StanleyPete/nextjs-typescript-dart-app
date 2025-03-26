@@ -15,7 +15,7 @@ const ButtonDoubleOnline = () => {
       && players[currentPlayerIndex].pointsLeft % 2 === 0 
       && (
          <button 
-            className={isDoubleActive ? 'active' : ''}
+            className={`button-double ${isDoubleActive ? 'active' : ''}`}
             onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 
          >
             Double

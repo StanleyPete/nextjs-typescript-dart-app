@@ -41,7 +41,7 @@ const ThrowValueSection = () => {
 
             {/* Toggle between input and number buttons */}
             <button 
-               className={`input-toggle ${showNumberButtons ? 'buttons-active' : 'input-active'}`}
+               className={`input-toggle ${showNumberButtons || playersOrTeams[index].pointsLeft <= 40 && playersOrTeams[index].pointsLeft % 2 === 0 ? 'buttons-active' : 'input-active'}`}
                onClick={() => {
                   handleToggleInputMethod(
                      gameType,
@@ -138,7 +138,7 @@ const ThrowValueSection = () => {
             {!showNumberButtons ? (
                playersOrTeams[index].pointsLeft <= 40 && playersOrTeams[index].pointsLeft % 2 === 0 && (
                   <button 
-                     className={isDoubleActive ? 'active' : ''}
+                     className={`button-double ${isDoubleActive ? 'active' : ''}`}
                      onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 
                   >
                      Double
