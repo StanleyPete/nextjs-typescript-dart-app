@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client'
 import { store } from '@/redux/store'
 import { RootState } from '@/redux/store'
-import { setGameId, setRole, setPlayers, setGameCreatedStartTime, setGameCreatedTimerDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrows, setCurrentThrow, setShowNumberButtons, setIsGameEnd, setWinner, setIsDoubleActive } from '@/redux/slices/game-online/gameOnlineSlice'
+import { setGameId, setRole, setPlayers, setGameTimeoutStartTime, setGameTimeoutDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrows, setCurrentThrow, setShowNumberButtons, setIsGameEnd, setWinner, setIsDoubleActive, setIsTimeout, setMessage as setLobbyMessage } from '@/redux/slices/game-online/gameOnlineSlice'
 import { setIsLoading, setCurrentPlayersInLobby, setGameFound, setMessage, setIsLobbyJoined } from '@/redux/slices/game-online/joinRoomSlice'
 import { setGameSettingsChange, setError } from '@/redux/slices/gameSettingsSlice'
 import { setNumberOfPlayers, setGameMode, setGameWin, setNumberOfLegs, setThrowTime } from '@/redux/slices/gameSettingsSlice'
@@ -23,27 +23,32 @@ class SocketService {
          console.error('Error, websocket server', err)
       })
 
+      this.socket.on('game-timeout', (data) => {
+         store.dispatch(setIsTimeout(true))
+         store.dispatch(setLobbyMessage(data.message))
+      })
+
       this.socket?.on('game-settings-changed', (data) => {
          store.dispatch(setGameSettingsChange(data.updatedGameSettings))              
       })
 
-      this.socket?.on('guest-joined-lobby', (data) => {
+      this.socket.on('guest-joined-lobby', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
       })
 
-      this.socket?.on('lobby-player-left', (data) => {
+      this.socket.on('lobby-player-left', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
       })
 
-      this.socket?.on('game-player-left', (data) => {
+      this.socket.on('game-player-left', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setCurrentPlayerIndex(data.currentPlayerIndex))
       })
 
-      this.socket?.on('current-game-player-left', (data) => {
+      this.socket.on('current-game-player-left', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setCurrentPlayerIndex(data.currentPlayerIndex))
@@ -51,27 +56,29 @@ class SocketService {
          store.dispatch(setIsItYourTurn(data.isItPlayersTurn))
       })
 
-      this.socket?.on('player-ready', (data) => {
+      this.socket.on('player-ready', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
       })
 
 
-      this.socket?.on('game-settings-change-failed', (data) => {
+      this.socket.on('game-settings-change-failed', (data) => {
          store.dispatch(setError({ isError: true, errorMessage: data.message }))
       })
 
-      this.socket?.on('host-change', () => {
+      this.socket.on('host-change', () => {
          store.dispatch(setRole('host'))
       })
 
 
-      this.socket?.on('game-start', (data) => {
+      this.socket.on('game-start', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setGameSettingsChange(data.updatedGameSettings))
          store.dispatch(setCurrentPlayerTurnStartTime(data.currentPlayerTurnStartTime))
          store.dispatch(setCurrentPlayerTurnTimerDuartion(data.currentPlayerTurnTimerDuartion))
+         store.dispatch(setGameTimeoutDuartion(0))
+         store.dispatch(setGameTimeoutStartTime(0))
          store.dispatch(setIsGameStarted(true))   
          store.dispatch(setIsItYourTurn(data.isItPlayersTurn))
          const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
@@ -79,7 +86,7 @@ class SocketService {
 
       })
 
-      this.socket?.on('no-score-result', (data) => {
+      this.socket.on('no-score-result', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setCurrentPlayerIndex(data.currentPlayerIndex))
@@ -95,7 +102,7 @@ class SocketService {
 
       })
 
-      this.socket?.on('score-submitted', (data) => {
+      this.socket.on('score-submitted', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setCurrentPlayerIndex(data.currentPlayerIndex))
@@ -113,7 +120,7 @@ class SocketService {
          }
       })
 
-      this.socket?.on('score-submitted-number-buttons', (data) => {
+      this.socket.on('score-submitted-number-buttons', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          const currentPlayerThrows = (store.getState() as RootState).gameOnline.currentPlayerThrows
@@ -122,7 +129,7 @@ class SocketService {
          store.dispatch(setMultiplier(1))
       })
 
-      this.socket?.on('undo-submitted', (data) => {
+      this.socket.on('undo-submitted', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          const currentPlayerThrows = (store.getState() as RootState).gameOnline.currentPlayerThrows
@@ -130,7 +137,7 @@ class SocketService {
          store.dispatch(setCurrentPlayerThrows(updatedThrows))
       })
 
-      this.socket?.on('input-method-changed', (data) => {
+      this.socket.on('input-method-changed', (data) => {
          const showNumberButtons = (store.getState() as RootState).gameOnline.showNumberButtons
          store.dispatch(setShowNumberButtons(!showNumberButtons))
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
@@ -141,7 +148,7 @@ class SocketService {
          store.dispatch(setCurrentThrow(0))
       })
 
-      this.socket?.on('leg-end', (data) => {
+      this.socket.on('leg-end', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setCurrentPlayerIndex(data.currentPlayerIndex))
@@ -154,14 +161,17 @@ class SocketService {
          playSound('and-the-leg', isSoundEnabled)
       })
 
-      this.socket?.on('game-end', (data) => {
+      this.socket.on('game-end', (data) => {
          const formattedPlayers = this.formatPlayers(data.gamePlayers)
+         store.dispatch(setGameTimeoutStartTime(data.gameTimeoutStartTime))
+         store.dispatch(setGameTimeoutDuartion(data.gameTimeoutDuartion))
          store.dispatch(setPlayers(formattedPlayers))
          store.dispatch(setCurrentPlayerThrows([]))
          store.dispatch(setMultiplier(1))
          store.dispatch(setIsDoubleActive(false))
-         store.dispatch(setIsGameEnd(true))
          store.dispatch(setWinner(data.winner))
+         store.dispatch(setIsGameStarted(false))
+         store.dispatch(setIsGameEnd(true))
          const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
          playSound('and-the-game', isSoundEnabled)
       })
@@ -189,7 +199,7 @@ class SocketService {
       this.socket.once('connect', () => {
          this.socket?.emit('create-game-request', { playerName, settings })
          this.socket?.once('game-created', (data) => {
-            const { gameId, gameCreatedStartTime, gameCreatedTimerDuartion } = data
+            const { gameId, gameTimeoutStartTime, gameTimeoutDuartion } = data
             const gamePlayer = {
                name: playerName,
                ready: true,
@@ -203,8 +213,8 @@ class SocketService {
             store.dispatch(setGameId(gameId))
             store.dispatch(setRole('host'))
             store.dispatch(setPlayers([gamePlayer]))
-            store.dispatch(setGameCreatedStartTime(gameCreatedStartTime))
-            store.dispatch(setGameCreatedTimerDuartion(gameCreatedTimerDuartion))
+            store.dispatch(setGameTimeoutStartTime(gameTimeoutStartTime))
+            store.dispatch(setGameTimeoutDuartion(gameTimeoutDuartion))
             store.dispatch(setIsConnected(true))
          })
       })
@@ -253,10 +263,10 @@ class SocketService {
             store.dispatch(setGameMode(data.gameSettings.gameMode))
             store.dispatch(setGameWin(data.gameSettings.gameWin))
             store.dispatch(setNumberOfLegs(data.gameSettings.numberOfLegs))
-            store.dispatch(setThrowTime(data.gameSettings.throwTime))
-            store.dispatch(setGameCreatedStartTime(data.gameSettings.gameCreatedTimerEndTime -
-            data.gameCreatedTimerDuartion))
-            store.dispatch(setGameCreatedTimerDuartion(data.gameCreatedTimerDuartion))
+            store.dispatch(setThrowTime(data.gameSettings.throwTime / 1000))
+            store.dispatch(setGameTimeoutStartTime(data.gameSettings.gameTimeoutEndTime -
+            data.gameTimeoutDuartion))
+            store.dispatch(setGameTimeoutDuartion(data.gameTimeoutDuartion))
             store.dispatch(setPlayers(formattedPlayers))
             store.dispatch(setIsLobbyJoined(true))
             this.socket?.off('current-players-in-lobby-update')

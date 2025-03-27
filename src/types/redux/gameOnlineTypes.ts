@@ -1,6 +1,8 @@
 export interface GameOnlineStates {
     isConnected: boolean
     isGameStarted: boolean
+    isTimeout: boolean
+    message: string
     gameId: string,
     role: string,
     players: PlayerOnline[],
@@ -14,8 +16,8 @@ export interface GameOnlineStates {
     multiplier: number
     currentPlayerThrows: number[],
     isSoundEnabled: boolean,
-    gameCreatedStartTime: number,
-    gameCreatedTimerDuartion: number,
+    gameTimeoutStartTime: number,
+    gameTimeoutDuartion: number,
     currentPlayerTurnStartTime: number,
     currentPlayerTurnTimerDuartion: number,
 }

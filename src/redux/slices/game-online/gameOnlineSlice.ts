@@ -4,6 +4,8 @@ import { GameOnlineStates, PlayerOnline } from '@/types/redux/gameOnlineTypes'
 const initialState: GameOnlineStates = {
    isConnected: false,
    isGameStarted: false,
+   isTimeout: false,
+   message: '',
    gameId: '',
    role: '',
    players: [],
@@ -17,8 +19,8 @@ const initialState: GameOnlineStates = {
    multiplier: 1,
    currentPlayerThrows: [],
    isSoundEnabled: true,
-   gameCreatedStartTime: 0,
-   gameCreatedTimerDuartion: 0,
+   gameTimeoutStartTime: 0,
+   gameTimeoutDuartion: 0,
    currentPlayerTurnStartTime: 0,
    currentPlayerTurnTimerDuartion: 0,
 }
@@ -32,6 +34,12 @@ const gameOnlineSlice = createSlice({
       },
       setIsGameStarted(state, action: PayloadAction<boolean>) {
          state.isGameStarted = action.payload
+      },
+      setIsTimeout(state, action: PayloadAction<boolean>) {
+         state.isTimeout = action.payload
+      },
+      setMessage(state, action: PayloadAction<string>) {
+         state.message = action.payload
       },
       setGameId(state, action: PayloadAction<string>){
          state.gameId = action.payload
@@ -72,11 +80,11 @@ const gameOnlineSlice = createSlice({
       setIsSoundEnabled(state, action: PayloadAction<boolean>) {
          state.isSoundEnabled = action.payload
       },
-      setGameCreatedStartTime(state, action: PayloadAction<number>) {
-         state.gameCreatedStartTime = action.payload
+      setGameTimeoutStartTime(state, action: PayloadAction<number>) {
+         state.gameTimeoutStartTime = action.payload
       },
-      setGameCreatedTimerDuartion(state, action: PayloadAction<number>) {
-         state.gameCreatedTimerDuartion = action.payload
+      setGameTimeoutDuartion(state, action: PayloadAction<number>) {
+         state.gameTimeoutDuartion = action.payload
       },
       setCurrentPlayerTurnStartTime(state, action: PayloadAction<number>) {
          state.currentPlayerTurnStartTime = action.payload
@@ -90,6 +98,8 @@ const gameOnlineSlice = createSlice({
 export const {
    setIsConnected,
    setIsGameStarted,
+   setIsTimeout,
+   setMessage,
    setGameId,
    setRole,
    setPlayers,
@@ -103,8 +113,8 @@ export const {
    setWinner,
    setMultiplier,
    setCurrentPlayerThrows,
-   setGameCreatedStartTime,
-   setGameCreatedTimerDuartion,
+   setGameTimeoutStartTime,
+   setGameTimeoutDuartion,
    setCurrentPlayerTurnStartTime,
    setCurrentPlayerTurnTimerDuartion,
 } = gameOnlineSlice.actions

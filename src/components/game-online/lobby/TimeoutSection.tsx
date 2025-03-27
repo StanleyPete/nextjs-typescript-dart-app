@@ -3,15 +3,16 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 
 const TimeoutSection = () => {
-   const gameCreatedStartTime = useSelector((state: RootState) => state.gameOnline.gameCreatedStartTime)
-   const gameCreatedTimerDuartion = useSelector((state: RootState) => state.gameOnline.gameCreatedTimerDuartion)
+   const gameTimeoutStartTime = useSelector((state: RootState) => state.gameOnline.gameTimeoutStartTime)
+   const gameTimeoutDuartion = useSelector((state: RootState) => state.gameOnline.gameTimeoutDuartion)
+   // const isGameEnd = useSelector((state: RootState) => state.gameOnline.isGameEnd)
+
    const [ timeRemaining, setTimeRemaining ] = useState<number | null>(null)
    
    useEffect(() => {
-      if (!gameCreatedStartTime) return 
+      if (!gameTimeoutStartTime) return 
 
-      const calculatedEndTime = gameCreatedStartTime + gameCreatedTimerDuartion
-      
+      const calculatedEndTime = gameTimeoutStartTime + gameTimeoutDuartion
       setTimeRemaining(calculatedEndTime - Date.now())
 
       const intervalId = setInterval(() => {
@@ -22,14 +23,21 @@ const TimeoutSection = () => {
             //Clear interval when timeout
             clearInterval(intervalId)
             setTimeRemaining(0)
-            window.location.href = 'http://localhost:3000'
+            // window.location.href = 'http://localhost:3000'
          } else {
             setTimeRemaining(remainingTime)
          }
       }, 1000) 
 
       return () => clearInterval(intervalId) 
-   }, [gameCreatedStartTime])
+   }, [gameTimeoutStartTime])
+
+   // useEffect(() => {
+   //    if(!isGameEnd){
+   //       const calculatedEndTime = gameTimeoutStartTime + gameTimeoutDuartion
+   //       setTimeRemaining(calculatedEndTime - Date.now())
+   //    }
+   // }, [isGameEnd])
 
    
    const formatTime = (milliseconds: number) => {
@@ -43,10 +51,14 @@ const TimeoutSection = () => {
   
    return (
       <div className="timeout">
-         {timeRemaining !== null 
+         {/* {timeRemaining !== null 
             ? <p>Timeout in: {formatTime(timeRemaining)}</p>
             : <p>Loading timeout...</p>
-         }
+         } */}
+
+         <p>Timeout in: {formatTime(timeRemaining as number)}</p>
+            
+         
       </div>
    )
 }

@@ -58,7 +58,7 @@ const gameSettingsSlice = createSlice({
          state.gameMode = action.payload.gameMode
          state.numberOfLegs = action.payload.numberOfLegs
          state.gameWin = action.payload.gameWin
-         state.throwTime = action.payload.throwTime
+         state.throwTime = action.payload.throwTime / 1000
       }
    },
 })

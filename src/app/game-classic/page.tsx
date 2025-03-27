@@ -1,11 +1,9 @@
 'use client'
 import React, { useEffect } from 'react'
-//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setInitialSoundPlayed } from '@/redux/slices/gameSlice'
 import { selectDataInGameClassicPage } from '@/redux/selectors/game-classic/selectDataInGameClassicPage'
-//Components
 import GameClassicSinglePlayersSection from '@/components/game-classic/GameClassicSinglePlayersSection'
 import GameClassicTeamsPlayersSection from '@/components/game-classic/GameClassicTeamsPlayersSection'
 import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
@@ -13,9 +11,7 @@ import ScoreSection from '@/components/game-classic/ScoreSection'
 import SettingsButtons from '@/components/SettingsButtons'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameEndPopUp from '@/components/game-classic/GameEndPopUp'
-//Controllers
 import { playSound } from '@/controllers/playSound'
-//Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 /* 
