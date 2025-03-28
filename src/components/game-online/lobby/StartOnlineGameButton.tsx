@@ -15,7 +15,7 @@ const StartOnlineGameButton= () => {
    const areAllPlayersInTheLobby = players.length === numberOfPlayers
    
    const handleStartGame = () => {
-      if (!(areAllPlayersInTheLobby && areAllPlayersReady)) return dispatch(setError({ isError: true,  errorMessage: 'You cannot start the game! All players have to join the game and declare their readiness.' 
+      if (!(areAllPlayersInTheLobby && areAllPlayersReady)) return dispatch(setError({ isError: true,  errorMessage: 'All players have to join the game and declare their readiness.' 
       }))
          
       if (role === 'host') return socketService.emitStartGame(gameId)

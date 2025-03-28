@@ -6,8 +6,13 @@ const CurrentPlayerTurnTimeoutSection = () => {
    const currentPlayerTurnStartTime = useSelector((state: RootState) => state.gameOnline.currentPlayerTurnStartTime)
    const currentPlayerTurnTimerDuartion = useSelector((state: RootState) => state.gameOnline.currentPlayerTurnTimerDuartion)
    const [ timeRemaining, setTimeRemaining ] = useState<number | null>(null)
+   const isGameEnd = useSelector((state: RootState) => state.gameOnline.isGameEnd)
    
    useEffect(() => {
+      if (isGameEnd) {
+         setTimeRemaining(0)
+         return
+      }
       if (!currentPlayerTurnStartTime) return 
 
       const calculatedEndTime = currentPlayerTurnStartTime + currentPlayerTurnTimerDuartion
@@ -28,7 +33,7 @@ const CurrentPlayerTurnTimeoutSection = () => {
       }, 1000) 
 
       return () => clearInterval(intervalId) 
-   }, [currentPlayerTurnStartTime, currentPlayerTurnTimerDuartion])
+   }, [currentPlayerTurnStartTime, currentPlayerTurnTimerDuartion, isGameEnd])
 
    // 
    const formatTime = (milliseconds: number) => {

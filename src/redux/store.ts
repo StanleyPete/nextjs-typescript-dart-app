@@ -89,6 +89,7 @@ export const addGameOnlineStates = () => {
    })
 
    store.replaceReducer(rootReducer)
+   
 }
 
 export const resetStates = () => {
