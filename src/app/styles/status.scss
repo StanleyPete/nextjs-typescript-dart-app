@@ -1,0 +1,27 @@
+.status {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+        p {
+            font-size: 22px;
+            color: white;
+        }
+        button {
+            width: 132px;
+            height: 24px;
+            margin-top: 8px;
+            color: white;
+            border: none;
+            background-color: #008000;
+            border-radius: 8px;
+            transition: transform 0.2s ease; 
+            cursor: pointer;
+        }
+        button:hover {
+            transform: scale(1.08);
+        }
+        button:active {
+            transform: scale(1);
+        }
+}

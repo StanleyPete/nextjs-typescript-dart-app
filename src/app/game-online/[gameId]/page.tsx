@@ -46,16 +46,19 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    }, [])
 
    useEffect(() => {
-      if (isLobbyJoined){
-         router.push(`/game-online/lobby/${gameId}`)
-      }
+      if (isLobbyJoined) return router.replace(`/game-online/lobby/${gameId}`)
    }, [isLobbyJoined])
+
+   useEffect(() => {
+      if (message) return router.replace('/game-online/status')
+   }, [message])
+
 
    return (
       <>
          {isLoading ? (
             <p style={{ color: 'white' }}>Loading...</p>
-         ) : gameFound ? (
+         ) : gameFound && (
             <div className='main-container'>
                <h1 className='game-online-header'>GAME ONLINE</h1>
                <p className='current-player-in-lobby'>
@@ -83,10 +86,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                      Join game lobby
                   </button>
                </div>
-            </div> 
-         ) : (
-            <p style={{ color: 'white' }}>{message}</p>
-         )}
+            </div> )}
          < ErrorPopUp />
       </>
    )

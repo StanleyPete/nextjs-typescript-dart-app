@@ -14,7 +14,6 @@ import TimeoutSection from '@/components/game-online/lobby/TimeoutSection'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GuestReadyButton from '@/components/game-online/lobby/GuestReadyButton'
 import '../../../styles/home.scss'
-import TimeoutComponent from '@/components/game-online/lobby/TimeoutComponent'
 
 const Lobby = () => {
    const router = useRouter()
@@ -26,34 +25,30 @@ const Lobby = () => {
    const role =  useSelector((state: RootState) => state.gameOnline.role)
 
    useEffect(() => {
-      if (isGameStarted){
-         router.push(`/game-online/game/${gameId}`)
-      }
+      if (isGameStarted) return router.replace(`/game-online/game/${gameId}`)
    }, [isGameStarted])
 
+   useEffect(() => {
+      if (isTimeout) return router.replace('/game-online/status')
+   }, [isTimeout])
+
    return (
-      <>
-         {isTimeout ? (
-            <TimeoutComponent />
-         ) : (
-            <div className='main-container form'>
-               <h1 className='game-header'>GAME LOBBY</h1>
-               <TimeoutSection />
-               { players.length < numberOfPlayers 
-                  ? ( <UrlToCopySection />) 
-                  : (null) }
-               <LobbyPlayersSection />
-               <GameModeOnlineSection />
-               <WinTypeOnlineSection />
-               <NumberOfLegsOnlineSection />
-               <ThrowTimeOnlineSection />
-               { role === 'host' 
-                  ? (<StartOnlineGameButton />)
-                  : (<GuestReadyButton />) }
-               <ErrorPopUp />
-            </div>
-         )}
-      </>
+      <div className='main-container form'>
+         <h1 className='game-header'>GAME LOBBY</h1>
+         <TimeoutSection />
+         { players.length < numberOfPlayers 
+            ? ( <UrlToCopySection />) 
+            : (null) }
+         <LobbyPlayersSection />
+         <GameModeOnlineSection />
+         <WinTypeOnlineSection />
+         <NumberOfLegsOnlineSection />
+         <ThrowTimeOnlineSection />
+         { role === 'host' 
+            ? (<StartOnlineGameButton />)
+            : (<GuestReadyButton />) }
+         <ErrorPopUp />
+      </div>
    )
 }
 

@@ -44,7 +44,7 @@ const CreateAnOnlineGameButton = () => {
 
    useEffect(() => {
       if (isConnected && gameId) {
-         router.push(`/game-online/lobby/${gameId}`)
+         router.replace(`/game-online/lobby/${gameId}`)
       }
    }, [isConnected, gameId])
 
