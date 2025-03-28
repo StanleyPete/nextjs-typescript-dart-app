@@ -333,6 +333,7 @@ class SocketService {
    public close() {
       if (this.socket) {
          this.socket.disconnect()
+         this.socket = null
       }
    }
 }

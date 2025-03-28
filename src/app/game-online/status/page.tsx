@@ -3,8 +3,8 @@ import React from 'react'
 import { resetStates, RootState } from '@/redux/store'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
-import '../../styles/status.scss'
 import { socketService } from '@/socket/socket'
+import '../../styles/status.scss'
 
 const Status = () => {
    const router = useRouter()

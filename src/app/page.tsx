@@ -61,11 +61,7 @@ const Home = () => {
          resetStates()
       }
    }, [pathname])
-   
-   useEffect(() => {
-      document.cookie = 'dart-app=dart-app; path=/; SameSite=Strict;'
-   }, [])
-   
+
    return (
       <div className='main-container form'>
          <h1 className='game-header'>FREE DARTS SCOREBOARD</h1>

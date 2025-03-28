@@ -48,6 +48,7 @@ const CreateAnOnlineGameButton = () => {
       }
    }, [isConnected, gameId])
 
+ 
    return (
       <button
          className="game-start-button"

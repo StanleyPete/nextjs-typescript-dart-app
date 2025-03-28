@@ -11,16 +11,8 @@ import gameOnlineReducer from './slices/game-online/gameOnlineSlice'
 import joinRoomReducer from './slices/game-online/joinRoomSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GameStates } from '@/types/redux/gameTypes'
-import { 
-   GameClassicStates,
-   GameClassicSingleStates, 
-   GameClassicTeamsStates 
-} from '@/types/redux/gameClassicTypes'
-import {
-   GameCricketStates, 
-   GameCricketSingleStates, 
-   GameCricketTeamsStates 
-} from '@/types/redux/gameCricketTypes'
+import { GameClassicStates, GameClassicSingleStates, GameClassicTeamsStates } from '@/types/redux/gameClassicTypes'
+import { GameCricketStates, GameCricketSingleStates, GameCricketTeamsStates } from '@/types/redux/gameCricketTypes'
 import { GameOnlineStates } from '@/types/redux/gameOnlineTypes'
 import { joinRoomTypes } from '@/types/redux/joinRoomTypes'
 
