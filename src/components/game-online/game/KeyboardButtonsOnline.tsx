@@ -8,7 +8,10 @@ const KeyboardButtonsOnline = () => {
    const currentThrow = useSelector((state: RootState) => state.gameOnline.currentThrow)
 
    const handleClick = (value: number) => {
+      const newValueString = (`${currentThrow}${value}`)
+      if (newValueString.length > 3) return
       const newValue = Number(`${currentThrow}${value}`)
+      
       dispatch(setCurrentThrow(newValue))
    }
 

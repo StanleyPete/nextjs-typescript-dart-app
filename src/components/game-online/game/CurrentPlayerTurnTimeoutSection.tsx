@@ -35,7 +35,6 @@ const CurrentPlayerTurnTimeoutSection = () => {
       return () => clearInterval(intervalId) 
    }, [currentPlayerTurnStartTime, currentPlayerTurnTimerDuartion, isGameEnd])
 
-   // 
    const formatTime = (milliseconds: number) => {
       // Converting into minutes:
       const minutes = Math.floor(milliseconds / 60000) 
@@ -45,7 +44,6 @@ const CurrentPlayerTurnTimeoutSection = () => {
       return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
    }
   
-
    return (
       <div className="timeout">
          {timeRemaining !== null 
