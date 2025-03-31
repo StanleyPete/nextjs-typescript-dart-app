@@ -13,6 +13,7 @@ import ErrorPopUp from '@/components/ErrorPopUp'
 import GameEndPopUp from '@/components/game-classic/GameEndPopUp'
 import { playSound } from '@/controllers/playSound'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
+import Footer from '@/components/Footer'
 
 /* 
 GAME CLASSIC: 
@@ -50,6 +51,7 @@ const GameClassic = () => {
          <CurrentPlayerThrowSection />
          <ScoreSection />
          <SettingsButtons />
+         <Footer githubLogoSrc='/github-mark-white.svg' />
          <GameEndPopUp />
          <ErrorPopUp />
       </div>

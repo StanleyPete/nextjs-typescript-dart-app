@@ -4,6 +4,7 @@ import { resetStates, RootState } from '@/redux/store'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
 import { socketService } from '@/socket/socket'
+import Footer from '@/components/Footer'
 import '../../styles/status.scss'
 
 const Status = () => {
@@ -14,7 +15,7 @@ const Status = () => {
 
    return (
       <div className='status'>
-         <p>{message}</p>
+         <p className='status-message'>{message}</p>
          <button
             onClick={() => {
                socketService.close()
@@ -24,6 +25,7 @@ const Status = () => {
          >
             Back to home page
          </button>
+         <Footer githubLogoSrc='/github-mark-white.svg' />
       </div>
    )
 }

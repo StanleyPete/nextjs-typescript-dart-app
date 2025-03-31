@@ -8,6 +8,7 @@ import { setPlayerNames, setError } from '@/redux/slices/gameSettingsSlice'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import { socketService } from '@/socket/socket'
 import '../../styles/insert-new-joiner-name.scss'
+import Footer from '@/components/Footer'
 
 const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const dispatch = useDispatch()
@@ -86,6 +87,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                      Join game lobby
                   </button>
                </div>
+               <Footer githubLogoSrc='/github-mark.svg'/>
             </div> )}
          < ErrorPopUp />
       </>

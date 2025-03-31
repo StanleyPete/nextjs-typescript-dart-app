@@ -15,6 +15,7 @@ import ButtonSubmitScoreOnline from '@/components/game-online/game/ButtonSubmitS
 import ButtonsMultiplierOnline from '@/components/game-online/game/ButtonsMultiplier'
 import ButtonDoubleOnline from '@/components/game-online/game/ButtonDouble'
 import GameEndPopUpOnline from '@/components/game-online/game/GameEndPopUpOnline'
+import Footer from '@/components/Footer'
 
 const GameOnline = () => {
    const gameOnline = useSelector((state: RootState) => state.gameOnline)
@@ -53,6 +54,7 @@ const GameOnline = () => {
                : ( <OpponentTurnToThrow /> )
             }
          </div>
+         <Footer githubLogoSrc='/github-mark-white.svg' />
          <ErrorPopUp />
          <GameEndPopUpOnline />
       </div>

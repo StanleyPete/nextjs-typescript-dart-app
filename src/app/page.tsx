@@ -18,6 +18,7 @@ import ErrorPopUp from '@/components/ErrorPopUp'
 import NumberOfPlayersSection from '@/components/home/NumberOfPlayersSection'
 import ThrowTimeSection from '@/components/home/ThrowTimeSection'
 import './styles/home.scss'
+import Footer from '@/components/Footer'
 
 
 /* 
@@ -96,6 +97,7 @@ const Home = () => {
                   ? ( <CreateAnOnlineGameButton /> ) 
                   : null }
          </div>
+         <Footer githubLogoSrc='/github-mark.svg' />
          <ErrorPopUp />
       </div>
    )

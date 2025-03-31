@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-        p {
+        .status-message {
             font-size: 22px;
             color: white;
         }
@@ -23,5 +23,10 @@
         }
         button:active {
             transform: scale(1);
+        }
+        .footer {
+            font-size: 10px;
+            margin-top: 12px;
+            color: white;
         }
 }

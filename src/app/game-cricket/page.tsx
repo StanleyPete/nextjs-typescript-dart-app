@@ -12,6 +12,7 @@ import GameEndPopUp from '@/components/game-cricket/GameEndPopUp'
 import ThrowValueSectionCricket from '@/components/game-cricket/ThrowValueSectionCricket'
 import ScoreButtonsCricket from '@/components/game-cricket/ScoreButtonsCricket'
 import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
+import Footer from '@/components/Footer'
 import { playSound } from '@/controllers/playSound'
 
 const GameCricket = () => {
@@ -47,6 +48,7 @@ const GameCricket = () => {
          <ThrowValueSectionCricket />
          <ScoreButtonsCricket />
          <SettingsButtons />
+         <Footer githubLogoSrc='/github-mark-white.svg' />
          <ErrorPopUp />
          <GameEndPopUp />
       </div>

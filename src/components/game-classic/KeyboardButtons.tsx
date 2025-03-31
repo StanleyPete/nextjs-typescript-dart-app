@@ -64,7 +64,7 @@ const KeyboardButtons = () => {
          <button
             onClick={() => {
                const newValueString = (`${currentThrow}${0}`)
-                  if (newValueString.length > 3) return
+               if (newValueString.length > 3) return
                const newValue = Number(`${currentThrow}${0}`)
                dispatch(setCurrentThrow(newValue))
             }}

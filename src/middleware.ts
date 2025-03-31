@@ -9,9 +9,9 @@ export function middleware(request: NextRequest) {
    if (protectedRoutes.includes(pathname)) {
       const referer = request.headers.get('referer')
       const origin = request.nextUrl.origin
-      const accessGrantedCookie = request.cookies.get('dart-app')
+      
 
-      if (!referer || !referer.startsWith(`${origin}/`) || !accessGrantedCookie) {
+      if (!referer || !referer.startsWith(`${origin}/`)) {
          return NextResponse.redirect(new URL('/', request.url))
       }
    }

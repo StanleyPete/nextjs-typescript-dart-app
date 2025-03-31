@@ -14,6 +14,7 @@ import TimeoutSection from '@/components/game-online/lobby/TimeoutSection'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GuestReadyButton from '@/components/game-online/lobby/GuestReadyButton'
 import '../../../styles/home.scss'
+import Footer from '@/components/Footer'
 
 const Lobby = () => {
    const router = useRouter()
@@ -47,6 +48,7 @@ const Lobby = () => {
          { role === 'host' 
             ? (<StartOnlineGameButton />)
             : (<GuestReadyButton />) }
+         <Footer githubLogoSrc='/github-mark.svg' />
          <ErrorPopUp />
       </div>
    )
