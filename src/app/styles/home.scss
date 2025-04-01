@@ -2,7 +2,9 @@
 @import './globals';
 $text-color: white; 
 $game-options-border-radius: 8px;
-$border-style: 1px solid gray; 
+$border-style: 1px solid gray;
+$border-focused: 2px solid red;
+$border-focused-button: 4px solid red;
 $active-button-color: #df4040;
 
 .main-form{
@@ -32,6 +34,8 @@ $active-button-color: #df4040;
     color: white;
     background-color: $active-button-color;
   }
+
+
   
 .header{
     margin-bottom: 6px;
@@ -64,6 +68,9 @@ $active-button-color: #df4040;
             }
             input.full-width {
               width: 100%; 
+            }
+            .focused {
+              border: $border-focused;
             }
             button.remove-player-button{
               display: flex;          
@@ -161,6 +168,9 @@ $active-button-color: #df4040;
       .game-start-button:hover{
         transform: scale(1.03);
       }
+      .focused{
+        border: $border-focused-button;
+      }
 }
 
 .overlay {
@@ -234,4 +244,8 @@ $active-button-color: #df4040;
  
   font-size: 12px;
   
+}
+
+.focused{
+  border: $border-focused;
 }

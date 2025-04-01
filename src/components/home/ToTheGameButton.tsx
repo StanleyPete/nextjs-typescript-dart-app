@@ -15,10 +15,8 @@ import { setError } from '@/redux/slices/gameSettingsSlice'
 
 
 const ToTheGameButton = () => {
-    
    const dispatch = useDispatch()
-   
-   const { gameType, playerNames, gameMode } = useSelector((state: RootState) => state.gameSettings)
+   const { focusedSection, gameType, playerNames, gameMode } = useSelector((state: RootState) => state.gameSettings)
 
    //Validate player names
    const validatePlayerNames = () => {
@@ -57,12 +55,11 @@ const ToTheGameButton = () => {
             dispatch(initializeTeams({ playerNames, gameMode }))
          }
       }
-   
    }
   
    return (
       <button 
-         className='game-start-button' 
+         className={`game-start-button  ${focusedSection === 'gameStart' ? 'focused' : ''}`} 
          onClick={handleGameStart}
       >
             To the game!

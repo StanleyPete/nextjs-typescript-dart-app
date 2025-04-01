@@ -1,10 +1,10 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect} from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, resetStates } from '@/redux/store'
-import { setIsFirstLoad } from '../redux/slices/gameSettingsSlice'
+import { setFocusedSection, setIsFirstLoad } from '../redux/slices/gameSettingsSlice'
 import GameTypeSection from '@/components/home/GameTypeSection'
 import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesInput'
 import GameTeamsPlayerNamesInput from '@/components/home/GameTeamsPlayerNamesInput'
@@ -19,7 +19,7 @@ import NumberOfPlayersSection from '@/components/home/NumberOfPlayersSection'
 import ThrowTimeSection from '@/components/home/ThrowTimeSection'
 import './styles/home.scss'
 import Footer from '@/components/Footer'
-
+import { handleChangeFocusedSection } from '@/controllers/handleChangeFoucesSection'
 
 /* 
    HOME PAGE: 
@@ -30,7 +30,7 @@ import Footer from '@/components/Footer'
 const Home = () => {
    const dispatch = useDispatch()
    const pathname = usePathname()
-   const { gameType, gameMode, isFirstLoad} = useSelector((state: RootState) => state.gameSettings)
+   const { focusedSection, previousFocusedSection, gameType, gameMode, isFirstLoad} = useSelector((state: RootState) => state.gameSettings)
    
    //Preparing URL
    const gameFolders = {
@@ -62,6 +62,37 @@ const Home = () => {
          resetStates()
       }
    }, [pathname])
+
+   useEffect(() => {
+      const handleKeyDownUp = (event: KeyboardEvent) => {
+         event.preventDefault()
+         event.stopPropagation()
+         const activeElement = document.activeElement;
+
+         
+         if (activeElement instanceof HTMLElement) {
+            activeElement.blur()
+         }
+        
+         handleChangeFocusedSection(event, gameType, focusedSection, dispatch)
+      }
+
+      
+      if (focusedSection === 'gameSinglePlayerNameInput') {
+         return () => {
+            window.removeEventListener('keyup', handleKeyDownUp)
+         }
+      }
+
+
+      window.addEventListener('keyup', handleKeyDownUp)
+
+      return () => {
+         window.removeEventListener('keyup', handleKeyDownUp)
+      }
+   }, [focusedSection, dispatch, gameType])
+
+
 
    return (
       <div className='main-container form'>

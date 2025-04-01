@@ -36,7 +36,12 @@ $active-button-color: #df4040;
     font-family: $font-family;
 }
 
+*:focus {
+  outline: none !important;
+}
+
 body{
+    user-select: none;
     min-height: 100vh;
     width: 100vw;
     min-width: 340px;
@@ -251,7 +256,7 @@ body{
                                       .team-player-name{
                                           display: flex;
                                           align-items: center;
-                                          justify-content: start;
+                                          justify-content: flex-start;
                                           width: 60%;
 
                                               img{
@@ -810,14 +815,8 @@ body{
 
 }
 .align-start{
-  align-items: start;
+  align-items: flex-start;
 }
-
-
-
-
-
-
 
 
 .url{

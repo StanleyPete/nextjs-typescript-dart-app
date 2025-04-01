@@ -6,6 +6,8 @@ import {
 } from '@/types/redux/gameSettingsTypes'
 
 const initialState: GameSettingsStates = {
+   focusedSection: null,
+   previousFocusedSection: null,
    gameType: 'single',
    playerNames: ['', ''],
    gameMode: 501,
@@ -24,6 +26,12 @@ const gameSettingsSlice = createSlice({
    name: 'gameSettings',
    initialState,
    reducers: {
+      setFocusedSection(state, action: PayloadAction<null| string>) {
+         state.focusedSection = action.payload
+      },
+      setPreviousFocusedSection(state, action: PayloadAction<null| string>) {
+         state.previousFocusedSection = action.payload
+      },
       setGameType: (
          state,
          action: PayloadAction<GameSettingsStates['gameType']>
@@ -64,6 +72,8 @@ const gameSettingsSlice = createSlice({
 })
 
 export const {
+   setFocusedSection,
+   setPreviousFocusedSection,
    setPlayerNames,
    setGameMode,
    setGameType,

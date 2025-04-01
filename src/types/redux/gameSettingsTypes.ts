@@ -1,4 +1,6 @@
 export interface GameSettingsStates {
+    focusedSection: null | string
+    previousFocusedSection: null | string
     gameType: 'single' | 'teams' | 'online'
     playerNames: string[]
     gameMode: number | string
