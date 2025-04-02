@@ -8,6 +8,7 @@ const GameTypeSection = () => {
    const dispatch = useDispatch()
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
+   
   
 
    const handleGameTypeChange = (type: GameSettingsStates['gameType']) => {

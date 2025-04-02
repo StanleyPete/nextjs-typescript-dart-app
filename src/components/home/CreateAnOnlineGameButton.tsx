@@ -9,15 +9,13 @@ import { socketService } from '@/socket/socket'
 const CreateAnOnlineGameButton = () => {
    const dispatch = useDispatch()
    const router = useRouter()
-   
-   const { 
-      playerNames, 
-      gameMode, 
-      gameWin, 
-      numberOfLegs, 
-      numberOfPlayers, 
-      throwTime 
-   } = useSelector((state: RootState) => state.gameSettings)
+   const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
+   const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
+   const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode)
+   const gameWin = useSelector((state: RootState) => state.gameSettings.gameWin)
+   const numberOfLegs = useSelector((state: RootState) => state.gameSettings.numberOfLegs)
+   const numberOfPlayers = useSelector((state: RootState) => state.gameSettings.numberOfPlayers)
+   const throwTime = useSelector((state: RootState) => state.gameSettings.throwTime)
    const isConnected = useSelector((state: RootState) => state.gameOnline?.isConnected ?? false)
    const gameId = useSelector((state: RootState) => state.gameOnline?.gameId ?? null)
 
@@ -51,7 +49,7 @@ const CreateAnOnlineGameButton = () => {
  
    return (
       <button
-         className="game-start-button"
+         className={`game-start-button  ${focusedSection === 'gameOnlineStart' ? 'focused' : ''}`} 
          onClick={handleCreateOnlineGame}
       >
         Create an online game!

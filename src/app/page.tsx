@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, resetStates } from '@/redux/store'
-import { setFocusedSection, setIsFirstLoad } from '../redux/slices/gameSettingsSlice'
+import { setPlayerNames, setIsFirstLoad } from '../redux/slices/gameSettingsSlice'
 import GameTypeSection from '@/components/home/GameTypeSection'
 import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesInput'
 import GameTeamsPlayerNamesInput from '@/components/home/GameTeamsPlayerNamesInput'
@@ -30,7 +30,7 @@ import { handleChangeFocusedSection } from '@/controllers/handleChangeFoucesSect
 const Home = () => {
    const dispatch = useDispatch()
    const pathname = usePathname()
-   const { focusedSection, previousFocusedSection, gameType, gameMode, isFirstLoad} = useSelector((state: RootState) => state.gameSettings)
+   const { focusedSection, previousFocusedSection, playerNames, gameType, gameMode, isFirstLoad} = useSelector((state: RootState) => state.gameSettings)
    
    //Preparing URL
    const gameFolders = {
@@ -50,6 +50,68 @@ const Home = () => {
 
    const gameUrl = `/${gameFolder}`
 
+
+   const addPlayerInput = () => {
+      dispatch(setPlayerNames([...playerNames, '']))
+   }
+
+
+ 
+
+   useEffect(() => {
+      console.log(`to jest focused section : ${focusedSection}`)
+      console.log(`to jest previousFocusedSection: ${previousFocusedSection}`)
+      const handleKeyDown = (event: KeyboardEvent) => {
+         const activeElement = document.activeElement
+         
+         if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
+            return
+         }
+
+         event.preventDefault()
+         event.stopPropagation()
+
+         if (activeElement instanceof HTMLElement) {
+            activeElement.blur()
+         }
+
+        
+        
+         handleChangeFocusedSection(event, gameType, focusedSection, previousFocusedSection, dispatch)
+      }
+
+      
+      if (focusedSection === 'gameSinglePlayerNameInput' || focusedSection === 'gameTeamsPlayerNameInputTeam1' || focusedSection === 'gameTeamsPlayerNameInputTeam2') {
+         return () => {
+            window.removeEventListener('keydown', handleKeyDown)
+         }
+      }
+
+
+      window.addEventListener('keydown', handleKeyDown)
+
+      return () => {
+         window.removeEventListener('keydown', handleKeyDown)
+      }
+   }, [focusedSection, dispatch, gameType, previousFocusedSection])
+
+   useEffect(() => {
+      if (playerNames.length === 4) return
+
+      const handleAddPlayerKeyboard = (event: KeyboardEvent) => {
+         if (gameType === 'single' && event.ctrlKey && event.key === '+') {
+            addPlayerInput()
+         }
+      }
+
+      window.addEventListener('keydown', handleAddPlayerKeyboard)
+
+      return () => {
+         window.removeEventListener('keydown', handleAddPlayerKeyboard)
+      }
+   }, [playerNames, gameType])
+
+
    useEffect(() => {
       /*
          When Home Page is rendered for the first time, isFirstLoad flag is set to false.
@@ -62,37 +124,6 @@ const Home = () => {
          resetStates()
       }
    }, [pathname])
-
-   useEffect(() => {
-      const handleKeyDownUp = (event: KeyboardEvent) => {
-         event.preventDefault()
-         event.stopPropagation()
-         const activeElement = document.activeElement;
-
-         
-         if (activeElement instanceof HTMLElement) {
-            activeElement.blur()
-         }
-        
-         handleChangeFocusedSection(event, gameType, focusedSection, dispatch)
-      }
-
-      
-      if (focusedSection === 'gameSinglePlayerNameInput') {
-         return () => {
-            window.removeEventListener('keyup', handleKeyDownUp)
-         }
-      }
-
-
-      window.addEventListener('keyup', handleKeyDownUp)
-
-      return () => {
-         window.removeEventListener('keyup', handleKeyDownUp)
-      }
-   }, [focusedSection, dispatch, gameType])
-
-
 
    return (
       <div className='main-container form'>

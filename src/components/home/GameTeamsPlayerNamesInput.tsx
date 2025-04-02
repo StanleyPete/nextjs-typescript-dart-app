@@ -1,21 +1,138 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
+import { setPlayerNames, setFocusedSection, setPreviousFocusedSection } from '../../redux/slices/gameSettingsSlice'
 import { TeamsPlayerInput } from '@/types/components/componentsTypes'
 
 const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInput) => {
-
    const dispatch = useDispatch()
-   
    const { playerNames } = useSelector((state: RootState) => state.gameSettings)
+   const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
+   const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
+   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+   const [ currentInputIndex, setCurrentInputIndex ] = useState<number|null>(null)
 
    const handleNameChange = (index: number, value: string) => {
       const newNames = [...playerNames]
       newNames[index] = value
       dispatch(setPlayerNames(newNames))
    }
+
+   const handleChangeFocusedInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (focusedSection !== 'gameTeamsPlayerNameInputTeam1' && focusedSection !== 'gameTeamsPlayerNameInputTeam2' ) return
+   
+      if(event.key === 'Tab'){
+         event.preventDefault()
+         event.stopPropagation()
+      }
+
+      if (teamIndex === 0) {
+         if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
+            // Scenario when last input is focused
+            if (document.activeElement === inputRefs.current[1]) {
+               dispatch(setFocusedSection('gameTeamsPlayerNameInputTeam2'))
+               dispatch(setPreviousFocusedSection('gameTeamsPlayerNameInputTeam1'))
+               if (document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur()
+               }
+               return
+   
+            // Scenario when last input is NOT focused (moving to the next available input)   
+            } else {
+               const nextIndex = (currentInputIndex as number + 1) % playerNames.length
+               setCurrentInputIndex(nextIndex)
+               inputRefs.current[nextIndex]?.focus()
+               return
+            }
+   
+         } else if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
+            // Scenario when first input is focused
+            if (document.activeElement === inputRefs.current[0]) {
+               dispatch(setFocusedSection('gameType'))
+               if (document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur()
+               }
+               return
+            
+            // Scenario when first input is NOT focused (moving to the previous input)   
+            } else {
+               const prevIndex = (currentInputIndex as number - 1 + playerNames.length) % playerNames.length
+               setCurrentInputIndex(prevIndex)
+               inputRefs.current[prevIndex]?.focus()
+               return
+            }
+         }
+      } else if (teamIndex === 1) {
+         if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
+            // Scenario when last input is focused
+            if (document.activeElement === inputRefs.current[3]) {
+               dispatch(setFocusedSection('gameMode'))
+               if (document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur()
+               }
+               return
+            // Scenario when last input is NOT focused (moving to the next available input)   
+            } else {
+               const nextIndex = (currentInputIndex as number + 1) % playerNames.length
+               setCurrentInputIndex(nextIndex)
+               inputRefs.current[nextIndex]?.focus()
+               return
+            }
+   
+         } else if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
+            // Scenario when first input is focused
+            if (document.activeElement === inputRefs.current[2]) {
+               dispatch(setFocusedSection('gameTeamsPlayerNameInputTeam1'))
+               dispatch(setPreviousFocusedSection('gameTeamsPlayerNameInputTeam2'))
+               if (document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur()
+               }
+               return
+            
+            // Scenario when first input is NOT focused (moving to the previous input)   
+            } else {
+               const prevIndex = (currentInputIndex as number - 1 + playerNames.length) % playerNames.length
+               setCurrentInputIndex(prevIndex)
+               inputRefs.current[prevIndex]?.focus()
+               return
+            }
+         }
+      }
+   }
+
+   useEffect(() => {
+      if (teamIndex === 0) {
+         if (focusedSection === 'gameTeamsPlayerNameInputTeam1' && previousFocusedSection === 'gameType') {
+            dispatch(setPreviousFocusedSection('gameTeamsPlayerNameInputTeam1'))
+            setCurrentInputIndex(0)
+            if (inputRefs.current[0]) {
+               inputRefs.current[0]?.focus()
+            }
+         } else if (focusedSection === 'gameTeamsPlayerNameInputTeam1' && previousFocusedSection === 'gameTeamsPlayerNameInputTeam2') {
+            dispatch(setPreviousFocusedSection('gameTeamsPlayerNameInputTeam1'))
+            setCurrentInputIndex(1)
+            if (inputRefs.current[1]) {
+               inputRefs.current[1]?.focus()
+            }
+         }
+
+      } else if (teamIndex === 1) {
+         if (focusedSection === 'gameTeamsPlayerNameInputTeam2' && previousFocusedSection === 'gameTeamsPlayerNameInputTeam1') {
+            dispatch(setPreviousFocusedSection('gameTeamsPlayerNameInputTeam2'))
+            setCurrentInputIndex(2)
+            if (inputRefs.current[2]) {
+               inputRefs.current[2]?.focus()
+            }
+         } else if (focusedSection === 'gameTeamsPlayerNameInputTeam2' && previousFocusedSection === 'gameMode') {
+            setCurrentInputIndex(3)
+            if (inputRefs.current[3]) {
+               inputRefs.current[3]?.focus()
+            }
+         }
+      }
+   }, [focusedSection, playerNames, previousFocusedSection])
+
 
    return (
       <div className={`team-${teamIndex + 1}-section`}>
@@ -38,11 +155,16 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
                   placeholder={`T${teamIndex + 1}: Player ${index + 1} name`}
                   value={playerNames[index]}
                   onChange={(event) => handleNameChange(index, event.target.value)}
+                  onKeyDown={(e) => handleChangeFocusedInput(e)}
+                  ref={(el) => {(inputRefs.current[index] = el)}}
+                  autoComplete="off"
                />
             ))}
          </div>
 
       </div>
+      
+
    )
 }
 

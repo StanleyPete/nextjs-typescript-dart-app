@@ -18,6 +18,7 @@ $active-button-color: #df4040;
   height: 32px;
   border: $border-style;
   border-radius: $game-options-border-radius;
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
 }
 
 .game-options button {
@@ -56,6 +57,7 @@ $active-button-color: #df4040;
               padding: 12px;
               padding-left: 30px;
               border: $border-style;
+              box-shadow: 0px 0.5px 1px rgba(0,0,0,0.2);
               border-radius: $game-options-border-radius;
               background: url('../../../public/user.svg');
               background-size: 16px 16px;
@@ -78,13 +80,13 @@ $active-button-color: #df4040;
               justify-content: center;  
               width: 22px;
               height: 22px;
-              border: $border-style;
+              border: none;
               border-radius: 50%;
-              background-color: white;
+              background-color: #fafafa;
               cursor: pointer;
             }
             button.remove-player-button:hover{
-              transform: scale(1.05)
+              transform: scale(1.2)
             }
       } 
       button.add-player-button{
@@ -93,7 +95,7 @@ $active-button-color: #df4040;
         margin-top: 8px;
         padding: 8px 0px; 
         height: 22px;
-        width: 120px;
+        width: 160px;
         border: none;
         border-radius: $game-options-border-radius;
         background-color: $main-container-background-color;
@@ -102,10 +104,11 @@ $active-button-color: #df4040;
         cursor: pointer;
       }
       button.add-player-button span {
-        margin-left: 6px;
+        margin-left: 4px;
+        font-size: 10px;
       }
       button.add-player-button:hover{
-        transform: scale(1.05);
+        transform: scale(1.1);
         font-weight: 700;
       }
 }
@@ -163,6 +166,7 @@ $active-button-color: #df4040;
         border: none;
         border-radius: $game-options-border-radius;
         background-color: green;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
         cursor: pointer;
       }
       .game-start-button:hover{

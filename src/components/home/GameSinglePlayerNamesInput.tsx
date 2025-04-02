@@ -29,38 +29,43 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
       dispatch(setPlayerNames(newNames))
    }
 
-   const handleArrowNavigation = (event: KeyboardEvent) => {
+   const handleChangeFocusedInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (focusedSection !== 'gameSinglePlayerNameInput') return
-  
-      event.preventDefault()
-      event.stopPropagation()
+      
+      if(event.key === 'Tab'){
+         event.preventDefault()
+         event.stopPropagation()
+      }
 
-      if (event.key === 'ArrowDown' || event.key === 'Tab') {
-       
+      if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
          const lastIndex = playerNames.length - 1
+         // Scenario when last input is focused
          if (document.activeElement === inputRefs.current[lastIndex]) {
-            dispatch(setFocusedSection('gameMode'))
             if (document.activeElement instanceof HTMLElement) {
                document.activeElement.blur()
             }
+            dispatch(setFocusedSection('gameMode'))
             return
+
+         // Scenario when last input is NOT focused (moving to the next available input)   
          } else {
-            // Jeśli nie jesteś na ostatnim inpucie, przenieś do następnego inputu
             const nextIndex = (currentInputIndex as number + 1) % playerNames.length
             setCurrentInputIndex(nextIndex)
             inputRefs.current[nextIndex]?.focus()
             return
          }
+
       } else if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
+         // Scenario when first input is focused
          if (document.activeElement === inputRefs.current[0]) {
             dispatch(setFocusedSection('gameType'))
             if (document.activeElement instanceof HTMLElement) {
                document.activeElement.blur()
             }
             return
-           
+         
+         // Scenario when first input is NOT focused (moving to the previous input)   
          } else {
-            // Jeśli nie jesteś na pierwszym inpucie, przenieś do poprzedniego inputu
             const prevIndex = (currentInputIndex as number - 1 + playerNames.length) % playerNames.length
             setCurrentInputIndex(prevIndex)
             inputRefs.current[prevIndex]?.focus()
@@ -86,8 +91,6 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
       }
    }, [focusedSection, playerNames, previousFocusedSection])
 
-   
-
    return (
       <div className="players-section main-form" >
          <p className="players header">
@@ -104,8 +107,8 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                   value={name}
                   placeholder={`Player ${index + 1} name`}
                   onChange={(event) => handleNameChange(index, event.target.value)}
-                  onKeyUp={(e) => handleArrowNavigation(e)}
-                  ref={(el) => (inputRefs.current[index] = el)}
+                  onKeyDown={(e) => handleChangeFocusedInput(e)}
+                  ref={(el) => {(inputRefs.current[index] = el)}}
                   autoComplete="off"
                />
                {playerNames.length > 1 && index > 0 && (
@@ -116,8 +119,8 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                      <Image
                         src="/minus.svg"
                         alt="Remove player icon"
-                        width={22}
-                        height={22}
+                        width={18}
+                        height={18}
                      />
                   </button>
                )}
@@ -131,10 +134,10 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                <Image
                   src="/plus.svg"
                   alt="Add player icon"
-                  width={16}
-                  height={16}
+                  width={18}
+                  height={18}
                />
-               <span>Add new player</span>
+               <span>Add new player (Ctrl +)</span>
             </button>
          )}
       </div>
