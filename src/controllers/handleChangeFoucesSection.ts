@@ -36,7 +36,7 @@ export const handleChangeFocusedSection = (
 
 
       if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
-         if (previousFocusedSection === 'gameSinglePlayerNameInput') {
+         if (previousFocusedSection === 'gameSinglePlayerNameInput'  && focusedSection !== 'gameType') {
             dispatch(setFocusedSection('gameType'))
             return
          }
@@ -46,7 +46,7 @@ export const handleChangeFocusedSection = (
       }
 
       if (event.key === 'ArrowDown' || event.key === 'Tab') {
-         if (previousFocusedSection === 'gameSinglePlayerNameInput') {
+         if (previousFocusedSection === 'gameSinglePlayerNameInput' && focusedSection !== 'gameMode') {
             dispatch(setFocusedSection('gameMode'))
             return
          }
@@ -57,6 +57,7 @@ export const handleChangeFocusedSection = (
          }
          const nextIndex = (currentFocusedSectionIndex + 1) % singleSections.length
          dispatch(setFocusedSection(singleSections[nextIndex]))
+         console.log('zmiana')
          return
       }
 
@@ -74,7 +75,7 @@ export const handleChangeFocusedSection = (
       }
 
       if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
-         if (previousFocusedSection === 'gameTeamsPlayerNameInputTeam1') {
+         if (previousFocusedSection === 'gameTeamsPlayerNameInputTeam1' && focusedSection !== 'gameType') {
             dispatch(setFocusedSection('gameType'))
             return
          }
@@ -85,7 +86,7 @@ export const handleChangeFocusedSection = (
       }
 
       if (event.key === 'ArrowDown' || event.key === 'Tab') {
-         if (previousFocusedSection === 'gameTeamsPlayerNameInputTeam2') {
+         if (previousFocusedSection === 'gameTeamsPlayerNameInputTeam2' && focusedSection !== 'gameMode' ) {
             dispatch(setFocusedSection('gameMode'))
             return
          }

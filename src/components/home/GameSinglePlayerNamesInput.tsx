@@ -38,6 +38,7 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
       }
 
       if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
+         console.log('arrowDown wykanal sie')
          const lastIndex = playerNames.length - 1
          // Scenario when last input is focused
          if (document.activeElement === inputRefs.current[lastIndex]) {
@@ -45,6 +46,7 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                document.activeElement.blur()
             }
             dispatch(setFocusedSection('gameMode'))
+            event.stopPropagation()
             return
 
          // Scenario when last input is NOT focused (moving to the next available input)   
@@ -54,14 +56,15 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
             inputRefs.current[nextIndex]?.focus()
             return
          }
-
+                        
       } else if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
          // Scenario when first input is focused
          if (document.activeElement === inputRefs.current[0]) {
-            dispatch(setFocusedSection('gameType'))
             if (document.activeElement instanceof HTMLElement) {
                document.activeElement.blur()
             }
+            dispatch(setFocusedSection('gameType'))
+            event.stopPropagation()
             return
          
          // Scenario when first input is NOT focused (moving to the previous input)   

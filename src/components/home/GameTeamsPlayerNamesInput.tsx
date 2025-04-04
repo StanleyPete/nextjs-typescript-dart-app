@@ -49,10 +49,11 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
          } else if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
             // Scenario when first input is focused
             if (document.activeElement === inputRefs.current[0]) {
-               dispatch(setFocusedSection('gameType'))
                if (document.activeElement instanceof HTMLElement) {
                   document.activeElement.blur()
                }
+               dispatch(setFocusedSection('gameType'))
+               event.stopPropagation()
                return
             
             // Scenario when first input is NOT focused (moving to the previous input)   
@@ -67,10 +68,11 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
          if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
             // Scenario when last input is focused
             if (document.activeElement === inputRefs.current[3]) {
-               dispatch(setFocusedSection('gameMode'))
                if (document.activeElement instanceof HTMLElement) {
                   document.activeElement.blur()
                }
+               dispatch(setFocusedSection('gameMode'))
+               event.stopPropagation()
                return
             // Scenario when last input is NOT focused (moving to the next available input)   
             } else {
