@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setGameMode, setGameType, setPlayerNames, setPreviousFocusedSection } from '../../redux/slices/gameSettingsSlice'
+import { setGameMode, setGameType, setPlayerNames } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 const GameTypeSection = () => {

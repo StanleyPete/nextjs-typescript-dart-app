@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setPlayerNames, setFocusedSection, setPreviousFocusedSection} from '../../redux/slices/gameSettingsSlice'
+import { setPlayerNames, setFocusedSection } from '../../redux/slices/gameSettingsSlice'
 import { PlayerNamesInputProps } from '@/types/components/componentsTypes'
 
 const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
@@ -38,7 +38,6 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
       }
 
       if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
-         console.log('arrowDown wykanal sie')
          const lastIndex = playerNames.length - 1
          // Scenario when last input is focused
          if (document.activeElement === inputRefs.current[lastIndex]) {
@@ -56,7 +55,7 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
             inputRefs.current[nextIndex]?.focus()
             return
          }
-                        
+
       } else if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
          // Scenario when first input is focused
          if (document.activeElement === inputRefs.current[0]) {
@@ -78,21 +77,19 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
    }
 
    useEffect(() => {
-      if (focusedSection === 'gameSinglePlayerNameInput' && previousFocusedSection === 'gameType') {
-         dispatch(setPreviousFocusedSection('gameSinglePlayerNameInput'))
+      if (focusedSection === 'gameSinglePlayerNameInput' && previousFocusedSection === 'gameType') {  
          setCurrentInputIndex(0)
          if (inputRefs.current[0]) {
             inputRefs.current[0]?.focus()
          }
       } else if (focusedSection === 'gameSinglePlayerNameInput' && previousFocusedSection === 'gameMode') {
          const lastIndex = playerNames.length - 1
-         dispatch(setPreviousFocusedSection('gameSinglePlayerNameInput'))
          setCurrentInputIndex(lastIndex)
          if (inputRefs.current[lastIndex]) {
             inputRefs.current[lastIndex]?.focus()
          }
       }
-   }, [focusedSection, playerNames, previousFocusedSection])
+   }, [focusedSection, previousFocusedSection])
 
    return (
       <div className="players-section main-form" >
@@ -140,7 +137,7 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                   width={18}
                   height={18}
                />
-               <span>Add new player (Ctrl +)</span>
+               <span>Add new player (Ctrl + Shift + &quot;+&quot;)</span>
             </button>
          )}
       </div>

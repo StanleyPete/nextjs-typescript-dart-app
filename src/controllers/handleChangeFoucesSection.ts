@@ -28,24 +28,22 @@ export const handleChangeFocusedSection = (
    if (gameType === 'single') {
       const singleSections = ['gameType', 'gameSinglePlayerNameInput', 'gameMode', 'winType', 'numberOfLegs', 'gameStart']
       const currentFocusedSectionIndex = singleSections.findIndex(element => element === focusedSection)
-      if (currentFocusedSectionIndex === 0) {
-         dispatch(setPreviousFocusedSection('gameType'))
-      } else if (currentFocusedSectionIndex === 2) {
-         dispatch(setPreviousFocusedSection('gameMode'))
-      }
-
-
+      
       if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
-         if (previousFocusedSection === 'gameSinglePlayerNameInput'  && focusedSection !== 'gameType') {
-            dispatch(setFocusedSection('gameType'))
-            return
+         if (focusedSection === 'gameMode') {
+            dispatch(setPreviousFocusedSection('gameMode'))
          }
+
          const prevIndex = (currentFocusedSectionIndex - 1 + singleSections.length) % singleSections.length
          dispatch(setFocusedSection(singleSections[prevIndex]))
          return
       }
 
       if (event.key === 'ArrowDown' || event.key === 'Tab') {
+         if(focusedSection === 'gameType') {
+            dispatch(setPreviousFocusedSection('gameType'))
+         }
+
          if (previousFocusedSection === 'gameSinglePlayerNameInput' && focusedSection !== 'gameMode') {
             dispatch(setFocusedSection('gameMode'))
             return
@@ -75,10 +73,10 @@ export const handleChangeFocusedSection = (
       }
 
       if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
-         if (previousFocusedSection === 'gameTeamsPlayerNameInputTeam1' && focusedSection !== 'gameType') {
-            dispatch(setFocusedSection('gameType'))
-            return
+         if (focusedSection === 'gameMode') {
+            dispatch(setPreviousFocusedSection('gameMode'))
          }
+         
          const prevIndex = (currentFocusedSectionIndex - 1 + singleSections.length) % singleSections.length
 
          dispatch(setFocusedSection(singleSections[prevIndex]))
@@ -86,10 +84,10 @@ export const handleChangeFocusedSection = (
       }
 
       if (event.key === 'ArrowDown' || event.key === 'Tab') {
-         if (previousFocusedSection === 'gameTeamsPlayerNameInputTeam2' && focusedSection !== 'gameMode' ) {
-            dispatch(setFocusedSection('gameMode'))
-            return
+         if(focusedSection === 'gameType') {
+            dispatch(setPreviousFocusedSection('gameType'))
          }
+
          const nextIndex = (currentFocusedSectionIndex + 1) % singleSections.length
          dispatch(setFocusedSection(singleSections[nextIndex]))
          return
@@ -109,6 +107,10 @@ export const handleChangeFocusedSection = (
       }
 
       if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
+         if (focusedSection === 'gameMode') {
+            dispatch(setPreviousFocusedSection('gameMode'))
+         }
+         
          const prevIndex = (currentFocusedSectionIndex - 1 + onlineSections.length) % onlineSections.length
 
          dispatch(setFocusedSection(onlineSections[prevIndex]))
@@ -116,6 +118,9 @@ export const handleChangeFocusedSection = (
       }
 
       if (event.key === 'ArrowDown' || event.key === 'Tab') {
+         if(focusedSection === 'numberOfPlayers') {
+            dispatch(setPreviousFocusedSection('numberOfPlayers'))
+         }
          const nextIndex = (currentFocusedSectionIndex + 1) % onlineSections.length
          dispatch(setFocusedSection(onlineSections[nextIndex]))
          return

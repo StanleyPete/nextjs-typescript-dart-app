@@ -106,7 +106,6 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
    useEffect(() => {
       if (teamIndex === 0) {
          if (focusedSection === 'gameTeamsPlayerNameInputTeam1' && previousFocusedSection === 'gameType') {
-            dispatch(setPreviousFocusedSection('gameTeamsPlayerNameInputTeam1'))
             setCurrentInputIndex(0)
             if (inputRefs.current[0]) {
                inputRefs.current[0]?.focus()
@@ -133,7 +132,7 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
             }
          }
       }
-   }, [focusedSection, playerNames, previousFocusedSection])
+   }, [focusedSection, previousFocusedSection])
 
 
    return (

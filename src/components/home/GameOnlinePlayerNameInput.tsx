@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setPlayerNames } from '../../redux/slices/gameSettingsSlice'
+import { setPlayerNames, setFocusedSection } from '../../redux/slices/gameSettingsSlice'
 
 const GameOnlinePlayerNameInput = () => {
    const dispatch = useDispatch()
    const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
-   const inputRef = useRef<HTMLInputElement | null>(null)
+   const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
+   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
    const handleNameChange = (index: number, value: string) => {
       const newNames = [...playerNames]
@@ -15,14 +16,47 @@ const GameOnlinePlayerNameInput = () => {
       dispatch(setPlayerNames(newNames))
    }
 
-   useEffect(() => {
-      if (focusedSection === 'gameOnlinePlayerNameInput' && inputRef.current) {
-         inputRef.current.focus()
-         inputRef.current.setSelectionRange(playerNames[0].length, playerNames[0].length)
-      } else {
-         inputRef.current.blur()
+   const handleChangeFocusedInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (focusedSection !== 'gameOnlinePlayerNameInput') return
+      
+      if(event.key === 'Tab'){
+         event.preventDefault()
+         event.stopPropagation()
       }
-   }, [focusedSection])
+
+      if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
+         if (document.activeElement === inputRefs.current[0]) {
+            if (document.activeElement instanceof HTMLElement) {
+               document.activeElement.blur()
+            }
+            dispatch(setFocusedSection('gameMode'))
+            event.stopPropagation()
+            return  
+         } 
+                        
+      } else if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
+         if (document.activeElement === inputRefs.current[0]) {
+            if (document.activeElement instanceof HTMLElement) {
+               document.activeElement.blur()
+            }
+            dispatch(setFocusedSection('numberOfPlayers'))
+            event.stopPropagation()
+            return
+         } 
+      }
+   }
+
+   useEffect(() => {
+      if (focusedSection === 'gameOnlinePlayerNameInput' && previousFocusedSection === 'numberOfPlayers') {
+         if (inputRefs.current[0]) {
+            inputRefs.current[0]?.focus()
+         }
+      } else if (focusedSection === 'gameOnlinePlayerNameInput' && previousFocusedSection === 'gameMode') {
+         if (inputRefs.current[0]) {
+            inputRefs.current[0]?.focus()
+         }
+      }
+   }, [focusedSection, previousFocusedSection])
 
  
 
@@ -41,7 +75,8 @@ const GameOnlinePlayerNameInput = () => {
                      value={name}
                      placeholder='Enter your name here...'
                      onChange={(event) => handleNameChange(index, event.target.value)}
-                     ref={inputRef}
+                     onKeyDown={(e) => handleChangeFocusedInput(e)}
+                     ref={(el) => {(inputRefs.current[index] = el)}}
                      autoComplete="off"
                   />
                </div>

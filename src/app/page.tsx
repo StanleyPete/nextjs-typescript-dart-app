@@ -99,7 +99,7 @@ const Home = () => {
       if (playerNames.length === 4) return
 
       const handleAddPlayerKeyboard = (event: KeyboardEvent) => {
-         if (gameType === 'single' && event.ctrlKey && event.key === '+') {
+         if (gameType === 'single' && event.ctrlKey && event.shiftKey && event.key === '+') {
             addPlayerInput()
          }
       }
