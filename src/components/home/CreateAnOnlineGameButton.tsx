@@ -27,7 +27,7 @@ const CreateAnOnlineGameButton = () => {
       return true
    }
 
-   const handleCreateOnlineGame = (event: React.MouseEvent<HTMLButtonElement>) => {
+   const handleCreateOnlineGame = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent ) => {
       if (!validatePlayerNames()) {
          event.preventDefault()
          return
@@ -39,6 +39,18 @@ const CreateAnOnlineGameButton = () => {
          { gameMode, gameWin, numberOfLegs, numberOfPlayers,throwTime }
       )
    }
+
+   useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+         if (focusedSection === 'gameOnlineStart' && event.key === 'Enter') {
+            handleCreateOnlineGame(event)
+         }
+      }
+
+      window.addEventListener('keydown', handleKeyDown)
+
+      return () => { window.removeEventListener('keydown', handleKeyDown) }
+   }, [focusedSection])
 
    useEffect(() => {
       if (isConnected && gameId) {

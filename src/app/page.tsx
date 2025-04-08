@@ -1,11 +1,8 @@
 'use client'
 import React, { useEffect} from 'react'
-import { usePathname } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState, resetStates } from '@/redux/store'
-import { setIsFirstLoad } from '../redux/slices/gameSettingsSlice'
+import { resetStates, RootState } from '@/redux/store'
 import GameTypeSection from '@/components/home/GameTypeSection'
 import GameSinglePlayerNamesInput from '@/components/home/GameSinglePlayerNamesInput'
 import GameTeamsPlayerNamesInput from '@/components/home/GameTeamsPlayerNamesInput'
@@ -18,9 +15,10 @@ import CreateAnOnlineGameButton from '@/components/home/CreateAnOnlineGameButton
 import ErrorPopUp from '@/components/ErrorPopUp'
 import NumberOfPlayersSection from '@/components/home/NumberOfPlayersSection'
 import ThrowTimeSection from '@/components/home/ThrowTimeSection'
-import './styles/home.scss'
 import Footer from '@/components/Footer'
 import { handleChangeFocusedSection } from '@/controllers/handleChangeFoucesSection'
+import './styles/home.scss'
+import { setBackFromGame, setFocusedSection } from '@/redux/slices/gameSettingsSlice'
 
 /* 
    HOME PAGE: 
@@ -30,28 +28,12 @@ import { handleChangeFocusedSection } from '@/controllers/handleChangeFoucesSect
 
 const Home = () => {
    const dispatch = useDispatch()
-   const pathname = usePathname()
-   const { focusedSection, previousFocusedSection, gameType, gameMode, isFirstLoad} = useSelector((state: RootState) => state.gameSettings)
-   
-   //Preparing URL
-   const gameFolders = {
-      classic: 'game-classic',
-      cricket: 'game-cricket',
-      online: 'game-online'
-   }
-   let gameFolder
-
-   if (gameMode === 'Cricket') {
-      gameFolder = gameFolders.cricket
-   } else if (gameType === 'single' || gameType === 'teams') {
-      gameFolder = gameFolders.classic
-   } else {
-      gameFolder = gameFolders.online
-   }
-
-   const gameUrl = `/${gameFolder}`
-
-
+   const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
+   const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
+   const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
+   const backFromGame = useSelector((state: RootState) => state.gameSettings.backFromGame)
+  
+  
    useEffect(() => {
       console.log(`to jest focused section : ${focusedSection}`)
       console.log(`to jest previousFocusedSection: ${previousFocusedSection}`)
@@ -82,19 +64,17 @@ const Home = () => {
 
       return () => { window.removeEventListener('keydown', handleKeyDown) }
    }, [focusedSection, dispatch, gameType, previousFocusedSection])
-  
+
    useEffect(() => {
-      /*
-         When Home Page is rendered for the first time, isFirstLoad flag is set to false.
-         When user returns to Home Page from any of game pages, it triggers resetReducer function
-         All of game states are removed from the redux store.
-      */
-      if(isFirstLoad){
-         dispatch(setIsFirstLoad(false))
-      } else if (!isFirstLoad && pathname === '/'){
+      if(backFromGame){
          resetStates()
+         dispatch(setBackFromGame(false))
+         dispatch(setFocusedSection(null))
       }
-   }, [pathname])
+
+   }, [backFromGame])
+
+  
 
    return (
       <div className='main-container form'>
@@ -132,7 +112,7 @@ const Home = () => {
          }
          <div className='game-start'>
             { gameType === 'single' || gameType === 'teams' 
-               ? ( <Link href={gameUrl}> <ToTheGameButton /> </Link> ) 
+               ? ( <ToTheGameButton />) 
                : gameType === 'online' 
                   ? ( <CreateAnOnlineGameButton /> ) 
                   : null }

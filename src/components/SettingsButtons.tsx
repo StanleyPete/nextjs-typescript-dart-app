@@ -4,18 +4,25 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { handleRestartGameClassic } from '@/controllers/game-classic/handleRestartGameClassic'
 import { handleRestartGameCricket } from '@/controllers/game-cricket/handleRestartGameCricket'
+import { setBackFromGame } from '@/redux/slices/gameSettingsSlice'
 
 const SettingsButtons = () => {
    const dispatch = useDispatch()
    const router = useRouter()
-   const { gameMode, playerNames, gameType } = useSelector((state: RootState) => state.gameSettings)
+   const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode)
+   const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
+   const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const { isGameEnd } = useSelector((state: RootState) => state.game)
    
    return (
       <div className="settings-buttons">
          <button 
             className="go-back" 
-            onClick={() => {router.back()}}>
+            onClick={() => {
+               dispatch(setBackFromGame(true))
+               router.replace('/')
+               return
+            }}>
                Back to Settings
          </button>
          <button 

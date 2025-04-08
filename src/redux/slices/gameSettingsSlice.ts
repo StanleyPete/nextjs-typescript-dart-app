@@ -1,9 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-//Types
-import { 
-   GameSettingsStates, 
-   ErrorState 
-} from '@/types/redux/gameSettingsTypes'
+import { GameSettingsStates, ErrorState } from '@/types/redux/gameSettingsTypes'
 
 const initialState: GameSettingsStates = {
    focusedSection: null,
@@ -15,7 +11,7 @@ const initialState: GameSettingsStates = {
    numberOfLegs: 3,
    numberOfPlayers: 2,
    throwTime: 30,
-   isFirstLoad: true,
+   backFromGame: false,
    error: {
       isError: false,
       errorMessage: '',
@@ -55,10 +51,10 @@ const gameSettingsSlice = createSlice({
       },
       setThrowTime(state, action: PayloadAction<number>) {
          state.throwTime = action.payload
-      },  
-      setIsFirstLoad: (state, action: PayloadAction<boolean>) => {
-         state.isFirstLoad = action.payload
       },
+      setBackFromGame(state, action: PayloadAction<boolean>) {
+         state.backFromGame = action.payload
+      },    
       setError: (state, action: PayloadAction<ErrorState>) => {
          state.error = action.payload
       },
@@ -81,7 +77,7 @@ export const {
    setNumberOfLegs,
    setNumberOfPlayers,
    setThrowTime,
-   setIsFirstLoad,
+   setBackFromGame,
    setError,
    setGameSettingsChange,
 } = gameSettingsSlice.actions

@@ -8,7 +8,7 @@ export interface GameSettingsStates {
     numberOfLegs: number
     numberOfPlayers: number,
     throwTime: number,
-    isFirstLoad: boolean,
+    backFromGame: boolean,
     error: {
         isError: boolean
         errorMessage: string

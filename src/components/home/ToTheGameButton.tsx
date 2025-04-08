@@ -1,12 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useSelector, useDispatch } from 'react-redux'
-import { 
-   RootState,
-   addGameClassicSingleStates, 
-   addGameClassicTeamsStates,
-   addGameCricketSingleStates,
-   addGameCricketTeamsStates, 
-} from '@/redux/store'
+import { RootState, addGameClassicSingleStates, addGameClassicTeamsStates, addGameCricketSingleStates, addGameCricketTeamsStates, } from '@/redux/store'
 import { initializePlayers } from '@/redux/slices/game-classic/gameClassicSingleSlice'
 import { initializeTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 import { initializeCricketPlayers } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
@@ -16,7 +11,11 @@ import { setError } from '@/redux/slices/gameSettingsSlice'
 
 const ToTheGameButton = () => {
    const dispatch = useDispatch()
-   const { focusedSection, gameType, playerNames, gameMode } = useSelector((state: RootState) => state.gameSettings)
+   const router = useRouter()
+   const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
+   const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
+   const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
+   const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode)
 
    //Validate player names
    const validatePlayerNames = () => {
@@ -27,12 +26,12 @@ const ToTheGameButton = () => {
       return true
    }
 
-   const handleGameStart = (event: React.MouseEvent<HTMLButtonElement>) => {
+   const handleGameStart = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
       if (!validatePlayerNames()) {
          event.preventDefault()
          return
       }
-   
+      
       //States added added dynamically to the redux store based on gameType and gameMode
       if(gameMode === 'Cricket'){
          if (gameType === 'single'){
@@ -55,12 +54,31 @@ const ToTheGameButton = () => {
             dispatch(initializeTeams({ playerNames, gameMode }))
          }
       }
+
+      if (gameMode === 'Cricket') {
+         router.replace('/game-cricket')
+      } else {
+         router.replace('/game-classic')
+      }
+
    }
+
+   useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+         if (focusedSection === 'gameStart' && event.key === 'Enter') {
+            handleGameStart(event)
+         }
+      }
+
+      window.addEventListener('keydown', handleKeyDown)
+
+      return () => { window.removeEventListener('keydown', handleKeyDown) }
+   }, [focusedSection])
   
    return (
       <button 
          className={`game-start-button  ${focusedSection === 'gameStart' ? 'focused' : ''}`} 
-         onClick={handleGameStart}
+         onClick={handleGameStart}  
       >
             To the game!
       </button> 

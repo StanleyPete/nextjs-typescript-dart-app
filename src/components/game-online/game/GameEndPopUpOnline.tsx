@@ -7,7 +7,6 @@ import { RootState } from '@/redux/store'
 import { setIsGameEnd, setIsGameStarted, setWinner } from '@/redux/slices/game-online/gameOnlineSlice'
 import TimeoutSection from '../lobby/TimeoutSection'
 
-
 const GameEndPopUpOnline = () => {
    const dispatch = useDispatch()
    const router = useRouter()
@@ -17,8 +16,8 @@ const GameEndPopUpOnline = () => {
    const isTimeout = useSelector((state: RootState) => state.gameOnline.isTimeout)
    
    useEffect(() => {
-         if (isTimeout) return router.replace('/game-online/status')
-      }, [isTimeout])
+      if (isTimeout) return router.replace('/game-online/status')
+   }, [isTimeout])
 
    return (
       isGameEnd && (
@@ -47,9 +46,7 @@ const GameEndPopUpOnline = () => {
 
                   <button 
                      className='go-back' 
-                     onClick={() => {
-                        window.location.href = 'http://localhost:3000'
-                     }}
+                     onClick={() => { window.location.href = 'http://localhost:3000' }}
                   >
                     Home page
                   </button>
