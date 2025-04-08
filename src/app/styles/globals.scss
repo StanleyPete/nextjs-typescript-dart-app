@@ -66,6 +66,12 @@ body{
     box-shadow: 0 2px 5px rgb(94, 92, 92);
 }
 
+.logo {
+  display: flex;
+  justify-content: center;
+}
+
+
 //GAME CONTAINER:
 .game-container{
   position: relative;

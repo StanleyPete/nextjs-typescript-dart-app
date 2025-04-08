@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setGameMode, setGameType, setPlayerNames } from '../../redux/slices/gameSettingsSlice'
+import { setFocusedSection, setGameMode, setGameType, setPlayerNames } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 const GameTypeSection = () => {
@@ -12,6 +12,8 @@ const GameTypeSection = () => {
   
 
    const handleGameTypeChange = (type: GameSettingsStates['gameType']) => {
+      dispatch(setFocusedSection('gameType'))
+      if (gameType === type) return
       dispatch(setGameType(type))
       if (type === 'teams') {
          dispatch(setPlayerNames(['', '', '', '']))

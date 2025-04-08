@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setGameWin } from '../../redux/slices/gameSettingsSlice'
+import { setFocusedSection, setGameWin } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 const WinTypeSection = () => {
@@ -10,6 +10,7 @@ const WinTypeSection = () => {
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
 
    const handleWinType = (winType: GameSettingsStates['gameWin']) => {
+      dispatch(setFocusedSection('winType'))
       dispatch(setGameWin(winType))
    }
 

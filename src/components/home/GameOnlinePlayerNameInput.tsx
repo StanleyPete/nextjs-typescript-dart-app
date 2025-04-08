@@ -9,6 +9,7 @@ const GameOnlinePlayerNameInput = () => {
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
    const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+   const wasFocusedByMouse = useRef(false)
 
    const handleNameChange = (index: number, value: string) => {
       const newNames = [...playerNames]
@@ -24,7 +25,7 @@ const GameOnlinePlayerNameInput = () => {
          event.stopPropagation()
       }
 
-      if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
+      if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey || event.key === 'Enter') {
          if (document.activeElement === inputRefs.current[0]) {
             if (document.activeElement instanceof HTMLElement) {
                document.activeElement.blur()
@@ -47,6 +48,11 @@ const GameOnlinePlayerNameInput = () => {
    }
 
    useEffect(() => {
+      if (wasFocusedByMouse.current) {
+         wasFocusedByMouse.current = false
+         return
+      }
+      
       if (focusedSection === 'gameOnlinePlayerNameInput' && previousFocusedSection === 'numberOfPlayers') {
          if (inputRefs.current[0]) {
             inputRefs.current[0]?.focus()
@@ -76,6 +82,10 @@ const GameOnlinePlayerNameInput = () => {
                      placeholder='Enter your name here...'
                      onChange={(event) => handleNameChange(index, event.target.value)}
                      onKeyDown={(e) => handleChangeFocusedInput(e)}
+                     onFocus={() => {
+                        wasFocusedByMouse.current = true
+                        dispatch(setFocusedSection('gameOnlinePlayerNameInput'))
+                     }}
                      ref={(el) => {(inputRefs.current[index] = el)}}
                      autoComplete="off"
                   />

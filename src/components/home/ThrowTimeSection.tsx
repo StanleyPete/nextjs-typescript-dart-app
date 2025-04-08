@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { setThrowTime } from '@/redux/slices/gameSettingsSlice'
+import { setFocusedSection, setThrowTime } from '@/redux/slices/gameSettingsSlice'
 
 const ThrowTimeSection = () => {
    const dispatch = useDispatch()
@@ -10,6 +10,7 @@ const ThrowTimeSection = () => {
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
  
    const handleThrowTime = (throwTime: GameSettingsStates['throwTime']) => {
+      dispatch(setFocusedSection('timeToThrow'))
       dispatch(setThrowTime(throwTime))
    }
 

@@ -7,10 +7,12 @@ import { PlayerNamesInputProps } from '@/types/components/componentsTypes'
 
 const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
    const dispatch = useDispatch()
+   const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
    const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+   const wasFocusedByMouse = useRef(false)
    const [ currentInputIndex, setCurrentInputIndex ] = useState<number|null>(null) 
 
    const handleNameChange = (index: number, value: string) => {
@@ -37,7 +39,15 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
          event.stopPropagation()
       }
 
-      if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
+      if (event.key === 'Delete' && playerNames.length > 1 && currentInputIndex !== 0) {
+         removePlayerInput(currentInputIndex as number)
+         const newIndex = currentInputIndex as number - 1
+         setCurrentInputIndex(newIndex)
+         inputRefs.current[newIndex]?.focus()
+         return
+      }
+
+      if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey || event.key === 'Enter') {
          const lastIndex = playerNames.length - 1
          // Scenario when last input is focused
          if (document.activeElement === inputRefs.current[lastIndex]) {
@@ -76,7 +86,13 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
       }
    }
 
+   // FOCUS SECTION UPDATE WHEN CHANGING FROM GAME TYPE/GAME MODE
    useEffect(() => {
+      if (wasFocusedByMouse.current) {
+         wasFocusedByMouse.current = false
+         return
+      }
+
       if (focusedSection === 'gameSinglePlayerNameInput' && previousFocusedSection === 'gameType') {  
          setCurrentInputIndex(0)
          if (inputRefs.current[0]) {
@@ -90,6 +106,41 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
          }
       }
    }, [focusedSection, previousFocusedSection])
+
+   // REMOVE LAST PLAYER (Keyboard)
+   useEffect(() => {
+      if (playerNames.length === 1) return
+
+      const handleRemoveLastPlayerKeyboard = (event: KeyboardEvent) => {
+         if (gameType === 'single' && event.ctrlKey && event.shiftKey && event.key === '-') {
+            if (currentInputIndex === playerNames.length-1){
+               const newIndex = currentInputIndex as number - 1
+               setCurrentInputIndex(newIndex)
+               inputRefs.current[newIndex]?.focus()
+            }
+            removePlayerInput(playerNames.length - 1)
+         }
+      }
+
+      window.addEventListener('keydown', handleRemoveLastPlayerKeyboard)
+
+      return () => { window.removeEventListener('keydown', handleRemoveLastPlayerKeyboard)}
+   }, [playerNames, gameType, currentInputIndex])
+
+   // ADD PLAYER (Keyboard)
+   useEffect(() => {
+      if (playerNames.length === 4) return
+
+      const handleAddPlayerKeyboard = (event: KeyboardEvent) => {
+         if (gameType === 'single' && event.ctrlKey && event.shiftKey && event.key === '+') {
+            addPlayerInput()
+         }
+      }
+
+      window.addEventListener('keydown', handleAddPlayerKeyboard)
+
+      return () => { window.removeEventListener('keydown', handleAddPlayerKeyboard)}
+   }, [playerNames, gameType])
 
    return (
       <div className="players-section main-form" >
@@ -108,6 +159,11 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                   placeholder={`Player ${index + 1} name`}
                   onChange={(event) => handleNameChange(index, event.target.value)}
                   onKeyDown={(e) => handleChangeFocusedInput(e)}
+                  onFocus={() => {
+                     wasFocusedByMouse.current = true
+                     setCurrentInputIndex(index)
+                     dispatch(setFocusedSection('gameSinglePlayerNameInput'))
+                  }}
                   ref={(el) => {(inputRefs.current[index] = el)}}
                   autoComplete="off"
                />
@@ -119,8 +175,8 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                      <Image
                         src="/minus.svg"
                         alt="Remove player icon"
-                        width={18}
-                        height={18}
+                        width={22}
+                        height={22}
                      />
                   </button>
                )}
@@ -134,11 +190,23 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                <Image
                   src="/plus.svg"
                   alt="Add player icon"
-                  width={18}
-                  height={18}
+                  width={22}
+                  height={22}
                />
                <span>Add new player (Ctrl + Shift + &quot;+&quot;)</span>
             </button>
+         )}
+         {playerNames.length > 1 && (
+            <div className="remove-last-player">
+               <Image
+                  src="/info.svg"
+                  alt="Info icon"
+                  width={12}
+                  height={12}
+               />
+               <span>Remove last: (Ctrl + Shift + &quot;-&quot;)</span>
+            </div>
+            
          )}
       </div>
    )

@@ -88,14 +88,26 @@ $active-button-color: #df4040;
             button.remove-player-button:hover{
               transform: scale(1.2)
             }
+      }
+      .remove-last-player{
+        display: flex;
+        align-items: center;
+        margin-top: 4px;
+        margin-left: 5px;
+        font-size: 10px;
+        color: #858585;
+        span{
+          margin-left: 4px;
+        }
+       
       } 
       button.add-player-button{
         display: flex;                   
         align-items: center;             
-        margin-top: 8px;
+        margin-top: 6px;
         padding: 8px 0px; 
         height: 22px;
-        width: 200px;
+        width: 220px;
         border: none;
         border-radius: $game-options-border-radius;
         background-color: $main-container-background-color;
@@ -105,7 +117,7 @@ $active-button-color: #df4040;
       }
       button.add-player-button span {
         margin-left: 4px;
-        font-size: 10px;
+        font-size: 12px;
       }
       button.add-player-button:hover{
         transform: scale(1.1);

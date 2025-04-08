@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setNumberOfLegs } from '../../redux/slices/gameSettingsSlice'
+import { setFocusedSection, setNumberOfLegs } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 const NumberOfLegsSection = () => {
@@ -10,6 +10,7 @@ const NumberOfLegsSection = () => {
    const focusedSection = useSelector((state:RootState) => state.gameSettings.focusedSection)
 
    const handleNnumberOfLegs = (legs: number) => {
+      dispatch(setFocusedSection('numberOfLegs'))
       dispatch(setNumberOfLegs(legs))
    }
 

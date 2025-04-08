@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setGameMode, setPreviousFocusedSection } from '../../redux/slices/gameSettingsSlice'
+import { setFocusedSection, setGameMode } from '../../redux/slices/gameSettingsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 
 
@@ -13,6 +13,7 @@ const GameModeSection = () => {
    const availableModes = gameType === 'online' ? [301, 501, 701, 1001] : [301, 501, 701, 1001, 'Cricket']
 
    const handleGameMode = (mode: GameSettingsStates['gameMode']) => {
+      dispatch(setFocusedSection('gameMode'))
       dispatch(setGameMode(mode))
    }
 

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
-import { setNumberOfPlayers } from '@/redux/slices/gameSettingsSlice'
+import { setFocusedSection, setNumberOfPlayers } from '@/redux/slices/gameSettingsSlice'
 
 const NumberOfPlayersSection = () => {
    const dispatch = useDispatch()
@@ -10,6 +10,7 @@ const NumberOfPlayersSection = () => {
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
  
    const handleNumberOfPlayers = (numberOfPlayers: GameSettingsStates['numberOfPlayers']) => {
+      dispatch(setFocusedSection('numberOfPlayers'))
       dispatch(setNumberOfPlayers(numberOfPlayers))
    }
 

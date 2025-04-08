@@ -11,6 +11,7 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
    const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+   const wasFocusedByMouse = useRef(false)
    const [ currentInputIndex, setCurrentInputIndex ] = useState<number|null>(null)
 
    const handleNameChange = (index: number, value: string) => {
@@ -28,7 +29,7 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
       }
 
       if (teamIndex === 0) {
-         if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
+         if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey || event.key === 'Enter' ) {
             // Scenario when last input is focused
             if (document.activeElement === inputRefs.current[1]) {
                dispatch(setFocusedSection('gameTeamsPlayerNameInputTeam2'))
@@ -65,7 +66,7 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
             }
          }
       } else if (teamIndex === 1) {
-         if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey ) {
+         if ((event.key === 'ArrowDown' || event.key === 'Tab') && !event.shiftKey || event.key === 'Enter' ) {
             // Scenario when last input is focused
             if (document.activeElement === inputRefs.current[3]) {
                if (document.activeElement instanceof HTMLElement) {
@@ -104,6 +105,12 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
    }
 
    useEffect(() => {
+      if (wasFocusedByMouse.current) {
+         wasFocusedByMouse.current = false
+         return
+      }
+
+      
       if (teamIndex === 0) {
          if (focusedSection === 'gameTeamsPlayerNameInputTeam1' && previousFocusedSection === 'gameType') {
             setCurrentInputIndex(0)
@@ -157,6 +164,16 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
                   value={playerNames[index]}
                   onChange={(event) => handleNameChange(index, event.target.value)}
                   onKeyDown={(e) => handleChangeFocusedInput(e)}
+                  onFocus={() => {
+                     wasFocusedByMouse.current = true
+                     setCurrentInputIndex(index)
+                     if(teamIndex === 0){
+                        dispatch(setFocusedSection('gameTeamsPlayerNameInputTeam1'))
+                     } else {
+                        dispatch(setFocusedSection('gameTeamsPlayerNameInputTeam2'))
+                     }
+
+                  }}
                   ref={(el) => {(inputRefs.current[index] = el)}}
                   autoComplete="off"
                />
