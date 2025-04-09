@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Image from 'next/image'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
@@ -8,6 +8,18 @@ const ErrorPopUp = () => {
    const dispatch = useDispatch()
    const { isError, errorMessage } = useSelector((state: RootState) => state.gameSettings.error)
    const closeError = () => { dispatch(setError({ isError: false, errorMessage: '' })) }
+
+   useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+         if (event.key === 'Escape' || event.key === 'Enter') {
+            closeError() 
+         }
+      }
+
+      window.addEventListener('keydown', handleKeyDown)
+
+      return () => { window.removeEventListener('keydown', handleKeyDown) }
+   }, [isError]) 
 
    return (
       isError && (

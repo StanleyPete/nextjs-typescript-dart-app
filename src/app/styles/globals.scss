@@ -359,7 +359,7 @@ body{
 
       button{
         height: 100%;
-        padding: 4px 8px;
+        padding: 4px 4px;
         color: white;
         border: none;
         cursor: pointer;
@@ -368,7 +368,24 @@ body{
       .input-toggle{
         width: 84px;
         background-color: $score-buttons-background-color;
-        border-bottom-left-radius: $main-container-border-radius
+        border-bottom-left-radius: $main-container-border-radius;
+          div{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+                .input-toggle-button-title{
+                  font-size: 11px;
+                }
+                .keyboard-shortcut{
+                  margin-top: 2px;
+                  font-size: 9px;
+                }
+          }
+      }
+
+      .clicked{
+        transform: scale(1.08);
       }
 
       .buttons-active {
@@ -514,6 +531,13 @@ body{
           color: white;
           background-color: $score-buttons-background-color;
           cursor: pointer;
+              span{
+                font-size: 12px;
+              }
+        }
+
+        .clicked{
+          transform: scale(1.08);
         }
 
         .base-value {

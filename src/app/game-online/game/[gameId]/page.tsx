@@ -34,7 +34,7 @@ const GameOnline = () => {
       <div className='game-container'>
          <GameOnlinePlayersSection />
          <CurrentPlayerThrowOnlineSection />
-         <div className="score-section">
+         <div className='score-section'>
             { isItYourTurn 
                ? (
                   <> 
