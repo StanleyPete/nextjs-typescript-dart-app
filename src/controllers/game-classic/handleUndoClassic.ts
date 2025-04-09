@@ -1,30 +1,11 @@
-//Redux
 import { AppDispatch } from '@/redux/store'
 import { setCurrentPlayerThrowsCount, setCurrentPlayerThrows } from '@/redux/slices/gameSlice'
 import { setThrowValueSum } from '@/redux/slices/game-classic/gameClassicSlice'
-import {
-   setPlayers,
-   setCurrentPlayerIndex,
-   setHistoryClassicSingle,
-} from '@/redux/slices/game-classic/gameClassicSingleSlice'
-import {
-   setTeams,
-   setCurrentTeamIndex,
-   setCurrentPlayerIndexInTeam,
-   setHistoryClassicTeams,
-} from '@/redux/slices/game-classic/gameClassicTeamsSlice'
-//Types
+import { setPlayers, setCurrentPlayerIndex, setHistoryClassicSingle } from '@/redux/slices/game-classic/gameClassicSingleSlice'
+import { setTeams, setCurrentTeamIndex, setCurrentPlayerIndexInTeam, setHistoryClassicTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GameStates } from '@/types/redux/gameTypes'
-import { 
-   GameClassicStates, 
-   GameClassicSingleStates, 
-   GameClassicTeamsStates, 
-   PlayerClassic, 
-   TeamClassic, 
-   HistoryEntryClassicSingle, 
-   HistoryEntryClassicTeams 
-} from '@/types/redux/gameClassicTypes'
+import { GameClassicStates, GameClassicSingleStates, GameClassicTeamsStates, PlayerClassic, TeamClassic, HistoryEntryClassicSingle, HistoryEntryClassicTeams } from '@/types/redux/gameClassicTypes'
 
 /* 
    USED IN: 
@@ -46,17 +27,47 @@ export const handleUndoClassic = (
    dispatch: AppDispatch
 ) => {
    const lastEntry = history[history.length - 1]
-   if (!lastEntry) return
+   if (!lastEntry && !showNumberButtons) return
+   if (!lastEntry && showNumberButtons) {
+      const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
+      if (currentPlayerThrowsCount !== 0) {
+         const currentPlayerOrTeam = gamePlayersOrTeams[0]
+
+         //Temporary variables with updated throw count and throws array
+         const updatedThrowCount = currentPlayerThrowsCount - 1
+         const updatedThrows = [...currentPlayerThrows as number[]]
+
+         //Updating pointsLeft, totalThrows and throwValueSum
+         currentPlayerOrTeam.pointsLeft += updatedThrows[updatedThrows.length - 1]
+         currentPlayerOrTeam.totalThrows -= updatedThrows[updatedThrows.length - 1]
+         const updatedThrowValueSum = throwValueSum - (currentPlayerThrows as number[])[currentPlayerThrows.length - 1]
+
+         dispatch(setThrowValueSum(updatedThrowValueSum))
+
+         //Removing last available throw from temporary variable
+         updatedThrows.pop()
+
+         //Updating currentPlayerThrows and currentPlayerThrowCount with temporary variables
+         dispatch(setCurrentPlayerThrows(updatedThrows))
+         dispatch(setCurrentPlayerThrowsCount(updatedThrowCount))
+
+         dispatch(
+            gameType === 'single'
+               ? setPlayers(gamePlayersOrTeams)
+               : setTeams(gamePlayersOrTeams)
+         )
+         return
+      } else {
+         return
+      }
+   }
    const gamePlayersOrTeams = JSON.parse(JSON.stringify(playersOrTeams))
    const currentPlayerOrTeam = 'historyPlayerIndex' in lastEntry
       ? gamePlayersOrTeams[lastEntry.historyPlayerIndex]
       : gamePlayersOrTeams[lastEntry.historyTeamIndex]
-
+   
    //SCENARIO WHEN PLAYER OR TEAM HAS JUST FINISHED THE LEG
-   if (
-      history.length !== 0 &&
-    lastEntry.historyTotalThrows === Number(gameMode)
-   ) {
+   if (history.length !== 0 && lastEntry.historyTotalThrows === Number(gameMode)) {
       currentPlayerOrTeam.legs -= 1
 
       //Updating game stats for each player or team
