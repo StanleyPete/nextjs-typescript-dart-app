@@ -17,6 +17,7 @@ $cricket-even-buttons-background-color: #333232;
 $game-options-border-radius: 8px;
 $border-style: 1px solid gray; 
 $active-button-color: #df4040;
+$border-focused: 2px solid red;
 
 
 @mixin background-gradient($color, $amount) {
@@ -379,7 +380,7 @@ body{
                 }
                 .keyboard-shortcut{
                   margin-top: 2px;
-                  font-size: 9px;
+                  font-size: 10px;
                 }
           }
       }
@@ -466,6 +467,9 @@ body{
   background-color: transparent;
   border: none;
 }
+.focused {
+  border: $border-focused;
+}
 .multiplier-section button{
   height: 28px;
   width: 84px;
@@ -483,6 +487,10 @@ body{
 }
 .multiplier-section button.active{
   background-color: $green-color;
+}
+
+.multiplier-section button.focused{
+  border: $border-focused;
 }
 
 .button-double{
@@ -538,6 +546,9 @@ body{
 
         .clicked{
           transform: scale(1.08);
+        }
+        .focused{
+          border: $border-focused;
         }
 
         .base-value {

@@ -14,6 +14,8 @@ import GameEndPopUp from '@/components/game-classic/GameEndPopUp'
 import { playSound } from '@/controllers/playSound'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import Footer from '@/components/Footer'
+import { setFocusedSection } from '@/redux/slices/gameSettingsSlice'
+import { setMultiplier } from '@/redux/slices/game-classic/gameClassicSlice'
 
 /* 
 GAME CLASSIC: 
@@ -28,6 +30,9 @@ const GameClassic = () => {
    //Memoized (@/redux/selectors/game-classic/selectDataInGameClassicPage.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)
 
+   
+
+
    useEffect(() => { 
       //Initial sound played only once (when game start)
       if(!initialSoundPlayed){
@@ -36,8 +41,8 @@ const GameClassic = () => {
       }
 
       //Only for the purpose of reviewing players/teams and history states in console
-      console.log('Players: ', playersOrTeams)
-      console.log('History: ', history)
+      // console.log('Players: ', playersOrTeams)
+      // console.log('History: ', history)
 
    }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled])
 

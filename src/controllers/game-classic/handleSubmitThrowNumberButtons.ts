@@ -423,10 +423,14 @@ export const handleSubmitThrowNumberButtons = (
       )
 
       //Sound effect:
-      playSound(
-         (throwValueSum + multiplierThrowValue).toString(),
-         isSoundEnabled
-      )
+      if (throwValueSum + multiplierThrowValue === 0) {
+         playSound('no-score', isSoundEnabled)
+      } else {
+         playSound(
+            (throwValueSum + multiplierThrowValue).toString(),
+            isSoundEnabled
+         )
+      }
       dispatch(setCurrentThrow(0))
       dispatch(setThrowValueSum(0))
       dispatch(setCurrentPlayerThrows([]))
