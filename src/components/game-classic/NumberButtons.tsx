@@ -55,8 +55,16 @@ const NumberButtons = () => {
 
             if (event.key === 'ArrowUp') {
                event.preventDefault()
-               setFocusedButton(null)
                dispatch(setFocusedSection('multiplier-buttons'))
+               dispatch(setPreviousFocusedSection('number-buttons-1-to-5'))
+               if(focusedButton === 3 || focusedButton === 4 || focusedButton === 5) {
+                  dispatch(setMultiplier(3))
+               } else if (focusedButton === 2) {
+                  dispatch(setMultiplier(2))
+               } else if (focusedButton === 1){
+                  dispatch(setMultiplier(1))
+               }
+               setFocusedButton(null)
             }
 
             if (event.key === 'ArrowDown') {
@@ -274,6 +282,7 @@ const NumberButtons = () => {
    useEffect(() => {
       if (previousFocusedSection === 'number-buttons-6-to-10') return
       if (focusedSection === 'number-buttons-1-to-5'){
+         dispatch(setPreviousFocusedSection(null))
          setFocusedButton(multiplier)
       }
    }, [focusedSection, previousFocusedSection])
@@ -323,7 +332,10 @@ const NumberButtons = () => {
                         gameWin,
                         isSoundEnabled,
                         dispatch
-                     )  
+                     )
+                     dispatch(setFocusedSection('multiplier-buttons'))
+                     dispatch(setMultiplier(1))
+                     setFocusedButton(null)  
                   }}
                >
                   <span className="base-value">{baseValue}</span>
@@ -359,6 +371,9 @@ const NumberButtons = () => {
                      isSoundEnabled,
                      dispatch
                   )
+                  dispatch(setFocusedSection('multiplier-buttons'))
+                  dispatch(setMultiplier(1))
+                  setFocusedButton(null)
                }}
             >
                {label}
@@ -382,6 +397,9 @@ const NumberButtons = () => {
                   gameMode, 
                   dispatch
                )
+               dispatch(setFocusedSection('multiplier-buttons'))
+               dispatch(setMultiplier(1))
+               setFocusedButton(null)
             }}
          >
             Undo

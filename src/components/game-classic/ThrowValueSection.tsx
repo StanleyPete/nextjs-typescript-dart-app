@@ -19,6 +19,7 @@ const ThrowValueSection = () => {
    const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode)
    const gameWin = useSelector((state: RootState) => state.gameSettings.gameWin)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
+   const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
    const { isError } = useSelector((state: RootState) => state.gameSettings.error)
    const numberOfLegs = useSelector((state: RootState) => state.gameSettings.numberOfLegs)
    const startIndex = useSelector((state: RootState) => state.game.startIndex)
@@ -117,6 +118,11 @@ const ThrowValueSection = () => {
    }, [gameType, playersOrTeams, index, currentPlayerThrowsCount, throwValueSum, dispatch, currentThrow, showNumberButtons, isError, isDoubleActive, multiplier, focusedSection, focusedMultiplierButton])
 
    useEffect(() => {
+      if (previousFocusedSection === 'number-buttons-1-to-5') {
+         const currentMultiplier = multiplier
+         setFocusedMultiplierButton(currentMultiplier)
+         return
+      }
       if (focusedSection !== 'multiplier-buttons') {
          console.log('to sie wykponalo i nie powinno isc dalej')
          return
@@ -130,7 +136,7 @@ const ThrowValueSection = () => {
          dispatch(setFocusedSection(null))
          setFocusedMultiplierButton(null)
       }
-   }, [showNumberButtons, focusedSection, dispatch])
+   }, [showNumberButtons, focusedSection, dispatch, previousFocusedSection])
 
    useEffect(() => {
       console.log(`to jest mulitplier: ${multiplier}`)

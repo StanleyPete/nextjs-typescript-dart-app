@@ -190,10 +190,10 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                <Image
                   src="/plus.svg"
                   alt="Add player icon"
-                  width={22}
-                  height={22}
+                  width={18}
+                  height={18}
                />
-               <span>Add new player (Ctrl + Shift + &quot;+&quot;)</span>
+               <span>New player (Ctrl + Shift + &quot;+&quot;) </span>
             </button>
          )}
          {playerNames.length > 1 && (
