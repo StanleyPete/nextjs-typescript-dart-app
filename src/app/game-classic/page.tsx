@@ -8,14 +8,13 @@ import GameClassicSinglePlayersSection from '@/components/game-classic/GameClass
 import GameClassicTeamsPlayersSection from '@/components/game-classic/GameClassicTeamsPlayersSection'
 import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
 import ScoreSection from '@/components/game-classic/ScoreSection'
-import SettingsButtons from '@/components/SettingsButtons'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameEndPopUp from '@/components/game-classic/GameEndPopUp'
 import { playSound } from '@/controllers/playSound'
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import Footer from '@/components/Footer'
-import { setFocusedSection } from '@/redux/slices/gameSettingsSlice'
-import { setMultiplier } from '@/redux/slices/game-classic/gameClassicSlice'
+import NavigationPanel from '@/components/NavigationPanel'
+
 
 /* 
 GAME CLASSIC: 
@@ -49,13 +48,14 @@ const GameClassic = () => {
 
    return (
       <div className='game-container'>
+         <NavigationPanel />
          {gameType === 'single' 
             ? (<GameClassicSinglePlayersSection />) 
             : (<GameClassicTeamsPlayersSection />)
          }
          <CurrentPlayerThrowSection />
          <ScoreSection />
-         <SettingsButtons />
+      
          <Footer githubLogoSrc='/github-mark-white.svg' />
          <GameEndPopUp />
          <ErrorPopUp />

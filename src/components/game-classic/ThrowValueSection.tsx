@@ -153,13 +153,13 @@ const ThrowValueSection = () => {
                className={`
                   input-toggle 
                   ${showNumberButtons || playersOrTeams[index].pointsLeft <= 40 && playersOrTeams[index].pointsLeft % 2 === 0 
-                     ? 'buttons-active' 
-                     : 'input-active'
-                  } 
+         ? 'buttons-active' 
+         : 'input-active'
+      } 
                   ${activeButton === 'input-toggle' 
-                     ? 'clicked' 
-                     : ''
-                  }
+         ? 'clicked' 
+         : ''
+      }
                `}
                onClick={() => {
                   handleToggleInputMethod(

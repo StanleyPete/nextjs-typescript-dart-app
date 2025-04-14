@@ -6,7 +6,6 @@ import { setInitialSoundPlayed } from '@/redux/slices/gameSlice'
 import { selectDataInGameCricketPage } from '@/redux/selectors/game-cricket/selectDataInGameCricketPage'
 import GameCricketSinglePlayersSection from '@/components/game-cricket/GameCricketSinglePlayersSection'
 import GameCricketTeamsPlayersSection from '@/components/game-cricket/GameCricketTeamsPlayersSection'
-import SettingsButtons from '@/components/SettingsButtons'
 import ErrorPopUp from '@/components/ErrorPopUp'
 import GameEndPopUp from '@/components/game-cricket/GameEndPopUp'
 import ThrowValueSectionCricket from '@/components/game-cricket/ThrowValueSectionCricket'
@@ -14,6 +13,7 @@ import ScoreButtonsCricket from '@/components/game-cricket/ScoreButtonsCricket'
 import CurrentPlayerThrowSection from '@/components/CurrentPlayerThrowSection'
 import Footer from '@/components/Footer'
 import { playSound } from '@/controllers/playSound'
+import NavigationPanel from '@/components/NavigationPanel'
 
 const GameCricket = () => {
    const dispatch = useDispatch()
@@ -40,6 +40,7 @@ const GameCricket = () => {
 
    return (    
       <div className='game-container'>
+         <NavigationPanel />
          {gameType === 'single' 
             ? (<GameCricketSinglePlayersSection />) 
             : (<GameCricketTeamsPlayersSection />)
@@ -47,7 +48,6 @@ const GameCricket = () => {
          <CurrentPlayerThrowSection />
          <ThrowValueSectionCricket />
          <ScoreButtonsCricket />
-         <SettingsButtons />
          <Footer githubLogoSrc='/github-mark-white.svg' />
          <ErrorPopUp />
          <GameEndPopUp />

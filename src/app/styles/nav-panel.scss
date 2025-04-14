@@ -1,0 +1,31 @@
+//NAV PANEL
+.nav-panel {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    padding: 0px 6px;
+      button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 13px;
+        background-color: transparent;
+        border: none;
+        color: white;
+        cursor: pointer;
+          span {
+            margin-left: 2px;
+          }
+      }
+      button:hover {
+        transform: scale(1.2); // delikatne powiększenie
+        }
+      .current-game-header {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 14px;
+      }
+  }
