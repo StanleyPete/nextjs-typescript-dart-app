@@ -17,8 +17,11 @@ const exoExtraBold = localFont({
 })
 
 export const metadata: Metadata = {
-   title: 'Dart Score App',
-   description: 'Dart Score application',
+   title: 'Free Darts Online',
+   description: 'Dart Score Application',
+   icons: {
+      icon: '/favicon.ico', // zakładamy, że masz plik favicon.ico w folderze /public
+   },
 }
 
 export default function RootLayout({
