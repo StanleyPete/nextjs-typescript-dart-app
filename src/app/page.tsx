@@ -33,10 +33,7 @@ const Home = () => {
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const backFromGame = useSelector((state: RootState) => state.gameSettings.backFromGame)
   
-  
    useEffect(() => {
-      console.log(`to jest focused section : ${focusedSection}`)
-      console.log(`to jest previousFocusedSection: ${previousFocusedSection}`)
       const handleKeyDown = (event: KeyboardEvent) => {
          const activeElement = document.activeElement
          
@@ -54,7 +51,6 @@ const Home = () => {
          handleChangeFocusedSection(event, gameType, focusedSection, previousFocusedSection, dispatch)
       }
 
-      
       if (focusedSection === 'gameSinglePlayerNameInput' || focusedSection === 'gameTeamsPlayerNameInputTeam1' || focusedSection === 'gameTeamsPlayerNameInputTeam2') {
          return () => { window.removeEventListener('keydown', handleKeyDown) }
       }
@@ -75,7 +71,6 @@ const Home = () => {
    }, [backFromGame])
 
   
-
    return (
       <div className='main-container form'>
          <div className="logo">

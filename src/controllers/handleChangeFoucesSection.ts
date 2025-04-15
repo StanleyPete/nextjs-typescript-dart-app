@@ -49,13 +49,11 @@ export const handleChangeFocusedSection = (
             return
          }
          if (currentFocusedSectionIndex === 1) {
-            console.log('wykonalo sie2')
             dispatch(setFocusedSection(singleSections[2]))
             return
          }
          const nextIndex = (currentFocusedSectionIndex + 1) % singleSections.length
          dispatch(setFocusedSection(singleSections[nextIndex]))
-         console.log('zmiana')
          return
       }
 

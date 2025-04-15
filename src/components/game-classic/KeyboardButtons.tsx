@@ -11,6 +11,8 @@ const KeyboardButtons = () => {
    const [activeButton, setActiveButton] = useState<number | string | null>(null)
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode)
+   const { isError } = useSelector((state: RootState) => state.gameSettings.error)
+   const isGameEnd = useSelector((state: RootState) => state.game.isGameEnd)
    const currentPlayerThrowsCount = useSelector((state: RootState) => state.game.currentPlayerThrowsCount)
    const currentPlayerThrows = useSelector((state: RootState) => state.game.currentPlayerThrows)
    const showNumberButtons = useSelector((state: RootState) => state.gameClassic.showNumberButtons)
@@ -28,6 +30,7 @@ const KeyboardButtons = () => {
    }
 
    useEffect(() => {
+      if (isGameEnd || isError) return
       const handleKeyDown = (event: KeyboardEvent) => {
          const key = event.key
          if (key >= '0' && key <= '9') {
@@ -59,7 +62,7 @@ const KeyboardButtons = () => {
       window.addEventListener('keydown', handleKeyDown)
 
       return () => { window.removeEventListener('keydown', handleKeyDown) }
-   }, [currentThrow, dispatch, gameType, gameMode, playersOrTeams, index, history, showNumberButtons, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount])
+   }, [currentThrow, dispatch, gameType, gameMode, playersOrTeams, index, history, showNumberButtons, throwValueSum, currentPlayerThrows, currentPlayerThrowsCount, isError, isGameEnd])
 
 
    return (

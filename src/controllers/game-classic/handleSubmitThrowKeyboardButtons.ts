@@ -1,26 +1,15 @@
-//Redux
 import { AppDispatch } from '@/redux/store'
 import { setError } from '@/redux/slices/gameSettingsSlice'
 import { setCurrentThrow, setIsDoubleActive } from '@/redux/slices/game-classic/gameClassicSlice'
 import { setPlayers, setCurrentPlayerIndex, setHistoryClassicSingle } from '@/redux/slices/game-classic/gameClassicSingleSlice'
 import { setTeams, setCurrentTeamIndex, setHistoryClassicTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
-//Controllers
 import { handleSwitchPlayerOrTeamClassic } from '@/controllers/game-classic/handleSwitchPlayerOrTeamClassic'
 import { handleSwitchStartPlayerOrTeamIndex } from '@/controllers/handleSwitchStartPlayerOrTeamIndex'
 import { handleCheckGameEnd } from '@/controllers/handleCheckGameEnd'
 import { playSound } from '@/controllers/playSound'
-//Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { GameStates } from '@/types/redux/gameTypes'
-import {
-   GameClassicStates,
-   GameClassicSingleStates,
-   GameClassicTeamsStates,
-   PlayerClassic,
-   TeamClassic,
-   HistoryEntryClassicSingle,
-   HistoryEntryClassicTeams,
-} from '@/types/redux/gameClassicTypes'
+import { GameClassicStates, GameClassicSingleStates, GameClassicTeamsStates, PlayerClassic, TeamClassic, HistoryEntryClassicSingle, HistoryEntryClassicTeams } from '@/types/redux/gameClassicTypes'
 
 /* USED IN: 
       ThrowValueSection component when showNumberButtons === false, 
@@ -47,12 +36,7 @@ export const handleSubmitThrowKeyboardButtons = (
 ) => {
    //ERROR (currentThrow over 180)
    if (currentThrow > 180) {
-      dispatch(
-         setError({
-            isError: true,
-            errorMessage: 'Score higher than 180 is not possible',
-         })
-      )
+      dispatch(setError({isError: true, errorMessage: 'Score higher than 180 is not possible'}))
       dispatch(setCurrentThrow(0))
       return
    }
@@ -140,14 +124,7 @@ export const handleSubmitThrowKeyboardButtons = (
 
       currentPlayerOrTeam.legs += 1
 
-      handleCheckGameEnd(
-         gamePlayersOrTeams,
-         gameWin,
-         numberOfLegs,
-         isSoundEnabled,
-         dispatch
-      )
-
+      
       //Updating game stats for new leg (for each player or team)
       gamePlayersOrTeams.forEach((playerOrTeam: PlayerClassic | TeamClassic) => {
          playerOrTeam.pointsLeft = Number(gameMode)
@@ -158,24 +135,14 @@ export const handleSubmitThrowKeyboardButtons = (
          playerOrTeam.isInputPreffered = true
       })
 
+      handleCheckGameEnd(gamePlayersOrTeams, gameWin, numberOfLegs, isSoundEnabled, dispatch)
+
       //Updating players and teams states + history state updated with current player or team
       if (gameType === 'single') {
-         dispatch(
-            setHistoryClassicSingle([
-               ...history,
-               ...newHistoryEntries,
-               newHistoryEntry,
-            ])
-         )
+         dispatch(setHistoryClassicSingle([...history, ...newHistoryEntries, newHistoryEntry ]))
          dispatch(setPlayers(gamePlayersOrTeams))
       } else {
-         dispatch(
-            setHistoryClassicTeams([
-               ...history,
-               ...newHistoryEntries,
-               newHistoryEntry,
-            ])
-         )
+         dispatch(setHistoryClassicTeams([...history, ...newHistoryEntries, newHistoryEntry,]))
          dispatch(setTeams(gamePlayersOrTeams))
       }
 
@@ -209,30 +176,14 @@ export const handleSubmitThrowKeyboardButtons = (
 
       //Updating history + players or teams states
       if (gameType === 'single') {
-         dispatch(
-            setHistoryClassicSingle([
-               ...(history as HistoryEntryClassicSingle[]),
-          newHistoryEntry as HistoryEntryClassicSingle,
-            ])
-         )
+         dispatch(setHistoryClassicSingle([...(history as HistoryEntryClassicSingle[]), newHistoryEntry as HistoryEntryClassicSingle]))
          dispatch(setPlayers(gamePlayersOrTeams))
       } else {
-         dispatch(
-            setHistoryClassicTeams([
-               ...(history as HistoryEntryClassicTeams[]),
-          newHistoryEntry as HistoryEntryClassicTeams,
-            ])
-         )
+         dispatch(setHistoryClassicTeams([...(history as HistoryEntryClassicTeams[]), newHistoryEntry as HistoryEntryClassicTeams]))
          dispatch(setTeams(gamePlayersOrTeams))
       }
 
-      handleSwitchPlayerOrTeamClassic(
-         gameType,
-         index,
-         currentPlayerIndexInTeam,
-         playersOrTeams,
-         dispatch
-      )
+      handleSwitchPlayerOrTeamClassic(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
       playSound('no-score', isSoundEnabled)
       dispatch(setCurrentThrow(0))
       return
@@ -256,29 +207,17 @@ export const handleSubmitThrowKeyboardButtons = (
       )
       dispatch(setPlayers(gamePlayersOrTeams))
    } else {
-      dispatch(
-         setHistoryClassicTeams([
-            ...(history as HistoryEntryClassicTeams[]),
-        newHistoryEntry as HistoryEntryClassicTeams,
-         ])
-      )
+      dispatch(setHistoryClassicTeams([...(history as HistoryEntryClassicTeams[]), newHistoryEntry as HistoryEntryClassicTeams]))
       dispatch(setTeams(gamePlayersOrTeams))
    }
 
-   //Sound effect
    if (currentThrow === 0) {
       playSound('no-score', isSoundEnabled)
    } else {
       playSound(currentThrow.toString(), isSoundEnabled)
    }
 
-   handleSwitchPlayerOrTeamClassic(
-      gameType,
-      index,
-      currentPlayerIndexInTeam,
-      playersOrTeams,
-      dispatch
-   )
+   handleSwitchPlayerOrTeamClassic(gameType, index, currentPlayerIndexInTeam, playersOrTeams, dispatch)
    dispatch(setCurrentThrow(0))
    return
 }

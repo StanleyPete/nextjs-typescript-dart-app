@@ -84,7 +84,7 @@ export const handleUndoClassic = (
                playerOrTeam.pointsLeft = playerOrTeamHistory.historyPointsLeft
                playerOrTeam.lastScore = playerOrTeamHistory.historyLastScore
                playerOrTeam.totalThrows = playerOrTeamHistory.historyTotalThrows === Number(gameMode)
-                  ? playerOrTeamHistory.historyTotalThrows - playerOrTeamHistory.historyLastScore
+                  ? playerOrTeamHistory.historyTotalThrows - playerOrTeamHistory.historyPointsLeft
                   : playerOrTeamHistory.historyTotalThrows
                playerOrTeam.totalAttempts = playerOrTeamHistory.historyTotalAttempts
                playerOrTeam.average = playerOrTeamHistory.historyLastAverage

@@ -18,7 +18,9 @@ const NumberButtons = () => {
    const gameWin = useSelector((state: RootState) => state.gameSettings.gameWin)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
+   const { isError } = useSelector((state: RootState) => state.gameSettings.error)
    const startIndex = useSelector((state: RootState) => state.game.startIndex)
+   const isGameEnd = useSelector((state: RootState) => state.game.isGameEnd)
    const currentPlayerThrowsCount = useSelector((state: RootState) => state.game.currentPlayerThrowsCount)
    const currentPlayerThrows = useSelector((state: RootState) => state.game.currentPlayerThrows)
    const isSoundEnabled = useSelector((state: RootState) => state.game.isSoundEnabled)
@@ -36,6 +38,7 @@ const NumberButtons = () => {
    ]
 
    useEffect(() => {
+      if (isGameEnd || isError) return
       const handleKeyDown = (event: KeyboardEvent) => {
          if (focusedSection === 'number-buttons-1-to-5') {
             const buttonsOptions = [1, 2, 3, 4, 5]

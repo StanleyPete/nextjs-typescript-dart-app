@@ -23,6 +23,7 @@ const ThrowValueSection = () => {
    const { isError } = useSelector((state: RootState) => state.gameSettings.error)
    const numberOfLegs = useSelector((state: RootState) => state.gameSettings.numberOfLegs)
    const startIndex = useSelector((state: RootState) => state.game.startIndex)
+   const isGameEnd = useSelector((state: RootState) => state.game.isGameEnd)
    const currentPlayerThrowsCount = useSelector((state: RootState) => state.game.currentPlayerThrowsCount)
    const currentPlayerThrows = useSelector((state: RootState) => state.game.currentPlayerThrows)
    const isSoundEnabled = useSelector((state: RootState) => state.game.isSoundEnabled)
@@ -36,6 +37,7 @@ const ThrowValueSection = () => {
    const { playersOrTeams, index, currentPlayerIndexInTeam, history } = useSelector(selectDataInThrowValueSectionAndNumberButtons)
    
    useEffect(() => {
+      if (isGameEnd || isError) return
       const handleKeyDown = (event: KeyboardEvent) => {
          if (event.ctrlKey && event.key === 'b') {
             event.preventDefault()
@@ -115,7 +117,7 @@ const ThrowValueSection = () => {
       window.addEventListener('keydown', handleKeyDown)
    
       return () => { window.removeEventListener('keydown', handleKeyDown) }
-   }, [gameType, playersOrTeams, index, currentPlayerThrowsCount, throwValueSum, dispatch, currentThrow, showNumberButtons, isError, isDoubleActive, multiplier, focusedSection, focusedMultiplierButton])
+   }, [gameType, playersOrTeams, index, currentPlayerThrowsCount, throwValueSum, dispatch, currentThrow, showNumberButtons, isError, isDoubleActive, multiplier, focusedSection, focusedMultiplierButton, isGameEnd])
 
    useEffect(() => {
       if (previousFocusedSection === 'number-buttons-1-to-5') {
@@ -123,12 +125,9 @@ const ThrowValueSection = () => {
          setFocusedMultiplierButton(currentMultiplier)
          return
       }
-      if (focusedSection !== 'multiplier-buttons') {
-         console.log('to sie wykponalo i nie powinno isc dalej')
-         return
-      }
+      if (focusedSection !== 'multiplier-buttons') return
       if (showNumberButtons){
-         console.log('czy to sie wykonalo wlasnie?')
+         
          dispatch(setFocusedSection('multiplier-buttons'))
          dispatch(setMultiplier(1))
          setFocusedMultiplierButton(1)
@@ -139,10 +138,8 @@ const ThrowValueSection = () => {
    }, [showNumberButtons, focusedSection, dispatch, previousFocusedSection])
 
    useEffect(() => {
-      console.log(`to jest mulitplier: ${multiplier}`)
-      console.log(`to jest focusedMultiplierButton: ${focusedMultiplierButton}`)
-      console.log(`to jest focusedSection: ${focusedSection}`)
-   }, [multiplier, focusedMultiplierButton, focusedSection])
+      setFocusedMultiplierButton(multiplier)
+   }, [multiplier])
 
    return (
       <>

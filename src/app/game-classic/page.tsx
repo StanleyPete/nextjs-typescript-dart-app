@@ -15,7 +15,6 @@ import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import Footer from '@/components/Footer'
 import NavigationPanel from '@/components/NavigationPanel'
 
-
 /* 
 GAME CLASSIC: 
 - only for 301, 501, 701, 1001 modes
@@ -25,12 +24,11 @@ GAME CLASSIC:
 const GameClassic = () => {
    const dispatch = useDispatch()
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
-   const { isSoundEnabled, initialSoundPlayed } = useSelector((state: RootState) => state.game)
+   const isSoundEnabled = useSelector((state: RootState) => state.game.isSoundEnabled)
+   const initialSoundPlayed = useSelector((state: RootState) => state.game.initialSoundPlayed)
+  
    //Memoized (@/redux/selectors/game-classic/selectDataInGameClassicPage.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)
-
-   
-
 
    useEffect(() => { 
       //Initial sound played only once (when game start)
@@ -40,8 +38,8 @@ const GameClassic = () => {
       }
 
       //Only for the purpose of reviewing players/teams and history states in console
-      // console.log('Players: ', playersOrTeams)
-      // console.log('History: ', history)
+      console.log('Players: ', playersOrTeams)
+      console.log('History: ', history)
 
    }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled])
 
@@ -55,7 +53,6 @@ const GameClassic = () => {
          }
          <CurrentPlayerThrowSection />
          <ScoreSection />
-      
          <Footer githubLogoSrc='/github-mark-white.svg' />
          <GameEndPopUp />
          <ErrorPopUp />
