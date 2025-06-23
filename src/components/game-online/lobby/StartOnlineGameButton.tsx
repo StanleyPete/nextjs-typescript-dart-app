@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { RootState } from '@/redux/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { setError } from '@/redux/slices/gameSettingsSlice'
@@ -10,6 +10,7 @@ const StartOnlineGameButton= () => {
    const role =  useSelector((state: RootState) => state.gameOnline.role)
    const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
    const numberOfPlayers = useSelector((state: RootState) => state.gameSettings.numberOfPlayers)
+   const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const players =  useSelector((state: RootState) => state.gameOnline.players)
    const areAllPlayersReady = players.every(player => player.ready === true)
    const areAllPlayersInTheLobby = players.length === numberOfPlayers
@@ -20,11 +21,23 @@ const StartOnlineGameButton= () => {
          
       if (role === 'host') return socketService.emitStartGame(gameId)
    }
+
+   useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+         if (focusedSection === 'startOnlineGameButton' && event.key === 'Enter') {
+            handleStartGame()
+         }
+      }
+
+      window.addEventListener('keydown', handleKeyDown)
+
+      return () => { window.removeEventListener('keydown', handleKeyDown) }
+   }, [focusedSection])
    
    return (
       <div className="game-start">
          <button
-            className="game-start-button" 
+            className={`game-start-button  ${focusedSection === 'startOnlineGameButton' ? 'focused' : ''}`} 
             onClick={handleStartGame}
          >
          Start game!

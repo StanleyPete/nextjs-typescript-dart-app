@@ -20,7 +20,7 @@ export const metadata: Metadata = {
    title: 'Free Darts Online',
    description: 'Dart Score Application',
    icons: {
-      icon: '/favicon.ico', // zakładamy, że masz plik favicon.ico w folderze /public
+      icon: '/favicon.ico', 
    },
 }
 

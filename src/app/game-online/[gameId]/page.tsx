@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef} from 'react'
 import { useRouter } from 'next/navigation'
 import { RootState } from '@/redux/store'
 import { useDispatch, useSelector } from 'react-redux'
@@ -14,6 +14,8 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    const dispatch = useDispatch()
    const router = useRouter()
    const { gameId } = params
+   const inputRef = useRef<HTMLInputElement>(null)
+   const buttonRef = useRef<HTMLButtonElement>(null)
    const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
    const isLoading = useSelector((state: RootState) => state.joinRoom?.isLoading) ?? true
    const gameFound = useSelector((state: RootState) => state.joinRoom?.gameFound) ?? false 
@@ -46,6 +48,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
       socketService.connectAndJoinGame(gameId)
    }, [])
 
+   
    useEffect(() => {
       if (isLobbyJoined) return router.replace(`/game-online/lobby/${gameId}`)
    }, [isLobbyJoined])
@@ -53,6 +56,41 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
    useEffect(() => {
       if (message) return router.replace('/game-online/status')
    }, [message])
+
+   useEffect(() => {
+      if (inputRef.current) {
+         inputRef.current.focus()
+      }
+
+      const handleKeyDown = (event: KeyboardEvent) => {
+         const isInputFocused = document.activeElement === inputRef.current
+         const isButtonFocused = document.activeElement === buttonRef.current
+
+         if(event.key === 'ArrowDown'){
+            if (isButtonFocused) {
+               inputRef.current?.focus()
+               return
+            }
+
+            buttonRef.current?.focus()
+         }
+
+         if(event.key === 'ArrowUp'){
+            if (isInputFocused){
+               buttonRef.current?.focus()
+               return
+            }
+
+            inputRef.current?.focus()
+         }
+      }
+
+      window.addEventListener('keydown', handleKeyDown)
+
+      return () => {
+         window.removeEventListener('keydown', handleKeyDown)
+      }
+   }, [isLoading])
 
 
    return (
@@ -76,6 +114,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                         value={playerNames[0]}
                         placeholder='Player name...' 
                         onChange={(e) => handlePlayerNameChange(e)}
+                        ref={inputRef}
                      />
                   </div>
                </div>
@@ -83,6 +122,7 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                   <button 
                      className="game-start-button"
                      onClick={joinGameLobby}
+                     ref={buttonRef}
                   >
                      Join game lobby
                   </button>

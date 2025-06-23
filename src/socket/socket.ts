@@ -24,7 +24,7 @@ class SocketService {
       })
 
       this.socket.on('game-timeout', (data) => {
-         store.dispatch(setError({ isError: false, errorMessage: ``}))
+         store.dispatch(setError({ isError: false, errorMessage: ''}))
          store.dispatch(setIsTimeout(true))
          store.dispatch(setLobbyMessage(data.message))
       })

@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 import { RootState } from '@/redux/store'
 import { useRouter } from 'next/navigation'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import UrlToCopySection from '@/components/game-online/lobby/UrlToCopySection'
 import LobbyPlayersSection from '@/components/game-online/lobby/LobbyPlayersSection'
 import GameModeOnlineSection from '@/components/game-online/lobby/GameModeOnlineSection'
@@ -15,9 +15,13 @@ import ErrorPopUp from '@/components/ErrorPopUp'
 import GuestReadyButton from '@/components/game-online/lobby/GuestReadyButton'
 import '../../../styles/home.scss'
 import Footer from '@/components/Footer'
+import { setFocusedSection } from '@/redux/slices/gameSettingsSlice'
+import { handleChangeFocusedSectionLobby } from '@/controllers/handleChangeFocusedSectionLobby'
 
 const Lobby = () => {
    const router = useRouter()
+   const dispatch = useDispatch()
+   const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const numberOfPlayers = useSelector((state: RootState) => state.gameSettings.numberOfPlayers)
    const players =  useSelector((state: RootState) => state.gameOnline.players)
    const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
@@ -33,6 +37,23 @@ const Lobby = () => {
       if (isTimeout) return router.replace('/game-online/status')
    }, [isTimeout])
 
+   useEffect(() => {
+      dispatch(setFocusedSection(''))
+   }, [])
+
+   useEffect(() => {
+      const handleKeyDown = (event: KeyboardEvent) => {
+         handleChangeFocusedSectionLobby(event, focusedSection, role, dispatch)
+      }
+
+
+      window.addEventListener('keydown', handleKeyDown)
+
+      return () => { window.removeEventListener('keydown', handleKeyDown) }
+   }, [focusedSection, dispatch, ])
+
+   
+
    return (
       <div className='main-container form'>
          <h1 className='game-header'>GAME LOBBY</h1>
@@ -44,7 +65,7 @@ const Lobby = () => {
          <GameModeOnlineSection />
          <WinTypeOnlineSection />
          <NumberOfLegsOnlineSection />
-         <ThrowTimeOnlineSection />
+         <ThrowTimeOnlineSection  />
          { role === 'host' 
             ? (<StartOnlineGameButton />)
             : (<GuestReadyButton />) }

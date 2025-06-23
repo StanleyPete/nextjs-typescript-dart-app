@@ -928,10 +928,20 @@ body{
   border-style: none;
 }
 
-.guest-ready-section{
+.guest-ready-section {
   margin-top: 22px;
   display: flex;
   align-items: center;
+}
+
+.switch-wrapper {
+  display: inline-block;
+  border-radius: 34px; 
+  padding: 2px;
+}
+
+.switch-wrapper.focused {
+  border: 3px solid red; 
 }
 
 .switch {
@@ -939,6 +949,7 @@ body{
   display: inline-block;
   width: 40px;
   height: 22px;
+  cursor: pointer;
 }
 
 .switch input {
@@ -949,7 +960,6 @@ body{
 
 .slider {
   position: absolute;
-  cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
@@ -960,29 +970,28 @@ body{
 }
 
 .slider:before {
-  position: absolute;
   content: "";
+  position: absolute;
   height: 18px;
   width: 18px;
-  border-radius: 50%;
   left: 2px;
   bottom: 2px;
   background-color: white;
+  border-radius: 50%;
   transition: 0.4s;
 }
 
-
 input:checked + .slider {
-  background-color: $green-color; 
+  background-color: $green-color;
 }
 
 input:checked + .slider:before {
   transform: translateX(18px);
 }
 
-
 .guest-ready-section p {
   font-size: 14px;
   margin-left: 10px;
 }
+
 
