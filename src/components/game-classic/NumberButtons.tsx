@@ -293,7 +293,6 @@ const NumberButtons = () => {
    useEffect(() => {
       const isInputPreferred = playersOrTeams[index].isInputPreffered
       if (!isInputPreferred) {
-         console.log('watrunek spelniony')
          dispatch(setFocusedSection('multiplier-buttons'))
          dispatch(setPreviousFocusedSection(null))
          setFocusedButton(null)

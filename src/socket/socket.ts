@@ -3,7 +3,7 @@ import { store } from '@/redux/store'
 import { RootState } from '@/redux/store'
 import { setGameId, setRole, setPlayers, setGameTimeoutStartTime, setGameTimeoutDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrows, setCurrentThrow, setShowNumberButtons, setIsGameEnd, setWinner, setIsDoubleActive, setIsTimeout, setMessage as setLobbyMessage } from '@/redux/slices/game-online/gameOnlineSlice'
 import { setIsLoading, setCurrentPlayersInLobby, setGameFound, setMessage, setIsLobbyJoined } from '@/redux/slices/game-online/joinRoomSlice'
-import { setGameSettingsChange, setError } from '@/redux/slices/gameSettingsSlice'
+import { setGameSettingsChange, setError, setPreviousFocusedSection } from '@/redux/slices/gameSettingsSlice'
 import { setNumberOfPlayers, setGameMode, setGameWin, setNumberOfLegs, setThrowTime } from '@/redux/slices/gameSettingsSlice'
 import { PlayerOnline } from '@/types/redux/gameOnlineTypes'
 import { playSound } from '@/controllers/playSound'
@@ -97,6 +97,7 @@ class SocketService {
          store.dispatch(setIsDoubleActive(false))
          store.dispatch(setCurrentPlayerThrows([]))
          store.dispatch(setCurrentThrow(0))
+         store.dispatch(setPreviousFocusedSection(''))
          const isSoundEnabled = (store.getState() as RootState).gameOnline.isSoundEnabled
          playSound('no-score', isSoundEnabled )
 

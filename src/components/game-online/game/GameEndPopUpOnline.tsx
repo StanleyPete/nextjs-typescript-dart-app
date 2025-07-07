@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
@@ -10,6 +10,7 @@ import TimeoutSection from '../lobby/TimeoutSection'
 const GameEndPopUpOnline = () => {
    const dispatch = useDispatch()
    const router = useRouter()
+   const [focusedButton, setFocusedButton] = useState<string| null>('play-again')
    const gameId = useSelector((state: RootState) => state.gameOnline.gameId)
    const isGameEnd = useSelector((state: RootState) => state.gameOnline.isGameEnd)
    const winner = useSelector((state: RootState) => state.gameOnline.winner)
@@ -19,9 +20,51 @@ const GameEndPopUpOnline = () => {
       if (isTimeout) return router.replace('/game-online/status')
    }, [isTimeout])
 
+   useEffect(() => {
+      setFocusedButton('play-again')
+   }, [isGameEnd])
+
+   useEffect(() => {
+      if (!isGameEnd) return
+      const handleKeyDown = (event: KeyboardEvent) => {
+         const buttonOptions = ['play-again', 'go-back']
+         const currentButtonIndex = buttonOptions.findIndex(el => el === focusedButton)
+
+         if (event.key === 'ArrowDown') {
+            event.preventDefault()
+            const nextButtonIndex = (currentButtonIndex + 1) % buttonOptions.length
+            setFocusedButton(buttonOptions[nextButtonIndex])
+         }
+
+         if (event.key === 'ArrowUp') {
+            event.preventDefault()
+            const prevButtonIndex = (currentButtonIndex - 1 + buttonOptions.length) % buttonOptions.length
+            setFocusedButton(buttonOptions[prevButtonIndex])
+         }
+
+         if (event.key === 'Enter') {
+            event.preventDefault()
+            if (focusedButton === 'play-again') {
+               dispatch(setIsGameEnd(false))
+               dispatch(setIsGameStarted(false))
+               dispatch(setWinner(null))
+               router.replace(`/game-online/lobby/${gameId}`)
+            } else if (focusedButton === 'go-back') {
+               window.location.href = 'http://localhost:3000'
+            } 
+         }
+   
+      }
+   
+      window.addEventListener('keydown', handleKeyDown)
+   
+      return () => { window.removeEventListener('keydown', handleKeyDown) }
+   }, [focusedButton, isGameEnd])
+   
+
    return (
       isGameEnd && (
-         <div className="overlay">
+         <div className='overlay'>
             <div className='game-over-popup'>
                <div className='game-over-popup-content'>
                   <TimeoutSection />
@@ -33,7 +76,7 @@ const GameEndPopUpOnline = () => {
                   />
                   <h3>Winner: {winner?.playerName}</h3>
                   <button 
-                     className='play-again' 
+                     className={`play-again ${focusedButton === 'play-again' ? 'focused' : ''} `} 
                      onClick={() => {
                         dispatch(setIsGameEnd(false))
                         dispatch(setIsGameStarted(false))
@@ -45,7 +88,7 @@ const GameEndPopUpOnline = () => {
                   </button>
 
                   <button 
-                     className='go-back' 
+                     className={`go-back ${focusedButton === 'go-back' ? 'focused' : ''} `}
                      onClick={() => { window.location.href = 'http://localhost:3000' }}
                   >
                     Home page

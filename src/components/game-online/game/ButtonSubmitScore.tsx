@@ -26,16 +26,7 @@ const ButtonSubmitScoreOnline = () => {
             const multiplierNumber = isDoubleActive ? 2 : 1
             handleSubmitThrowKeyboardButtonsOnline(currentThrow, multiplierNumber, dispatch, gameId) 
          }
-
-         if (event.key === 'Enter' && showNumberButtons && !isError) {
-            event.preventDefault() 
-            setActiveButton('submit-score')
-            setTimeout(() => setActiveButton(null), 100)
-            handleSubmitThrowNumberButtonsBeforeThirdThrow(gameId)
-         }
-
-        
-
+  
       }
    
       window.addEventListener('keydown', handleKeyDown)

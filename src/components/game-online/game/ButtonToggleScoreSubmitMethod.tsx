@@ -1,10 +1,16 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { RootState } from '@/redux/store'
-import { useSelector} from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { handleToggleInputMethodOnline } from '@/controllers/game-online/handleToggleInputMethod'
+import { setFocusedSection, setPreviousFocusedSection } from '@/redux/slices/gameSettingsSlice'
+import { setMultiplier } from '@/redux/slices/game-online/gameOnlineSlice'
+
+
+
 
 const ButtonToggleScoreSubmitMethod = () => {
+   const dispatch = useDispatch()
    const [activeButton, setActiveButton] = useState<string | null>(null)
    const gameId = useSelector((state: RootState) => state.gameOnline.gameId)
    const showNumberButtons = useSelector((state: RootState) => state.gameOnline.showNumberButtons)
@@ -18,16 +24,33 @@ const ButtonToggleScoreSubmitMethod = () => {
       const handleKeyDown = (event: KeyboardEvent) => {
          if (event.ctrlKey && event.key === 'b') {
             event.preventDefault()
+
+            if (!showNumberButtons) {
+               dispatch(setFocusedSection('multiplier-buttons'))
+               dispatch(setPreviousFocusedSection(''))
+               dispatch(setMultiplier(1))
+            } else {
+               dispatch(setFocusedSection(''))
+               dispatch(setPreviousFocusedSection(''))
+               dispatch(setMultiplier(1))
+            }
+
             setActiveButton('input-toggle-button')
             setTimeout(() => setActiveButton(null), 100)
             handleToggleInputMethodOnline(gameId)
+
+         
          }
       }
    
       window.addEventListener('keydown', handleKeyDown)
    
       return () => { window.removeEventListener('keydown', handleKeyDown) }
+      
    }, [showNumberButtons, isError, isGameEnd])
+
+  
+
 
    return (
       <button 
