@@ -16,7 +16,7 @@ const NavigationPanel = () => {
    const numberOfLegs = useSelector((state: RootState) => state.gameSettings.numberOfLegs)
    const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
-   const isGameEnd  = useSelector((state: RootState) => state.game.isGameEnd)
+   const isGameEnd  = useSelector((state: RootState) => state.game?.isGameEnd ?? false)
    const { isError } = useSelector((state: RootState) => state.gameSettings.error)
    const gameWinType = gameWin === 'best-of' ? 'BEST OF' : 'FIRST TO'
    

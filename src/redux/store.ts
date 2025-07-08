@@ -17,16 +17,110 @@ import { GameOnlineStates } from '@/types/redux/gameOnlineTypes'
 import { joinRoomTypes } from '@/types/redux/joinRoomTypes'
 
 
-//Initial store setup
-export const store = configureStore({
-   reducer: {
+function loadStateFromSessionStorage() {
+   if (typeof window === 'undefined') return undefined
+
+   const serializedStateSingle = sessionStorage.getItem('storeGameSingle')
+   const serializedStateTeams = sessionStorage.getItem('storeGameTeams')
+   const serializedStateCricketSingle = sessionStorage.getItem('storeGameCricketSingle')
+   const serializedStateCricketTeams = sessionStorage.getItem('storeGameCricketTeams')
+
+   if (serializedStateSingle === null 
+      && serializedStateTeams === null 
+      && serializedStateCricketSingle === null
+      && serializedStateCricketTeams === null
+   ) return
+
+   if (serializedStateSingle) {
+      sessionStorage.removeItem('storeGameSingle')
+      return {state: JSON.parse(serializedStateSingle), type: 'single'}  
+   }
+
+   if (serializedStateTeams) {
+      sessionStorage.removeItem('storeGameTeams')
+      return {state: JSON.parse(serializedStateTeams), type: 'teams'} 
+   }
+
+   if (serializedStateCricketSingle) {
+      sessionStorage.removeItem('storeGameCricketSingle')
+      return {state: JSON.parse(serializedStateCricketSingle), type: 'cricketSingle'}  
+   }
+
+   if (serializedStateCricketSingle) {
+      sessionStorage.removeItem('storeGameCricketTeams')
+      return {state: JSON.parse(serializedStateCricketSingle), type: 'cricketTeams'}  
+   }
+}
+
+const persistedState = loadStateFromSessionStorage()
+
+let rootReducer: Reducer
+let preloadedState
+
+if (persistedState) {
+   preloadedState = persistedState.state
+
+   if(persistedState.type === 'single'){
+      rootReducer = combineReducers({
+         gameSettings: gameSettingsReducer,
+         game: gameReducer,
+         gameClassic: gameClassicReducer,
+         gameClassicSingle: gameClassicSingleReducer
+      })
+      
+   } else if (persistedState.type === 'teams') {
+      rootReducer = combineReducers({
+         gameSettings: gameSettingsReducer,
+         game: gameReducer,
+         gameClassic: gameClassicReducer,
+         gameClassicTeams: gameClassicTeamsReducer,
+      })
+      
+   } else if (persistedState.type === 'cricketSingle') {
+      rootReducer = combineReducers({
+         gameSettings: gameSettingsReducer,
+         game: gameReducer,
+         gameCricket: gameCricketReducer,
+         gameCricketSingle: gameCricketSingleReducer,
+      })
+   } else if (persistedState.type === 'cricketTeams') {
+      rootReducer = combineReducers({
+         gameSettings: gameSettingsReducer,
+         game: gameReducer,
+         gameCricket: gameCricketReducer,
+         gameCricketTeams: gameCricketTeamsReducer,
+      })
+   } else {
+      rootReducer = combineReducers({
+         gameSettings: gameSettingsReducer,
+      })
+   }
+} else {
+   rootReducer = combineReducers({
       gameSettings: gameSettingsReducer,
-   },
+   })
+}
+
+export const store = configureStore({
+   reducer: rootReducer,
+   preloadedState
 })
 
-let rootReducer: Reducer = combineReducers({
-   gameSettings: gameSettingsReducer,
-})
+
+
+
+
+
+// //Initial store setup
+// export const store = configureStore({
+//    reducer: {
+//       gameSettings: gameSettingsReducer,
+//    },
+// })
+
+// let rootReducer: Reducer = combineReducers({
+//    gameSettings: gameSettingsReducer,
+// })
 
 
 

@@ -10,13 +10,13 @@ export const selectDataInScoreSection = createSelector(
    (gameSettings, gameClassicSingle, gameClassicTeams) => {
 
       if (gameSettings.gameType === 'single') return {
-         playersOrTeams: gameClassicSingle.players,
-         index: gameClassicSingle.currentPlayerIndex,
+         playersOrTeams: gameClassicSingle?.players ?? [],
+         index: gameClassicSingle?.currentPlayerIndex ?? 0,
       }
 
       if (gameSettings.gameType === 'teams') return {
-         playersOrTeams: gameClassicTeams.teams,
-         index: gameClassicTeams.currentTeamIndex,
+         playersOrTeams: gameClassicTeams?.teams ?? [],
+         index: gameClassicTeams?.currentTeamIndex ?? 0,
       }
       
       return {

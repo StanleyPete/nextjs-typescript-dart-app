@@ -16,12 +16,12 @@ const GameEndPopUp = () => {
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const gameMode = useSelector((state: RootState) => state.gameSettings.gameMode)
    const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
-   const currentPlayerThrows = useSelector((state: RootState) => state.game.currentPlayerThrows)
-   const currentPlayerThrowsCount = useSelector((state: RootState) => state.game.currentPlayerThrowsCount)
-   const isGameEnd = useSelector((state: RootState) => state.game.isGameEnd)
-   const winner = useSelector((state: RootState) => state.game.winner)
-   const showNumberButtons = useSelector((state: RootState) => state.gameClassic.showNumberButtons)
-   const throwValueSum = useSelector((state: RootState) => state.gameClassic.throwValueSum)
+   const currentPlayerThrows = useSelector((state: RootState) => state.game?.currentPlayerThrows ?? [])
+   const currentPlayerThrowsCount = useSelector((state: RootState) => state.game?.currentPlayerThrowsCount ?? 0)
+   const isGameEnd = useSelector((state: RootState) => state.game?.isGameEnd ?? false)
+   const winner = useSelector((state: RootState) => state.game?.winner ?? null)
+   const showNumberButtons = useSelector((state: RootState) => state.gameClassic?.showNumberButtons ?? false)
+   const throwValueSum = useSelector((state: RootState) => state.gameClassic?.throwValueSum ?? 0)
 
    //Memoized (@/redux/memoizedSelectors.ts):
    const { playersOrTeams, index, history } = useSelector(selectDataInKeyboardButtonsAndGameEndPopUp)

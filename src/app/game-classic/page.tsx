@@ -1,7 +1,8 @@
 'use client'
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useSelector, useDispatch, useStore } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { useRouter } from 'next/navigation'
 import { setInitialSoundPlayed } from '@/redux/slices/gameSlice'
 import { selectDataInGameClassicPage } from '@/redux/selectors/game-classic/selectDataInGameClassicPage'
 import GameClassicSinglePlayersSection from '@/components/game-classic/GameClassicSinglePlayersSection'
@@ -22,27 +23,54 @@ GAME CLASSIC:
 */
 
 const GameClassic = () => {
+   const router = useRouter()
    const dispatch = useDispatch()
+   const [allowed, setAllowed] = useState<boolean | null>(null)
+   const store = useStore()
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
-   const isSoundEnabled = useSelector((state: RootState) => state.game.isSoundEnabled)
-   const initialSoundPlayed = useSelector((state: RootState) => state.game.initialSoundPlayed)
+   const isSoundEnabled = useSelector((state: RootState) => state.game?.isSoundEnabled ?? true)
+   const initialSoundPlayed= useSelector((state: RootState) => state.game?.initialSoundPlayed ?? true)
   
    //Memoized (@/redux/selectors/game-classic/selectDataInGameClassicPage.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameClassicPage)
-
+  
    useEffect(() => { 
       //Initial sound played only once (when game start)
       if(!initialSoundPlayed){
          playSound('game-is-on', isSoundEnabled)
          dispatch(setInitialSoundPlayed(true))
       }
-
-      //Only for the purpose of reviewing players/teams and history states in console
-      console.log('Players: ', playersOrTeams)
-      console.log('History: ', history)
-
    }, [playersOrTeams, history, initialSoundPlayed, dispatch, isSoundEnabled])
 
+   useEffect(() => {
+      const handleBeforeUnload = () => {
+         try {
+            const serializedState = JSON.stringify(store.getState())
+            if (gameType === 'single') {
+               sessionStorage.setItem('storeGameSingle', serializedState)
+            } else {
+               sessionStorage.setItem('storeGameTeams', serializedState)
+            }
+         } catch (e) {
+            console.error('sessionStorage savedown error', e)
+         }
+      }
+
+      window.addEventListener('beforeunload', handleBeforeUnload)
+
+      return () => { window.removeEventListener('beforeunload', handleBeforeUnload) }
+   }, [store])
+   
+   useEffect(() => {
+      const isAllowed = sessionStorage.getItem('classic-allowed')
+      if (!isAllowed) {
+         router.replace('/')
+      } else {
+         setAllowed(true)
+      }
+   }, [router])
+
+   if (allowed === null) return null
 
    return (
       <div className='game-container'>

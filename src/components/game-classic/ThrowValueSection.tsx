@@ -22,16 +22,16 @@ const ThrowValueSection = () => {
    const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
    const { isError } = useSelector((state: RootState) => state.gameSettings.error)
    const numberOfLegs = useSelector((state: RootState) => state.gameSettings.numberOfLegs)
-   const startIndex = useSelector((state: RootState) => state.game.startIndex)
-   const isGameEnd = useSelector((state: RootState) => state.game.isGameEnd)
-   const currentPlayerThrowsCount = useSelector((state: RootState) => state.game.currentPlayerThrowsCount)
-   const currentPlayerThrows = useSelector((state: RootState) => state.game.currentPlayerThrows)
-   const isSoundEnabled = useSelector((state: RootState) => state.game.isSoundEnabled)
-   const showNumberButtons = useSelector((state: RootState) => state.gameClassic.showNumberButtons)
-   const throwValueSum = useSelector((state: RootState) => state.gameClassic.throwValueSum)
-   const currentThrow = useSelector((state: RootState) => state.gameClassic.currentThrow)
-   const multiplier = useSelector((state: RootState) => state.gameClassic.multiplier)
-   const isDoubleActive = useSelector((state: RootState) => state.gameClassic.isDoubleActive)
+   const startIndex = useSelector((state: RootState) => state.game?.startIndex ?? 0)
+   const isGameEnd = useSelector((state: RootState) => state.game?.isGameEnd ?? false)
+   const currentPlayerThrowsCount = useSelector((state: RootState) => state.game?.currentPlayerThrowsCount ?? 0)
+   const currentPlayerThrows = useSelector((state: RootState) => state.game?.currentPlayerThrows ?? [])
+   const isSoundEnabled = useSelector((state: RootState) => state.game?.isSoundEnabled ?? true)
+   const showNumberButtons = useSelector((state: RootState) => state.gameClassic?.showNumberButtons ?? false)
+   const throwValueSum = useSelector((state: RootState) => state.gameClassic?.throwValueSum ?? 0)
+   const currentThrow = useSelector((state: RootState) => state.gameClassic?.currentThrow ?? 0)
+   const multiplier = useSelector((state: RootState) => state.gameClassic?.multiplier ?? 1)
+   const isDoubleActive = useSelector((state: RootState) => state.gameClassic?.isDoubleActive ?? false)
    
    //Memoized (@/redux/selectors/game-classic/selectDataInThrowValueSectionAndNumberButtons.ts):
    const { playersOrTeams, index, currentPlayerIndexInTeam, history } = useSelector(selectDataInThrowValueSectionAndNumberButtons)
@@ -149,7 +149,7 @@ const ThrowValueSection = () => {
             <button 
                className={`
                   input-toggle 
-                  ${showNumberButtons || playersOrTeams[index].pointsLeft <= 40 && playersOrTeams[index].pointsLeft % 2 === 0 
+                  ${showNumberButtons || playersOrTeams[index]?.pointsLeft <= 40 && playersOrTeams[index]?.pointsLeft % 2 === 0 
          ? 'buttons-active' 
          : 'input-active'
       } 
@@ -256,7 +256,7 @@ const ThrowValueSection = () => {
          {/* Multiplier section*/}
          <div className='multiplier-section'>
             {!showNumberButtons ? (
-               playersOrTeams[index].pointsLeft <= 40 && playersOrTeams[index].pointsLeft % 2 === 0 && (
+               playersOrTeams[index]?.pointsLeft <= 40 && playersOrTeams[index]?.pointsLeft % 2 === 0 && (
                   <button 
                      className={`button-double ${isDoubleActive ? 'active' : ''}`}
                      onClick={() => dispatch(setIsDoubleActive(!isDoubleActive))} 

@@ -11,7 +11,7 @@ const selectGameCricketTeams = (state: RootState) => state.gameCricketTeams
 
 export const selectIsSoundEnabled = createSelector(
    [selectGame], (game) => {
-      return { isSoundEnabled: game.isSoundEnabled } 
+      return { isSoundEnabled: game?.isSoundEnabled ?? true } 
    }
 )
 export const selectDataInCurrentPlayerThrowSection = createSelector(
@@ -20,7 +20,7 @@ export const selectDataInCurrentPlayerThrowSection = createSelector(
       if (gameSettings.gameMode === 'Cricket') {
 
          if (gameSettings.gameType === 'single') return {
-            playersOrTeams: gameCricketSingle.players,
+            playersOrTeams: gameCricketSingle?.players ?? [],
             index: gameCricketSingle.currentPlayerIndex,
             currentPlayerIndexInTeam: 0,
          }
@@ -40,14 +40,14 @@ export const selectDataInCurrentPlayerThrowSection = createSelector(
       } else {
 
          if (gameSettings.gameType === 'single') return {
-            playersOrTeams: gameClassicSingle.players,
-            index: gameClassicSingle.currentPlayerIndex,
+            playersOrTeams: gameClassicSingle?.players ?? [],
+            index: gameClassicSingle?.currentPlayerIndex ?? 0,
             currentPlayerIndexInTeam: 0,
          }
 
          if (gameSettings.gameType === 'teams') return {
-            playersOrTeams: gameClassicTeams.teams,
-            index: gameClassicTeams.currentTeamIndex,
+            playersOrTeams: gameClassicTeams?.teams ?? [],
+            index: gameClassicTeams?.currentTeamIndex ?? 0,
             currentPlayerIndexInTeam: gameClassicTeams.currentPlayerIndexInTeam,
          }
         

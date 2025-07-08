@@ -8,7 +8,6 @@ import { initializeCricketPlayers } from '@/redux/slices/game-cricket/gameCricke
 import { initializeCricketTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 import { setError } from '@/redux/slices/gameSettingsSlice'
 
-
 const ToTheGameButton = () => {
    const dispatch = useDispatch()
    const router = useRouter()
@@ -26,7 +25,7 @@ const ToTheGameButton = () => {
       return true
    }
 
-   const handleGameStart = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
+   const handleGameStart = async (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
       if (!validatePlayerNames()) {
          event.preventDefault()
          return
@@ -56,8 +55,10 @@ const ToTheGameButton = () => {
       }
 
       if (gameMode === 'Cricket') {
+         sessionStorage.setItem('cricket-allowed', 'true')
          router.replace('/game-cricket')
       } else {
+         sessionStorage.setItem('classic-allowed', 'true')
          router.replace('/game-classic')
       }
 

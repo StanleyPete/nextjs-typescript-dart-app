@@ -10,7 +10,7 @@ import { setFocusedSection } from '@/redux/slices/gameSettingsSlice'
 
 const ScoreSection = () => {
    const dispatch = useDispatch()
-   const showNumberButtons = useSelector((state: RootState) => state.gameClassic.showNumberButtons)
+   const showNumberButtons = useSelector((state: RootState) => state.gameClassic?.showNumberButtons ?? false)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
 
    //Memoized (@/redux/selectors/game-classic/selectDataInScoreSection.ts)

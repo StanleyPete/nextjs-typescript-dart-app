@@ -9,13 +9,13 @@ export const selectDataInGameClassicPage = createSelector(
    [selectGameSettings, selectGameClassicSingle, selectGameClassicTeams],
    (gameSettings, gameClassicSingle, gameClassicTeams) => {
       if (gameSettings.gameType === 'single') return {
-         playersOrTeams: gameClassicSingle.players,
-         history: gameClassicSingle.historyClassicSingle,
+         playersOrTeams: gameClassicSingle?.players ?? [],
+         history: gameClassicSingle?.historyClassicSingle ?? [],
       }
 
       if (gameSettings.gameType === 'teams') return {
-         playersOrTeams: gameClassicTeams.teams,
-         history: gameClassicTeams.historyClassicTeams,
+         playersOrTeams: gameClassicTeams?.teams ?? [],
+         history: gameClassicTeams?.historyClassicTeams ?? [],
       }
   
       return {

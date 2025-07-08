@@ -1,16 +1,15 @@
+'use client'
 import React from 'react'
 import Image from 'next/image'
-//Redux
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-//Types
 import { PlayerClassic } from '@/types/redux/gameClassicTypes'
-//Lib
 import checkoutArray from '@/lib/checkout-table'
 
+
 const GameClassicSinglePlayersSection = () => {
-   
    const { players, currentPlayerIndex, } = useSelector((state: RootState) => state.gameClassicSingle)
+ 
 
    return (
       <div className="game-players-section">
@@ -29,7 +28,7 @@ const GameClassicSinglePlayersSection = () => {
 
                            {/*Player header image (active/non-active)*/}
                            <Image
-                              src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'}
+                              src={player.name === players[currentPlayerIndex]?.name ? '/game-user-throw.svg' : '/game-user.svg'}
                               alt="User icon"
                               width={16}
                               height={16}
@@ -90,36 +89,36 @@ const GameClassicSinglePlayersSection = () => {
                         />
 
                         {/*Current player header name*/}
-                        {players[currentPlayerIndex].name} 
+                        {players[currentPlayerIndex]?.name} 
 
                      </div>
 
                      {/*Current player header legs*/}
                      <div className='player-legs'>
-                        {players[currentPlayerIndex].legs}
+                        {players[currentPlayerIndex]?.legs}
                      </div>
 
                   </div>
 
                   {/*CURRENT PLAYER POINTS LEFT */}
                   <p className='current-player-points-left'>
-                     {players[currentPlayerIndex].pointsLeft}
+                     {players[currentPlayerIndex]?.pointsLeft}
                   </p>
 
                   {/*CURRENT PLAYER CHECKOUT OPTIONS */}
-                  {players[currentPlayerIndex].pointsLeft <= 170 && (
-                     <p className='checkout-options'>{checkoutArray[players[currentPlayerIndex].pointsLeft - 2]}</p>
+                  {players[currentPlayerIndex]?.pointsLeft <= 170 && (
+                     <p className='checkout-options'>{checkoutArray[players[currentPlayerIndex]?.pointsLeft - 2]}</p>
                   )}
 
                   {/*CURRENT PLAYER STATS*/}
                   <div className='current-player-stats'>
                         3-DART AVERAGE: 
-                     <p>{players[currentPlayerIndex].average.toFixed(2)}</p>
+                     <p>{players[currentPlayerIndex]?.average.toFixed(2)}</p>
                   </div>
 
                   <div className='current-player-stats'>
                         LAST SCORE: 
-                     <p>{players[currentPlayerIndex].lastScore}</p>
+                     <p>{players[currentPlayerIndex]?.lastScore}</p>
                   </div>
 
                </div>
@@ -129,11 +128,11 @@ const GameClassicSinglePlayersSection = () => {
 
                   {players.map((player: PlayerClassic, index: number) => (
 
-                     <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} key={index}>
+                     <div className={`game-players-list-player ${player.name === players[currentPlayerIndex]?.name ? 'active-player' : '' }`} key={index}>
 
                         <div className='game-players-list-player-name'>
                            <Image 
-                              src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
+                              src={player.name === players[currentPlayerIndex]?.name ? '/game-user-throw.svg' : '/game-user.svg'} 
                               alt='User icon' 
                               width={16} 
                               height={16} 

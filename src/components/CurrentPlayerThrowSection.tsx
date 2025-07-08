@@ -1,20 +1,16 @@
 import React from 'react'
 import Image from 'next/image'
-//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setIsSoundEnabled } from '@/redux/slices/gameSlice'
 import { selectDataInCurrentPlayerThrowSection } from '@/redux/selectors/selectDataInCurrentPlayerThrowSection'
 import { selectIsSoundEnabled } from '@/redux/selectors/selectDataInCurrentPlayerThrowSection'
-//Types
 import { GameSettingsStates } from '@/types/redux/gameSettingsTypes'
 import { TeamClassic } from '@/types/redux/gameClassicTypes'
 import { TeamCricket } from '@/types/redux/gameCricketTypes'
 
 const CurrentPlayerThrowSection = () => {
-
    const dispatch = useDispatch()
-
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType) as GameSettingsStates['gameType']
    
    //Memoized (@/redux/selectors/selectDataInCurrentPlayerThrowSection.ts):
@@ -45,8 +41,8 @@ const CurrentPlayerThrowSection = () => {
          {/* Current player's turn message */}
          <span className="current-player-throw-message">
             {gameType === 'single' 
-               ? `${currentPlayerOrTeam.name.toUpperCase()}'S TURN TO THROW!`
-               : `${(currentPlayerOrTeam as TeamClassic | TeamCricket).members[currentPlayerIndexInTeam].toUpperCase()}'S TURN TO THROW!`
+               ? `${currentPlayerOrTeam?.name?.toUpperCase() ?? 'PLAYER'}'S TURN TO THROW!`
+               : `${(currentPlayerOrTeam as TeamClassic | TeamCricket)?.members[currentPlayerIndexInTeam]?.toUpperCase()}'S TURN TO THROW!`
             }
          </span>
          

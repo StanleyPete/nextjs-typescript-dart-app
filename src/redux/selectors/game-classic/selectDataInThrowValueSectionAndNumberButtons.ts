@@ -10,17 +10,17 @@ export const selectDataInThrowValueSectionAndNumberButtons = createSelector(
    (gameSettings, gameClassicSingle, gameClassicTeams) => {
 
       if (gameSettings.gameType === 'single') return {
-         playersOrTeams: gameClassicSingle.players,
-         index: gameClassicSingle.currentPlayerIndex,
+         playersOrTeams: gameClassicSingle?.players ?? [],
+         index: gameClassicSingle?.currentPlayerIndex ?? 0,
          currentPlayerIndexInTeam: undefined,
-         history: gameClassicSingle.historyClassicSingle,
+         history: gameClassicSingle?.historyClassicSingle ?? [],
       }
 
       if (gameSettings.gameType === 'teams') return {
-         playersOrTeams: gameClassicTeams.teams,
-         index: gameClassicTeams.currentTeamIndex,
+         playersOrTeams: gameClassicTeams?.teams ?? [],
+         index: gameClassicTeams?.currentTeamIndex ?? 0,
          currentPlayerIndexInTeam: gameClassicTeams.currentPlayerIndexInTeam,
-         history: gameClassicTeams.historyClassicTeams,
+         history: gameClassicTeams?.historyClassicTeams ?? [],
       }
       
       return {

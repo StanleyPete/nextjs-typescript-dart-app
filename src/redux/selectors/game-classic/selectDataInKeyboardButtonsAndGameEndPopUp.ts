@@ -10,15 +10,15 @@ export const selectDataInKeyboardButtonsAndGameEndPopUp = createSelector(
    (gameSettings, gameClassicSingle, gameClassicTeams ) => {
       
       if (gameSettings.gameType === 'single') return {
-         playersOrTeams: gameClassicSingle.players,
-         index: gameClassicSingle.currentPlayerIndex,
-         history: gameClassicSingle.historyClassicSingle,
+         playersOrTeams: gameClassicSingle?.players ?? [],
+         index: gameClassicSingle?.currentPlayerIndex ?? 0,
+         history: gameClassicSingle?.historyClassicSingle ?? [],
       }
 
       if (gameSettings.gameType === 'teams') return {
-         playersOrTeams: gameClassicTeams.teams,
-         index: gameClassicTeams.currentTeamIndex,
-         history: gameClassicTeams.historyClassicTeams,
+         playersOrTeams: gameClassicTeams?.teams ?? [],
+         index: gameClassicTeams?.currentTeamIndex ?? 0,
+         history: gameClassicTeams?.historyClassicTeams ?? [],
       }
     
       return {
