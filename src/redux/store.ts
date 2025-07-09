@@ -24,11 +24,13 @@ function loadStateFromSessionStorage() {
    const serializedStateTeams = sessionStorage.getItem('storeGameTeams')
    const serializedStateCricketSingle = sessionStorage.getItem('storeGameCricketSingle')
    const serializedStateCricketTeams = sessionStorage.getItem('storeGameCricketTeams')
+   const serializedStateGameOnline = sessionStorage.getItem('storeGameOnline')
 
    if (serializedStateSingle === null 
       && serializedStateTeams === null 
       && serializedStateCricketSingle === null
       && serializedStateCricketTeams === null
+      && serializedStateGameOnline === null
    ) return
 
    if (serializedStateSingle) {
@@ -49,6 +51,11 @@ function loadStateFromSessionStorage() {
    if (serializedStateCricketSingle) {
       sessionStorage.removeItem('storeGameCricketTeams')
       return {state: JSON.parse(serializedStateCricketSingle), type: 'cricketTeams'}  
+   }
+
+   if (serializedStateGameOnline) {
+      sessionStorage.removeItem('storeGameOnline')
+      return {state: JSON.parse(serializedStateGameOnline), type: 'gameOnline'}  
    }
 }
 
@@ -89,6 +96,12 @@ if (persistedState) {
          game: gameReducer,
          gameCricket: gameCricketReducer,
          gameCricketTeams: gameCricketTeamsReducer,
+      })
+   } else if (persistedState.type === 'gameOnline') {
+      rootReducer = combineReducers({
+         gameSettings: gameSettingsReducer,
+         gameOnline: gameOnlineReducer,
+         joinRoom: joinRoomReducer
       })
    } else {
       rootReducer = combineReducers({
@@ -171,8 +184,6 @@ export const addGameCricketTeamsStates = () => {
 
    store.replaceReducer(rootReducer)
 }
-
-
 
 //Add Game Online States: 
 export const addGameOnlineStates = () => {

@@ -50,7 +50,10 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
 
    
    useEffect(() => {
-      if (isLobbyJoined) return router.replace(`/game-online/lobby/${gameId}`)
+      if (isLobbyJoined) {
+         sessionStorage.setItem('online-allowed', 'true')
+         router.replace(`/game-online/lobby/${gameId}`)
+      }
    }, [isLobbyJoined])
 
    useEffect(() => {
@@ -105,9 +108,9 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                      ? currentPlayersInLobby.join(', ') 
                      : 'None' }
                </p>
-               <div className="players-section main-form">
-                  <p className="players header">Enter your name:</p>
-                  <div className="player-input">
+               <div className='players-section main-form'>
+                  <p className='players header'>Enter your name:</p>
+                  <div className='player-input'>
                      <input
                         className='full-width'
                         type="text"
@@ -118,9 +121,9 @@ const GameOnlineRequest = ({ params }: { params: { gameId: string } }) => {
                      />
                   </div>
                </div>
-               <div className="game-start">
+               <div className='game-start'>
                   <button 
-                     className="game-start-button"
+                     className='game-start-button'
                      onClick={joinGameLobby}
                      ref={buttonRef}
                   >

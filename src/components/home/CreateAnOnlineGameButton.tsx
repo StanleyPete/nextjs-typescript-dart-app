@@ -54,6 +54,7 @@ const CreateAnOnlineGameButton = () => {
 
    useEffect(() => {
       if (isConnected && gameId) {
+         sessionStorage.setItem('online-allowed', 'true')
          router.replace(`/game-online/lobby/${gameId}`)
       }
    }, [isConnected, gameId])
