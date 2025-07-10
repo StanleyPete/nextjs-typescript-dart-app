@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { RootState } from '@/redux/store'
 import { useRouter } from 'next/navigation'
+import { RootState } from '@/redux/store'
 import { useSelector, useDispatch, useStore } from 'react-redux'
 import UrlToCopySection from '@/components/game-online/lobby/UrlToCopySection'
 import LobbyPlayersSection from '@/components/game-online/lobby/LobbyPlayersSection'
@@ -27,10 +27,16 @@ const Lobby = () => {
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const numberOfPlayers = useSelector((state: RootState) => state.gameSettings.numberOfPlayers)
    const players =  useSelector((state: RootState) => state.gameOnline.players)
+   const isConnected =  useSelector((state: RootState) => state.gameOnline.isConnected)
    const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
    const isGameStarted =  useSelector((state: RootState) => state.gameOnline.isGameStarted)
    const isTimeout = useSelector((state: RootState) => state.gameOnline.isTimeout)
    const role =  useSelector((state: RootState) => state.gameOnline.role)
+
+
+   useEffect(() => {
+      if (!isConnected) return router.replace('/game-online/status')
+   }, [isConnected])
 
    useEffect(() => {
       const handleBeforeUnload = () => {
@@ -40,7 +46,7 @@ const Lobby = () => {
             sessionStorage.setItem('storeGameOnline', serializedStateGameOnline)
             sessionStorage.setItem('gameId', gameId)
             sessionStorage.setItem('socketId', socketId ?? '')
-            socketService.emitRefreshPage(gameId)
+            socketService.emitReloadOrCloseRequest(gameId)
          } catch (e) {
             console.error('sessionStorage savedown error', e)
          }
@@ -76,12 +82,14 @@ const Lobby = () => {
       const isAllowed = sessionStorage.getItem('online-allowed')
       if (!isAllowed) {
          router.replace('/')
-      } else {
+      } else{
          setAllowed(true)
          const previousGameId = sessionStorage.getItem('gameId')
          const previousSocketId = sessionStorage.getItem('socketId')
          if (previousGameId === null || previousSocketId === null) return
          socketService.connectAfterRefresh(previousGameId, previousSocketId)
+         sessionStorage.removeItem('gameId')
+         sessionStorage.removeItem('socketId')
       }
    }, [router])
 

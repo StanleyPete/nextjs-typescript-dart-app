@@ -35,6 +35,8 @@ const NavigationPanel = () => {
          if (event.key === 'Escape') {
             event.preventDefault()
             dispatch(setBackFromGame(true))
+            sessionStorage.removeItem('classic-allowed')
+            sessionStorage.removeItem('cricket-allowed')
             router.replace('/')
          }        
       }
@@ -51,6 +53,8 @@ const NavigationPanel = () => {
             className='go-back' 
             onClick={() => {
                dispatch(setBackFromGame(true))
+               sessionStorage.removeItem('classic-allowed')
+               sessionStorage.removeItem('cricket-allowed')
                router.replace('/')
                return
             }}

@@ -12,6 +12,8 @@ import { playSound } from '@/controllers/playSound'
 class SocketService {
    private socket: Socket | null = null
    private url: string = 'http://localhost:3001'
+
+
    private registerEventListeners() {
       if (!this.socket) return
 
@@ -250,7 +252,7 @@ class SocketService {
             store.dispatch(setMessage(data.message))
          })
 
-         this.socket?.once('host-left', (data) => {
+         this.socket?.on('host-left', (data) => {
             store.dispatch(setGameFound(false))
             store.dispatch(setMessage(data.message))
          })
@@ -277,6 +279,76 @@ class SocketService {
 
       this.registerEventListeners()
       
+   }
+
+   public connectAfterRefresh(previousGameId: string, previousSocketId: string) {
+      if (this.socket) return
+      this.socket = io(this.url)
+
+      this.socket.once('connect', () => {
+         this.socket?.emit('refresh-request', { previousGameId, previousSocketId })
+
+         this.socket?.once('refresh-request-res', (data) => {
+            store.dispatch(setIsConnected(true))
+            store.dispatch(setIsLoading(false))
+            store.dispatch(setGameFound(true))
+            const formattedPlayers = this.formatPlayers(data.gamePlayers)
+            store.dispatch(setPlayers(formattedPlayers))
+            store.dispatch(setGameSettingsChange(data.updatedGameSettings))
+            store.dispatch(setIsGameEnd(data.updatedGameSettings.isGameEnd))
+            store.dispatch(setWinner(data.updatedGameSettings.winner))
+            store.dispatch(setIsItYourTurn(data.isItPlayersTurnNow))
+            store.dispatch(setCurrentPlayerIndex(data.currentPlayerIndexInGame))
+            
+         })
+
+         this.socket?.once('game-not-found-after-refresh', (data) => {
+            sessionStorage.removeItem('online-allowed')
+            store.dispatch(setIsConnected(false))
+            store.dispatch(setMessage(data.message))
+         })
+
+         this.socket?.once('game-is-full', (data) => {
+            store.dispatch(setIsLoading(false))
+            store.dispatch(setMessage(data.message))
+         })
+
+         this.socket?.once('host-change', () => {
+            store.dispatch(setRole('host'))
+         })
+
+         this.socket?.on('current-players-in-lobby-update', (data) => {
+            store.dispatch(setCurrentPlayersInLobby(data.currentPlayers))
+         })
+
+         this.socket?.once('join-lobby-guest-response', (data) => {
+            const formattedPlayers = this.formatPlayers(data.gamePlayers)
+            store.dispatch(setNumberOfPlayers(data.gameSettings.maxNumberOfPlayers))
+            store.dispatch(setGameMode(data.gameSettings.gameMode))
+            store.dispatch(setGameWin(data.gameSettings.gameWin))
+            store.dispatch(setNumberOfLegs(data.gameSettings.numberOfLegs))
+            store.dispatch(setThrowTime(data.gameSettings.throwTime / 1000))
+            store.dispatch(setGameTimeoutStartTime(data.gameSettings.gameTimeoutEndTime -
+            data.gameTimeoutDuartion))
+            store.dispatch(setGameTimeoutDuartion(data.gameTimeoutDuartion))
+            store.dispatch(setPlayers(formattedPlayers))
+            store.dispatch(setIsLobbyJoined(true))
+            this.socket?.off('current-players-in-lobby-update')
+         })
+      })
+
+      this.registerEventListeners()
+
+   }
+
+   public emitReloadOrCloseRequest(gameId: string) {
+      if (this.socket) {
+         this.socket.emit('reload-or-close-request', { gameId })
+      }
+   }
+
+   public getClientId(): string | null {
+      return this.socket?.id ?? null
    }
 
    public emitJoinLobby(gameId: string, playerName: string) {

@@ -1,7 +1,8 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { RootState } from '@/redux/store'
-import { useSelector} from 'react-redux'
+import { useSelector, useStore } from 'react-redux'
 import GameOnlinePlayersSection from '@/components/game-online/game/GameOnlinePlayersSection'
 import CurrentPlayerThrowOnlineSection from '@/components/game-online/game/CurrentPlayerThrowOnlineSection'
 import OpponentTurnToThrow from '@/components/game-online/game/OpponentTurnToThrowSection'
@@ -16,9 +17,14 @@ import ButtonsMultiplierOnline from '@/components/game-online/game/ButtonsMultip
 import ButtonDoubleOnline from '@/components/game-online/game/ButtonDouble'
 import GameEndPopUpOnline from '@/components/game-online/game/GameEndPopUpOnline'
 import Footer from '@/components/Footer'
+import { socketService } from '@/socket/socket'
 
 const GameOnline = () => {
+   const router = useRouter()
+   const [allowed, setAllowed] = useState<boolean | null>(null)
+   const store = useStore()
    const gameOnline = useSelector((state: RootState) => state.gameOnline)
+   const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
    const isItYourTurn = useSelector((state: RootState) => state.gameOnline.isItYourTurn)
    const showNumberButtons = useSelector((state: RootState) => state.gameOnline.showNumberButtons)
    const ThrowValue = showNumberButtons ? <CurrentPlayerThrowsOnline /> : <ScoreValueOnline />
@@ -26,8 +32,44 @@ const GameOnline = () => {
    const InputMethod = showNumberButtons ? <NumberButtonsOnline /> : <KeyboardButtonsOnline />
 
    useEffect(() => {
+      const handleBeforeUnload = () => {
+         try {
+            const serializedStateGameOnline = JSON.stringify(store.getState())
+            const socketId = socketService.getClientId()
+            sessionStorage.setItem('storeGameOnline', serializedStateGameOnline)
+            sessionStorage.setItem('gameId', gameId)
+            sessionStorage.setItem('socketId', socketId ?? '')
+            socketService.emitReloadOrCloseRequest(gameId)
+         } catch (e) {
+            console.error('sessionStorage savedown error', e)
+         }
+      }
+
+      window.addEventListener('beforeunload', handleBeforeUnload)
+
+      return () => { window.removeEventListener('beforeunload', handleBeforeUnload) }
+   }, [store])
+
+   useEffect(() => {
       console.log('Updated gameOnline state:', gameOnline)
    }, [gameOnline])
+
+   useEffect(() => {
+      const isAllowed = sessionStorage.getItem('online-allowed')
+      if (!isAllowed) {
+         router.replace('/')
+      } else{
+         setAllowed(true)
+         const previousGameId = sessionStorage.getItem('gameId')
+         const previousSocketId = sessionStorage.getItem('socketId')
+         if (previousGameId === null || previousSocketId === null) return
+         socketService.connectAfterRefresh(previousGameId, previousSocketId)
+         sessionStorage.removeItem('gameId')
+         sessionStorage.removeItem('socketId')
+      }
+   }, [router])
+
+   if (allowed === null) return null
 
 
    return (
