@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect} from 'react'
+import React, { useEffect, useState} from 'react'
 import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { resetStates, RootState } from '@/redux/store'
@@ -28,11 +28,23 @@ import { setBackFromGame, setFocusedSection } from '@/redux/slices/gameSettingsS
 
 const Home = () => {
    const dispatch = useDispatch()
+   const [hydrated, setHydrated] = useState(false)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const backFromGame = useSelector((state: RootState) => state.gameSettings.backFromGame)
-  
+   
+   useEffect(() => {
+      sessionStorage.removeItem('classic-allowed')
+      sessionStorage.removeItem('cricket-allowed')
+      sessionStorage.removeItem('storeGameSingle')
+      sessionStorage.removeItem('storeGameTeams')
+      sessionStorage.removeItem('storeGameCricketSingle')
+      sessionStorage.removeItem('storeGameCricketTeams')
+      // resetStates()
+      setHydrated(true)
+   }, [])
+
    useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
          const activeElement = document.activeElement
@@ -70,7 +82,8 @@ const Home = () => {
 
    }, [backFromGame])
 
-  
+   if (!hydrated) return null
+
    return (
       <div className='main-container form'>
          <div className="logo">

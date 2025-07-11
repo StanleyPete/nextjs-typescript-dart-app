@@ -120,23 +120,6 @@ export const store = configureStore({
 })
 
 
-
-
-
-
-// //Initial store setup
-// export const store = configureStore({
-//    reducer: {
-//       gameSettings: gameSettingsReducer,
-//    },
-// })
-
-// let rootReducer: Reducer = combineReducers({
-//    gameSettings: gameSettingsReducer,
-// })
-
-
-
 //Add Game Classic Single States (only for 301, 501, 701, 1001 modes)
 export const addGameClassicSingleStates = () => {
    rootReducer = combineReducers({
@@ -204,6 +187,8 @@ export const resetStates = () => {
 
    store.replaceReducer(rootReducer)
 }
+
+
 
 export type RootState = {
   gameSettings: GameSettingsStates

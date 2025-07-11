@@ -302,7 +302,7 @@ class SocketService {
             
          })
 
-         this.socket?.once('game-not-found-after-refresh', (data) => {
+         this.socket?.once('connection-lost', (data) => {
             sessionStorage.removeItem('online-allowed')
             store.dispatch(setIsConnected(false))
             store.dispatch(setMessage(data.message))

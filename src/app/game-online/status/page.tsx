@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { resetStates, RootState } from '@/redux/store'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
@@ -8,10 +8,22 @@ import Footer from '@/components/Footer'
 import '../../styles/status.scss'
 
 const Status = () => {
+   const [hydrated, setHydrated] = useState(false)
+   useEffect(() => {
+      sessionStorage.removeItem('online-allowed')
+      sessionStorage.removeItem('gameId')
+      sessionStorage.removeItem('socketId')
+      setHydrated(true)
+
+   }, [])
+
+   
    const router = useRouter()
-   const lobbyMessage = useSelector((state: RootState) => state.gameOnline?.message) ?? ''
-   const joinRoomMessage = useSelector((state: RootState) => state.joinRoom?.message) ?? ''
-   const message = lobbyMessage || joinRoomMessage
+   const lobbyMessage = useSelector((state: RootState) => state.gameOnline?.message) ?? 'Connection lost'
+   const joinRoomMessage = useSelector((state: RootState) => state.joinRoom?.message) ?? 'Connection lost'
+   const message = lobbyMessage || joinRoomMessage || 'Connection lost'
+   
+   if (!hydrated) return null
 
    return (
       <div className='status'>

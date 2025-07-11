@@ -26,10 +26,15 @@ const GameOnline = () => {
    const gameOnline = useSelector((state: RootState) => state.gameOnline)
    const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
    const isItYourTurn = useSelector((state: RootState) => state.gameOnline.isItYourTurn)
+   const isConnected =  useSelector((state: RootState) => state.gameOnline.isConnected)
    const showNumberButtons = useSelector((state: RootState) => state.gameOnline.showNumberButtons)
    const ThrowValue = showNumberButtons ? <CurrentPlayerThrowsOnline /> : <ScoreValueOnline />
    const MultiplierSection = showNumberButtons ? <ButtonsMultiplierOnline /> : <ButtonDoubleOnline />
    const InputMethod = showNumberButtons ? <NumberButtonsOnline /> : <KeyboardButtonsOnline />
+
+   useEffect(() => {
+      if (!isConnected) return router.replace('/game-online/status')
+   }, [isConnected])
 
    useEffect(() => {
       const handleBeforeUnload = () => {
@@ -62,7 +67,7 @@ const GameOnline = () => {
          setAllowed(true)
          const previousGameId = sessionStorage.getItem('gameId')
          const previousSocketId = sessionStorage.getItem('socketId')
-         if (previousGameId === null || previousSocketId === null) return
+         if (previousGameId === null || previousSocketId === null) return 
          socketService.connectAfterRefresh(previousGameId, previousSocketId)
          sessionStorage.removeItem('gameId')
          sessionStorage.removeItem('socketId')

@@ -81,12 +81,12 @@ const Lobby = () => {
    useEffect(() => {
       const isAllowed = sessionStorage.getItem('online-allowed')
       if (!isAllowed) {
-         router.replace('/')
+         return router.replace('/')
       } else{
          setAllowed(true)
          const previousGameId = sessionStorage.getItem('gameId')
          const previousSocketId = sessionStorage.getItem('socketId')
-         if (previousGameId === null || previousSocketId === null) return
+         if (previousGameId === null || previousSocketId === null) return 
          socketService.connectAfterRefresh(previousGameId, previousSocketId)
          sessionStorage.removeItem('gameId')
          sessionStorage.removeItem('socketId')

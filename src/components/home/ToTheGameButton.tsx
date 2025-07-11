@@ -5,7 +5,7 @@ import { RootState, addGameClassicSingleStates, addGameClassicTeamsStates, addGa
 import { initializePlayers } from '@/redux/slices/game-classic/gameClassicSingleSlice'
 import { initializeTeams } from '@/redux/slices/game-classic/gameClassicTeamsSlice'
 import { initializeCricketPlayers } from '@/redux/slices/game-cricket/gameCricketSingleSlice'
-import { initializeCricketTeams } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
+import { initializeCricketTeams,  } from '@/redux/slices/game-cricket/gameCricketTeamsSlice'
 import { setError } from '@/redux/slices/gameSettingsSlice'
 
 const ToTheGameButton = () => {
@@ -37,10 +37,12 @@ const ToTheGameButton = () => {
             addGameCricketSingleStates()
             dispatch(initializeCricketPlayers({ playerNames }))
          }
+            
    
          if (gameType === 'teams'){
             addGameCricketTeamsStates()
             dispatch(initializeCricketTeams({ playerNames }))
+            
          }
       } else {
          if (gameType === 'single'){
@@ -61,6 +63,8 @@ const ToTheGameButton = () => {
          sessionStorage.setItem('classic-allowed', 'true')
          router.replace('/game-classic')
       }
+      
+
 
    }
 
