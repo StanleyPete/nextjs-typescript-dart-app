@@ -16,6 +16,8 @@ const initialState: GameSettingsStates = {
       isError: false,
       errorMessage: '',
    },
+   isServerError: false
+
 }
 
 const gameSettingsSlice = createSlice({
@@ -63,7 +65,10 @@ const gameSettingsSlice = createSlice({
          state.numberOfLegs = action.payload.numberOfLegs
          state.gameWin = action.payload.gameWin
          state.throwTime = action.payload.throwTime / 1000
-      }
+      },
+      setIsServerError(state, action: PayloadAction<boolean>) {
+         state.isServerError = action.payload
+      },
    },
 })
 
@@ -80,5 +85,6 @@ export const {
    setBackFromGame,
    setError,
    setGameSettingsChange,
+   setIsServerError,
 } = gameSettingsSlice.actions
 export default gameSettingsSlice.reducer

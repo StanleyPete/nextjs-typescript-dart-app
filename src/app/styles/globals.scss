@@ -42,26 +42,31 @@ $border-focused-game-end: 2px solid rgb(7, 7, 7);
   outline: none !important;
 }
 
+
 body{
-    user-select: none;
-    min-height: 100vh;
-    width: 100vw;
-    min-width: 340px;
-    display: flex;
-    padding: 0px 6px;
-    justify-content: center;
-    align-items: center;
-    background-color: $body-background-color;
-    overflow-x: auto;
-    overflow-y: auto;
-    @include background-gradient($body-background-color, 8%)
+  user-select: none;
+  min-height: 100vh;
+  width: 100%;
+  min-width: 340px;
+  padding-top: 26px;
+  padding-bottom: 26px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $body-background-color;
+  overflow-x: auto;
+  overflow-y: auto;
+  @include background-gradient($body-background-color, 8%)
 }
 
 .main-container{
     position: relative;
-    min-height: 90%;
-    width: 420px;
+    width: 100%;
+    max-width: 480px;
     min-width: 340px;
+    min-height: 90%;
+    // width: 480px;
+    // min-width: 340px;
     padding: 38px 38px 12px 38px;
     background-color: $main-container-background-color;
     border-radius: $main-container-border-radius;
@@ -90,6 +95,9 @@ body{
         }
         button:active {
           transform: scale(1.08);
+          color: black; 
+          -webkit-tap-highlight-color: transparent;
+          outline: none; 
         }
 
 }
@@ -366,6 +374,11 @@ body{
         border: none;
         cursor: pointer;
       }
+
+      button:focus {
+        outline: none;
+        color: inherit;
+      }
   
       .input-toggle{
         width: 84px;
@@ -411,6 +424,7 @@ body{
               box-shadow: none; 
               user-select: none;
               cursor: default; 
+              border-radius: 0;
             }
 
             input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
@@ -479,6 +493,10 @@ body{
   border: none;
   cursor: pointer;
 }
+.multiplier-section button:focus {
+        outline: none;
+        color: inherit;
+      }
 
 .multiplier-buttons button:first-child {
   border-bottom-left-radius: $main-container-border-radius;
@@ -539,10 +557,14 @@ body{
           font-size: 16px;
           color: white;
           background-color: $score-buttons-background-color;
+          outline: none;
           cursor: pointer;
               span{
                 font-size: 12px;
               }
+           border: 1px solid #302e2e;
+            margin: -1px;
+            box-sizing: border-box;
         }
 
         .clicked{
@@ -757,24 +779,32 @@ body{
       z-index: 1000;
     
             .error-content, .game-over-popup-content{
-              height: 40%;
-              width: 40%;
+              height: 100vh;
+              width: 100vw;
               display: flex;
               flex-direction: column;
-              justify-content: space-evenly;
+              justify-content: center;
               align-items: center;
                     
+                    img {
+                      margin-bottom: 2%;
+
+                    }
                     h3{
                       font-size: 32px;
+                      
                     }
     
                     p{
                       text-align: center;
+                      margin-bottom: 2%;
                     }
     
                     button{
-                      height: 12%;
-                      width: 40%;
+                      height: 5%;
+                      min-height: 24px;
+                      width: 20%;
+                      min-width: 200px;
                       margin-top: 6px;
                       font-size: 16px;
                       color: white;
@@ -993,5 +1023,23 @@ input:checked + .slider:before {
   font-size: 14px;
   margin-left: 10px;
 }
+@media (max-width: 400px) {
+   .current-player-points-left{
+    font-size: 32px !important;              
+  }
+  .current-player-stats {
+    font-size: 10px !important;
+  }
+  .current-player-stat p {
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 479px) {
+  .main-container {
+    border-radius: 0;
+  }
+}
+
 
 

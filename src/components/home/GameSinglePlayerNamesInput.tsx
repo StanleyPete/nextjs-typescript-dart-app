@@ -153,7 +153,7 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
             <div className="player-input" key={index}>
                <input
                   type="text"
-                  className={index === 0 ? 'full-width' : ''}
+                  className={`${index === 0 ? 'full-width' : ''} ${name === '' ? 'italic' : ''}`}
                   id={`player-${index}`}
                   value={name}
                   placeholder={`Player ${index + 1} name`}
@@ -165,18 +165,19 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                      dispatch(setFocusedSection('gameSinglePlayerNameInput'))
                   }}
                   ref={(el) => {(inputRefs.current[index] = el)}}
-                  autoComplete="off"
+                  autoComplete='off'
                />
                {playerNames.length > 1 && index > 0 && (
                   <button
-                     className="remove-player-button"
+                     className='remove-player-button'
                      onClick={() => removePlayerInput(index)}
                   >
                      <Image
-                        src="/minus.svg"
-                        alt="Remove player icon"
-                        width={22}
-                        height={22}
+                        src='/minus.svg'
+                        alt='Remove player icon'
+                        width={20}
+                        height={20}
+                        title='Remove player'
                      />
                   </button>
                )}
@@ -201,8 +202,8 @@ const GameSinglePlayerNamesInput = ({ maxPlayers }: PlayerNamesInputProps) => {
                <Image
                   src="/info.svg"
                   alt="Info icon"
-                  width={12}
-                  height={12}
+                  width={14}
+                  height={14}
                />
                <span>Remove last: (Ctrl + Shift + &quot;-&quot;)</span>
             </div>

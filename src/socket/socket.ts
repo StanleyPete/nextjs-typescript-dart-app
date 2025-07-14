@@ -1,9 +1,9 @@
 import { io, Socket } from 'socket.io-client'
 import { store } from '@/redux/store'
 import { RootState } from '@/redux/store'
-import { setGameId, setRole, setPlayers, setGameTimeoutStartTime, setGameTimeoutDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrows, setCurrentThrow, setShowNumberButtons, setIsGameEnd, setWinner, setIsDoubleActive, setIsTimeout, setMessage as setLobbyMessage } from '@/redux/slices/game-online/gameOnlineSlice'
+import { setGameId, setRole, setPlayers, setGameTimeoutStartTime, setGameTimeoutDuartion, setIsConnected, setIsItYourTurn, setCurrentPlayerTurnStartTime, setCurrentPlayerTurnTimerDuartion, setIsGameStarted, setCurrentPlayerIndex, setMultiplier, setCurrentPlayerThrows, setCurrentThrow, setShowNumberButtons, setIsGameEnd, setWinner, setIsDoubleActive, setIsTimeout, setMessage as setLobbyMessage} from '@/redux/slices/game-online/gameOnlineSlice'
 import { setIsLoading, setCurrentPlayersInLobby, setGameFound, setMessage, setIsLobbyJoined } from '@/redux/slices/game-online/joinRoomSlice'
-import { setGameSettingsChange, setError, setPreviousFocusedSection } from '@/redux/slices/gameSettingsSlice'
+import { setGameSettingsChange, setError, setPreviousFocusedSection, setIsServerError } from '@/redux/slices/gameSettingsSlice'
 import { setNumberOfPlayers, setGameMode, setGameWin, setNumberOfLegs, setThrowTime } from '@/redux/slices/gameSettingsSlice'
 import { PlayerOnline } from '@/types/redux/gameOnlineTypes'
 import { playSound } from '@/controllers/playSound'
@@ -17,18 +17,33 @@ class SocketService {
    private registerEventListeners() {
       if (!this.socket) return
 
+      
       this.socket.on('disconnect', () => {
          console.log('Disconnected from websocket server')
+      })
+      
+      this.socket.on('connect-error', (err) => {
+         store.dispatch(setIsServerError(true))
+         store.dispatch(setMessage(err.message))
+         console.error('Error, websocket server', err)
+
       })
 
       this.socket.on('connect_error', (err) => {
          console.error('Error, websocket server', err)
+
       })
 
       this.socket.on('game-timeout', (data) => {
          store.dispatch(setError({ isError: false, errorMessage: ''}))
          store.dispatch(setIsTimeout(true))
          store.dispatch(setLobbyMessage(data.message))
+      })
+
+      this.socket.on('inactivity-disconnect', (data) => {
+         sessionStorage.removeItem('online-allowed')
+         store.dispatch(setIsConnected(false))
+         store.dispatch(setMessage(data.message))
       })
 
       this.socket?.on('game-settings-changed', (data) => {
@@ -198,7 +213,10 @@ class SocketService {
 
    public connectAndCreateGame(playerName: string, settings: any) {
       if (this.socket) return
-      this.socket = io(this.url)
+      this.socket = io(this.url, {
+         transports: ['websocket'],
+         reconnection: false
+      })
 
       this.socket.once('connect', () => {
          this.socket?.emit('create-game-request', { playerName, settings })
@@ -228,7 +246,11 @@ class SocketService {
 
    public connectAndJoinGame(gameId: string) {
       if (this.socket) return
-      this.socket = io(this.url)
+      this.socket = io(this.url, {
+         transports: ['websocket'],
+         reconnection: false
+      })
+      
       this.socket.once('connect', () => {
 
          this.socket?.emit('check-if-game-exists-request', { gameId })
@@ -283,7 +305,10 @@ class SocketService {
 
    public connectAfterRefresh(previousGameId: string, previousSocketId: string) {
       if (this.socket) return
-      this.socket = io(this.url)
+      this.socket = io(this.url, {
+         transports: ['websocket'],
+         reconnection: false
+      })
 
       this.socket.once('connect', () => {
          this.socket?.emit('refresh-request', { previousGameId, previousSocketId })

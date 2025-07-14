@@ -12,7 +12,8 @@ export interface GameSettingsStates {
     error: {
         isError: boolean
         errorMessage: string
-    }
+    },
+    isServerError: boolean
 }
 
 export interface ErrorState {

@@ -64,6 +64,7 @@ const GameClassic = () => {
    useEffect(() => {
       const isAllowed = sessionStorage.getItem('classic-allowed')
       if (!isAllowed) {
+         console.log('wykonalo ise')
          router.replace('/')
       } else {
          setAllowed(true)

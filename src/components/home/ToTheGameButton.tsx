@@ -26,6 +26,7 @@ const ToTheGameButton = () => {
    }
 
    const handleGameStart = async (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
+      console.log('test')
       if (!validatePlayerNames()) {
          event.preventDefault()
          return
@@ -83,7 +84,8 @@ const ToTheGameButton = () => {
    return (
       <button 
          className={`game-start-button  ${focusedSection === 'gameStart' ? 'focused' : ''}`} 
-         onClick={handleGameStart}  
+         onClick={handleGameStart}
+         
       >
             To the game!
       </button> 

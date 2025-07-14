@@ -23,6 +23,7 @@ const GameOnline = () => {
    const router = useRouter()
    const [allowed, setAllowed] = useState<boolean | null>(null)
    const store = useStore()
+   const isServerError = useSelector((state: RootState) => state.gameSettings.isServerError)
    const gameOnline = useSelector((state: RootState) => state.gameOnline)
    const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
    const isItYourTurn = useSelector((state: RootState) => state.gameOnline.isItYourTurn)
@@ -32,9 +33,10 @@ const GameOnline = () => {
    const MultiplierSection = showNumberButtons ? <ButtonsMultiplierOnline /> : <ButtonDoubleOnline />
    const InputMethod = showNumberButtons ? <NumberButtonsOnline /> : <KeyboardButtonsOnline />
 
+   
    useEffect(() => {
-      if (!isConnected) return router.replace('/game-online/status')
-   }, [isConnected])
+      if (!isConnected || isServerError) return router.replace('/game-online/status')
+   }, [isConnected, isServerError])
 
    useEffect(() => {
       const handleBeforeUnload = () => {

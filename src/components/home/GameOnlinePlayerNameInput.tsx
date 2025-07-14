@@ -76,7 +76,7 @@ const GameOnlinePlayerNameInput = () => {
                <div className="player-input" key={index}>
                   <input
                      type="text"
-                     className={`${index === 0 ? 'full-width' : ''} ${focusedSection === 'gameOnlinePlayerNameInput' ? 'focused' : ''}`}
+                     className={`${index === 0 ? 'full-width' : ''} ${focusedSection === 'gameOnlinePlayerNameInput' ? 'focused' : ''}  ${name === '' ? 'italic' : ''}`}
                      id={`player-${index}`}
                      value={name}
                      placeholder='Enter your name here...'

@@ -158,6 +158,7 @@ const GameTeamsPlayerNamesInput = ({ teamIndex, playerIndexes }: TeamsPlayerInpu
          <div className="team-player-input">
             {playerIndexes.map((index) => (
                <input
+                  className={playerNames[index] === '' ? 'italic' : ''}
                   key={index}
                   type="text"
                   placeholder={`T${teamIndex + 1}: Player ${index + 1} name`}

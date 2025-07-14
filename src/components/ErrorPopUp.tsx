@@ -33,7 +33,11 @@ const ErrorPopUp = () => {
                      height={100} 
                   />
                   <p>{errorMessage}</p>
-                  <button onClick={closeError}>OK</button>
+                  <button 
+                     className='error-button'
+                     onClick={closeError}>
+                        OK
+                  </button>
                </div>
             </div>
          </div>

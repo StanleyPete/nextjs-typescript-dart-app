@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState} from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useSelector, useDispatch } from 'react-redux'
 import { resetStates, RootState } from '@/redux/store'
 import GameTypeSection from '@/components/home/GameTypeSection'
@@ -28,9 +29,11 @@ import { setBackFromGame, setFocusedSection } from '@/redux/slices/gameSettingsS
 
 const Home = () => {
    const dispatch = useDispatch()
+   const router = useRouter()
    const [hydrated, setHydrated] = useState(false)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
+   const isServerError = useSelector((state: RootState) => state.gameSettings.isServerError)
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const backFromGame = useSelector((state: RootState) => state.gameSettings.backFromGame)
    
@@ -45,6 +48,9 @@ const Home = () => {
       setHydrated(true)
    }, [])
 
+   useEffect(() => {
+      if (isServerError) return router.replace('/game-online/status')
+   }, [isServerError])
    useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
          const activeElement = document.activeElement
@@ -90,8 +96,8 @@ const Home = () => {
             <Image
                src="/logo.webp" 
                alt="Logo"
-               width={320}  
-               height={38} 
+               width={340}  
+               height={42} 
             />
          </div>
          <GameTypeSection />

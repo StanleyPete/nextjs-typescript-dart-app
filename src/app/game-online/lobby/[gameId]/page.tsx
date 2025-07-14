@@ -24,6 +24,7 @@ const Lobby = () => {
    const dispatch = useDispatch()
    const [allowed, setAllowed] = useState<boolean | null>(null)
    const store = useStore()
+   const isServerError = useSelector((state: RootState) => state.gameSettings.isServerError)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const numberOfPlayers = useSelector((state: RootState) => state.gameSettings.numberOfPlayers)
    const players =  useSelector((state: RootState) => state.gameOnline.players)
@@ -35,8 +36,8 @@ const Lobby = () => {
 
 
    useEffect(() => {
-      if (!isConnected) return router.replace('/game-online/status')
-   }, [isConnected])
+      if (!isConnected || isServerError) return router.replace('/game-online/status')
+   }, [isConnected, isServerError])
 
    useEffect(() => {
       const handleBeforeUnload = () => {

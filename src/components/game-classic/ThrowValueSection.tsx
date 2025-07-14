@@ -159,6 +159,8 @@ const ThrowValueSection = () => {
       }
                `}
                onClick={() => {
+                  setActiveButton('input-toggle')
+                  setTimeout(() => setActiveButton(null), 100)
                   handleToggleInputMethod(
                      gameType,
                      playersOrTeams,
