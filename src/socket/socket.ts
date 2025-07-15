@@ -23,15 +23,26 @@ class SocketService {
       })
       
       this.socket.on('connect-error', (err) => {
+         sessionStorage.removeItem('online-allowed')
+         sessionStorage.removeItem('gameId')
+         sessionStorage.removeItem('socketId')
          store.dispatch(setIsServerError(true))
+         store.dispatch(setIsConnected(false))
          store.dispatch(setMessage(err.message))
-         console.error('Error, websocket server', err)
+      })
 
+      this.socket?.on('connection-lost', (data) => {
+         sessionStorage.removeItem('gameId')
+         sessionStorage.removeItem('socketId')
+         sessionStorage.removeItem('online-allowed')
+         sessionStorage.removeItem('storeGameOnline')
+         store.dispatch(setIsConnected(false))
+         store.dispatch(setIsServerError(true))
+         store.dispatch(setMessage(data.message))
       })
 
       this.socket.on('connect_error', (err) => {
          console.error('Error, websocket server', err)
-
       })
 
       this.socket.on('game-timeout', (data) => {
@@ -311,7 +322,29 @@ class SocketService {
       })
 
       this.socket.once('connect', () => {
+         
+         this.socket?.on('connection-lost', (data) => {
+            sessionStorage.removeItem('gameId')
+            sessionStorage.removeItem('socketId')
+            sessionStorage.removeItem('online-allowed')
+            sessionStorage.removeItem('storeGameOnline')
+            store.dispatch(setIsConnected(false))
+            store.dispatch(setIsServerError(true))
+            store.dispatch(setMessage(data.message))
+            console.log('wykonal sie connection-lost')
+         })
+
+         this.socket?.on('connect-error', (err) => {
+            sessionStorage.removeItem('online-allowed')
+            sessionStorage.removeItem('gameId')
+            sessionStorage.removeItem('socketId')
+            store.dispatch(setIsConnected(false))
+            store.dispatch(setIsServerError(true))
+            store.dispatch(setMessage(err.message))
+            console.log('wykonal sie connect-error')
+         })
          this.socket?.emit('refresh-request', { previousGameId, previousSocketId })
+
 
          this.socket?.once('refresh-request-res', (data) => {
             store.dispatch(setIsConnected(true))
@@ -327,11 +360,6 @@ class SocketService {
             
          })
 
-         this.socket?.once('connection-lost', (data) => {
-            sessionStorage.removeItem('online-allowed')
-            store.dispatch(setIsConnected(false))
-            store.dispatch(setMessage(data.message))
-         })
 
          this.socket?.once('game-is-full', (data) => {
             store.dispatch(setIsLoading(false))

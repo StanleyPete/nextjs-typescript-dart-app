@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import { resetStates, RootState } from '@/redux/store'
 import { useRouter } from 'next/navigation'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { socketService } from '@/socket/socket'
 import Footer from '@/components/Footer'
 import '../../styles/status.scss'
+import { setIsServerError } from '@/redux/slices/gameSettingsSlice'
 
 const Status = () => {
    const [hydrated, setHydrated] = useState(false)
@@ -13,11 +14,11 @@ const Status = () => {
       sessionStorage.removeItem('online-allowed')
       sessionStorage.removeItem('gameId')
       sessionStorage.removeItem('socketId')
+      sessionStorage.removeItem('storeGameOnline')
       setHydrated(true)
-
    }, [])
 
-   
+   const dispatch = useDispatch()
    const router = useRouter()
    const lobbyMessage = useSelector((state: RootState) => state.gameOnline?.message) ?? 'Connection lost'
    const joinRoomMessage = useSelector((state: RootState) => state.joinRoom?.message) ?? 'Connection lost'
@@ -32,6 +33,7 @@ const Status = () => {
             onClick={() => {
                socketService.close()
                resetStates()
+               dispatch(setIsServerError(false))
                router.replace('/')
             }}
          >

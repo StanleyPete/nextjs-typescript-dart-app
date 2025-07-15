@@ -19,7 +19,7 @@ import ThrowTimeSection from '@/components/home/ThrowTimeSection'
 import Footer from '@/components/Footer'
 import { handleChangeFocusedSection } from '@/controllers/handleChangeFoucesSection'
 import './styles/home.scss'
-import { setBackFromGame, setFocusedSection } from '@/redux/slices/gameSettingsSlice'
+import { setBackFromGame, setFocusedSection, setIsServerError } from '@/redux/slices/gameSettingsSlice'
 
 /* 
    HOME PAGE: 
@@ -31,9 +31,9 @@ const Home = () => {
    const dispatch = useDispatch()
    const router = useRouter()
    const [hydrated, setHydrated] = useState(false)
+   const isServerError = useSelector((state: RootState) => state.gameSettings.isServerError)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const previousFocusedSection = useSelector((state: RootState) => state.gameSettings.previousFocusedSection)
-   const isServerError = useSelector((state: RootState) => state.gameSettings.isServerError)
    const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
    const backFromGame = useSelector((state: RootState) => state.gameSettings.backFromGame)
    
@@ -46,11 +46,14 @@ const Home = () => {
       sessionStorage.removeItem('storeGameCricketTeams')
       // resetStates()
       setHydrated(true)
+      dispatch(setIsServerError(false))
    }, [])
 
    useEffect(() => {
       if (isServerError) return router.replace('/game-online/status')
    }, [isServerError])
+
+
    useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
          const activeElement = document.activeElement

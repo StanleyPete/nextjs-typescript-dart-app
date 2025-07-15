@@ -35,7 +35,9 @@ const GameOnline = () => {
 
    
    useEffect(() => {
-      if (!isConnected || isServerError) return router.replace('/game-online/status')
+      if (!isConnected || isServerError) {
+         return router.replace('/game-online/status')
+      }
    }, [isConnected, isServerError])
 
    useEffect(() => {
