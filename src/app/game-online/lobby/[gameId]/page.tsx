@@ -27,12 +27,12 @@ const Lobby = () => {
    const isServerError = useSelector((state: RootState) => state.gameSettings.isServerError)
    const focusedSection = useSelector((state: RootState) => state.gameSettings.focusedSection)
    const numberOfPlayers = useSelector((state: RootState) => state.gameSettings.numberOfPlayers)
-   const players =  useSelector((state: RootState) => state.gameOnline.players)
-   const isConnected =  useSelector((state: RootState) => state.gameOnline.isConnected)
-   const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
-   const isGameStarted =  useSelector((state: RootState) => state.gameOnline.isGameStarted)
-   const isTimeout = useSelector((state: RootState) => state.gameOnline.isTimeout)
-   const role =  useSelector((state: RootState) => state.gameOnline.role)
+   const players =  useSelector((state: RootState) => state.gameOnline?.players || [])
+   const isConnected =  useSelector((state: RootState) => state.gameOnline?.isConnected || false)
+   const gameId =  useSelector((state: RootState) => state.gameOnline?.gameId || '')
+   const isGameStarted =  useSelector((state: RootState) => state.gameOnline?.isGameStarted || false)
+   const isTimeout = useSelector((state: RootState) => state.gameOnline?.isTimeout || false)
+   const role =  useSelector((state: RootState) => state.gameOnline?.role || '')
 
 
    useEffect(() => {

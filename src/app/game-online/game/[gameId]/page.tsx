@@ -24,11 +24,10 @@ const GameOnline = () => {
    const [allowed, setAllowed] = useState<boolean | null>(null)
    const store = useStore()
    const isServerError = useSelector((state: RootState) => state.gameSettings.isServerError)
-   const gameOnline = useSelector((state: RootState) => state.gameOnline)
-   const gameId =  useSelector((state: RootState) => state.gameOnline.gameId)
-   const isItYourTurn = useSelector((state: RootState) => state.gameOnline.isItYourTurn)
-   const isConnected =  useSelector((state: RootState) => state.gameOnline.isConnected)
-   const showNumberButtons = useSelector((state: RootState) => state.gameOnline.showNumberButtons)
+   const gameId =  useSelector((state: RootState) => state.gameOnline?.gameId || '')
+   const isItYourTurn = useSelector((state: RootState) => state.gameOnline?.isItYourTurn || false)
+   const isConnected =  useSelector((state: RootState) => state.gameOnline?.isConnected || false)
+   const showNumberButtons = useSelector((state: RootState) => state.gameOnline?.showNumberButtons || false)
    const ThrowValue = showNumberButtons ? <CurrentPlayerThrowsOnline /> : <ScoreValueOnline />
    const MultiplierSection = showNumberButtons ? <ButtonsMultiplierOnline /> : <ButtonDoubleOnline />
    const InputMethod = showNumberButtons ? <NumberButtonsOnline /> : <KeyboardButtonsOnline />
@@ -58,10 +57,6 @@ const GameOnline = () => {
 
       return () => { window.removeEventListener('beforeunload', handleBeforeUnload) }
    }, [store])
-
-   useEffect(() => {
-      console.log('Updated gameOnline state:', gameOnline)
-   }, [gameOnline])
 
    useEffect(() => {
       const isAllowed = sessionStorage.getItem('online-allowed')
