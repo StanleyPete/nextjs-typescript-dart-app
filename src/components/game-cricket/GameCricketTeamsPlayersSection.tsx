@@ -23,7 +23,7 @@ const GameCricketTeamsPlayersSection = () => {
                   {team.members.map((player, playerIndex) => (
                      <div className="team-player" key={playerIndex}>
                         <div className="team-player-name">
-                           {player === teams[currentTeamIndex]?.members[currentPlayerIndexInTeam] && (
+                           {teamIndex === currentTeamIndex && playerIndex === currentPlayerIndexInTeam && (
                               <Image
                                  src="/active-dot.svg"
                                  alt="Active dot icon"
@@ -33,7 +33,7 @@ const GameCricketTeamsPlayersSection = () => {
                            )}
                            <Image
                               src={
-                                 player === teams[currentTeamIndex]?.members[currentPlayerIndexInTeam]
+                                 teamIndex === currentTeamIndex && playerIndex === currentPlayerIndexInTeam 
                                     ? '/game-user-throw.svg'
                                     : '/game-user.svg'
                               }
