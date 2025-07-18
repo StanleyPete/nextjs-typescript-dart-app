@@ -1,27 +1,32 @@
 import React  from 'react'
 import Image from 'next/image'
-//Redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { selectDataInScoreButtons } from '@/redux/selectors/game-cricket/selectDataInScoreButtons'
-//Controllers
 import { handleScoreButtons } from '@/controllers/game-cricket/handleScoreButtons'
 import { handleMissButton } from '@/controllers/game-cricket/handleMissButton'
-//Types
 import { PlayerCricket, TeamCricket } from '@/types/redux/gameCricketTypes'
-//Lib
 import Scores from '@/lib/cricket-scores'
 
 const ScoreButtonsCricket = () => {
-
    const dispatch = useDispatch()
-
-   const { gameType, gameWin, numberOfLegs } = useSelector((state: RootState) => state.gameSettings)
-
-   const { startIndex, currentPlayerThrowsCount, currentPlayerThrows, isSoundEnabled } = useSelector((state: RootState) => state.game)
-
-   const { completedSectors } = useSelector((state: RootState) => state.gameCricket)
-
+   const defaultCompletedSectors: Record<'20' | '19' | '18' | '17' | '16' | '15' | 'Bull', boolean> = {
+      '20': false,
+      '19': false,
+      '18': false,
+      '17': false,
+      '16': false,
+      '15': false,
+      'Bull': false,
+   }
+   const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
+   const gameWin = useSelector((state: RootState) => state.gameSettings.gameWin)
+   const numberOfLegs = useSelector((state: RootState) => state.gameSettings.numberOfLegs)
+   const startIndex = useSelector((state: RootState) => state.game?.startIndex ?? 0)
+   const currentPlayerThrowsCount = useSelector((state: RootState) => state.game?.currentPlayerThrowsCount ?? 0)
+   const currentPlayerThrows = useSelector((state: RootState) => state.game?.currentPlayerThrows ?? [])
+   const isSoundEnabled = useSelector((state: RootState) => state.game?.isSoundEnabled ?? true)
+   const completedSectors = useSelector((state: RootState) => state.gameCricket?.completedSectors ?? defaultCompletedSectors )
    const { playersOrTeams, playerOrTeamIndex, currentPlayerIndexInTeam, history } = useSelector(selectDataInScoreButtons)
  
    return ( 
@@ -35,7 +40,7 @@ const ScoreButtonsCricket = () => {
                         <div className='player-score'>
                            <span>
                               {(() => {
-                                 const scoreValue = playersOrTeams[0].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
+                                 const scoreValue = playersOrTeams[0]?.scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
                                  if (scoreValue === 0) {
                                     return ''
                                  } else if (scoreValue === 1) {
@@ -97,7 +102,7 @@ const ScoreButtonsCricket = () => {
                            <span>
                               {(() => {
                                  const scoreValue = 
-                                    playersOrTeams[1].scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
+                                    playersOrTeams[1]?.scores[buttons[0] === '25' ? 'Bull' : buttons[0]]
                                  if (scoreValue === 0) {
                                     return ''
                                  } else if (scoreValue === 1) {

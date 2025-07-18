@@ -1,29 +1,27 @@
 import React from 'react'
 import Image from 'next/image'
-//Redux
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-//Types
 import { PlayerCricket } from '@/types/redux/gameCricketTypes'
 
+
 const GameCricketSinglePlayersSection = () => {
-   
-   const { players, currentPlayerIndex, } = useSelector((state: RootState) => state.gameCricketSingle)
+   const { players, currentPlayerIndex } = useSelector((state: RootState) => state.gameCricketSingle)
 
    return (
       <div className="game-players-section">
          {/*TWO PLAYERS VIEW:*/}
-         {players.length === 2 ? (
+         {players?.length === 2 ? (
             <div className="two-players-preview">
 
-               {players.map((player: PlayerCricket, index: number) => (
+               {players?.map((player: PlayerCricket, index: number) => (
 
                   <div key={index} className={`current-player-section ${currentPlayerIndex === index ? 'current-active-player' : ''}`}>
                      {/* PLAYER HEADER SECTION */}
                      <div className="current-player-name-legs">
                         <div className="current-player-name">
                            <Image
-                              src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'}
+                              src={player.name === players[currentPlayerIndex]?.name ? '/game-user-throw.svg' : '/game-user.svg'}
                               alt="User icon"
                               width={16}
                               height={16}
@@ -52,28 +50,28 @@ const GameCricketSinglePlayersSection = () => {
                            width={16} 
                            height={16} 
                         />
-                        {players[currentPlayerIndex].name} 
+                        {players[currentPlayerIndex]?.name} 
                      </div>
                      <div className='player-legs'>
-                        {players[currentPlayerIndex].legs}
+                        {players[currentPlayerIndex]?.legs}
                      </div>
                   </div>
       
                   {/*Current player points left */}
                   <p className='current-player-points-left'>
-                     {players[currentPlayerIndex].points}
+                     {players[currentPlayerIndex]?.points}
                   </p>
       
                </div>
       
                {/*Game player list:*/}
                <div className='game-players-list'>
-                  {players.map((player: { name: string, legs: number, points:number }, index: number) => (
-                     <div className={`game-players-list-player ${player.name === players[currentPlayerIndex].name ? 'active-player' : '' }`} 
+                  {players?.map((player: { name: string, legs: number, points:number }, index: number) => (
+                     <div className={`game-players-list-player ${player.name === players[currentPlayerIndex]?.name ? 'active-player' : '' }`} 
                         key={index}>
                         <div className='game-players-list-player-name'>
                            <Image 
-                              src={player.name === players[currentPlayerIndex].name ? '/game-user-throw.svg' : '/game-user.svg'} 
+                              src={player.name === players[currentPlayerIndex]?.name ? '/game-user-throw.svg' : '/game-user.svg'} 
                               alt='User icon' 
                               width={16} 
                               height={16} 

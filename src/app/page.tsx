@@ -19,7 +19,7 @@ import ThrowTimeSection from '@/components/home/ThrowTimeSection'
 import Footer from '@/components/Footer'
 import { handleChangeFocusedSection } from '@/controllers/handleChangeFoucesSection'
 import './styles/home.scss'
-import { setBackFromGame, setFocusedSection, setIsServerError } from '@/redux/slices/gameSettingsSlice'
+import { setBackFromGame, setFocusedSection, setIsIphoneUser, setIsServerError } from '@/redux/slices/gameSettingsSlice'
 
 /* 
    HOME PAGE: 
@@ -47,6 +47,8 @@ const Home = () => {
       // resetStates()
       setHydrated(true)
       dispatch(setIsServerError(false))
+      const isIphone = /iPhone/i.test(navigator.userAgent)
+      dispatch(setIsIphoneUser(isIphone))
    }, [])
 
    useEffect(() => {

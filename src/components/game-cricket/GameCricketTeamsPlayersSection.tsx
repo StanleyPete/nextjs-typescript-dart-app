@@ -1,9 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
-//Redux
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-//Types
 import { TeamCricket } from '@/types/redux/gameCricketTypes'
 
 const GameCricketTeamsPlayersSection = () => {
@@ -13,7 +11,7 @@ const GameCricketTeamsPlayersSection = () => {
    return (
       <div className="game-players-section">
          <div className="teams-preview">
-            {teams.map((team: TeamCricket, teamIndex: number) => (
+            {teams?.map((team: TeamCricket, teamIndex: number) => (
                <div key={teamIndex} className={`team-section ${currentTeamIndex === teamIndex ? 'current-active-team' : ''}`}>
                   {/* Team header */}
                   <div className="team-header">
@@ -25,7 +23,7 @@ const GameCricketTeamsPlayersSection = () => {
                   {team.members.map((player, playerIndex) => (
                      <div className="team-player" key={playerIndex}>
                         <div className="team-player-name">
-                           {player === teams[currentTeamIndex].members[currentPlayerIndexInTeam] && (
+                           {player === teams[currentTeamIndex]?.members[currentPlayerIndexInTeam] && (
                               <Image
                                  src="/active-dot.svg"
                                  alt="Active dot icon"
@@ -35,7 +33,7 @@ const GameCricketTeamsPlayersSection = () => {
                            )}
                            <Image
                               src={
-                                 player === teams[currentTeamIndex].members[currentPlayerIndexInTeam]
+                                 player === teams[currentTeamIndex]?.members[currentPlayerIndexInTeam]
                                     ? '/game-user-throw.svg'
                                     : '/game-user.svg'
                               }

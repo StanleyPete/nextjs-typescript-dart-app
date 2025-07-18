@@ -9,17 +9,17 @@ export const selectDataInScoreButtons = createSelector(
    [selectGameSettings, selectGameCricketSingle, selectGameCricketTeams],
    (gameSettings, gameCricketSingle, gameCricketTeams) => {
       if (gameSettings.gameType === 'single') return {
-         playersOrTeams: gameCricketSingle.players,
-         playerOrTeamIndex: gameCricketSingle.currentPlayerIndex,
+         playersOrTeams: gameCricketSingle?.players ?? [],
+         playerOrTeamIndex: gameCricketSingle?.currentPlayerIndex ?? 0,
          currentPlayerIndexInTeam: 0,
-         history: gameCricketSingle.historyCricketSingle
+         history: gameCricketSingle?.historyCricketSingle ?? []
       }
     
       if (gameSettings.gameType === 'teams') return {
-         playersOrTeams: gameCricketTeams.teams,
-         playerOrTeamIndex: gameCricketTeams.currentTeamIndex,
-         currentPlayerIndexInTeam: gameCricketTeams.currentPlayerIndexInTeam,
-         history: gameCricketTeams.historyCricketTeams
+         playersOrTeams: gameCricketTeams?.teams ?? [],
+         playerOrTeamIndex: gameCricketTeams?.currentTeamIndex ?? 0,
+         currentPlayerIndexInTeam: gameCricketTeams?.currentPlayerIndexInTeam ?? 0,
+         history: gameCricketTeams?.historyCricketTeams ?? []
       }
 
       return {

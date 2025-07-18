@@ -11,7 +11,7 @@ import { playSound } from '@/controllers/playSound'
 
 class SocketService {
    private socket: Socket | null = null
-   private url: string = 'http://ws.freedartsonline.net'
+   private url: string = 'http://localhost:3001'
 
 
    private registerEventListeners() {

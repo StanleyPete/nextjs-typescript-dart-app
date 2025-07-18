@@ -1,11 +1,8 @@
 import React from 'react'
 import Image from 'next/image'
-//Redux
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-//Types
 import { TeamClassic } from '@/types/redux/gameClassicTypes'
-//Lib
 import checkoutArray from '@/lib/checkout-table'
 
 const GameTeamsPlayersSection = () => {

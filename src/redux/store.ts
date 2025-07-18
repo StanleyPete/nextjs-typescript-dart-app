@@ -48,9 +48,9 @@ function loadStateFromSessionStorage() {
       return {state: JSON.parse(serializedStateCricketSingle), type: 'cricketSingle'}  
    }
 
-   if (serializedStateCricketSingle) {
+   if (serializedStateCricketTeams) {
       sessionStorage.removeItem('storeGameCricketTeams')
-      return {state: JSON.parse(serializedStateCricketSingle), type: 'cricketTeams'}  
+      return {state: JSON.parse(serializedStateCricketTeams), type: 'cricketTeams'}  
    }
 
    if (serializedStateGameOnline) {

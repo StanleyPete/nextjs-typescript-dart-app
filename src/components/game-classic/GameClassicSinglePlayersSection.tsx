@@ -8,7 +8,7 @@ import checkoutArray from '@/lib/checkout-table'
 
 
 const GameClassicSinglePlayersSection = () => {
-   const { players, currentPlayerIndex, } = useSelector((state: RootState) => state.gameClassicSingle)
+   const { players, currentPlayerIndex } = useSelector((state: RootState) => state.gameClassicSingle)
  
 
    return (

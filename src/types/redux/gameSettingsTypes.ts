@@ -14,6 +14,7 @@ export interface GameSettingsStates {
         errorMessage: string
     },
     isServerError: boolean
+    isIphoneUser: boolean
 }
 
 export interface ErrorState {

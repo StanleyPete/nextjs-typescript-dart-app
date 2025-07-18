@@ -16,7 +16,8 @@ const initialState: GameSettingsStates = {
       isError: false,
       errorMessage: '',
    },
-   isServerError: false
+   isServerError: false,
+   isIphoneUser: false
 
 }
 
@@ -69,6 +70,9 @@ const gameSettingsSlice = createSlice({
       setIsServerError(state, action: PayloadAction<boolean>) {
          state.isServerError = action.payload
       },
+      setIsIphoneUser(state, action: PayloadAction<boolean>) {
+         state.isIphoneUser = action.payload
+      },
    },
 })
 
@@ -86,5 +90,6 @@ export const {
    setError,
    setGameSettingsChange,
    setIsServerError,
+   setIsIphoneUser,
 } = gameSettingsSlice.actions
 export default gameSettingsSlice.reducer

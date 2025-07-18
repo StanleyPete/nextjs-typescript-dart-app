@@ -26,7 +26,6 @@ const ToTheGameButton = () => {
    }
 
    const handleGameStart = async (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
-      console.log('test')
       if (!validatePlayerNames()) {
          event.preventDefault()
          return

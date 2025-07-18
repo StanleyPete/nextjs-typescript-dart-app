@@ -9,13 +9,13 @@ export const selectDataInGameEndPopUp = createSelector(
    [selectGameSettings, selectGameCricketSingle, selectGameCricketTeams],
    (gameSettings, gameCricketSingle, gameCricketTeams) => {
       if (gameSettings.gameType === 'single') return {
-         playersOrTeams: gameCricketSingle.players,
-         history: gameCricketSingle.historyCricketSingle,
+         playersOrTeams: gameCricketSingle?.players ?? [],
+         history: gameCricketSingle?.historyCricketSingle ?? [] ,
       }
     
       if (gameSettings.gameType === 'teams') return {
-         playersOrTeams: gameCricketTeams.teams,
-         history: gameCricketTeams.historyCricketTeams,
+         playersOrTeams: gameCricketTeams?.teams ?? [],
+         history: gameCricketTeams?.historyCricketTeams ?? [],
       }
 
       return {

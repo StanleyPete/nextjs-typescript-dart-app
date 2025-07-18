@@ -11,14 +11,13 @@ import { handleRestartGameCricket } from '@/controllers/game-cricket/handleResta
 import { handleUndoCricket } from '@/controllers/game-cricket/handleUndoCricket'
 
 const GameEndPopUp = () => {
-
    const dispatch = useDispatch()
-   
    const router = useRouter()
-
-   const { gameType, playerNames } = useSelector((state: RootState) => state.gameSettings)
-
-   const { currentPlayerThrowsCount, isGameEnd, winner } = useSelector((state: RootState) => state.game)
+   const playerNames = useSelector((state: RootState) => state.gameSettings.playerNames)
+   const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
+   const currentPlayerThrowsCount = useSelector((state: RootState) => state.game?.currentPlayerThrowsCount ?? 0)
+   const isGameEnd = useSelector((state: RootState) => state.game?.isGameEnd ?? false)
+   const winner = useSelector((state: RootState) => state.game?.winner ?? null)
 
    //Memoized (@/redux/selectors/game-cricket/selectDataInGameEndPopUp.ts):
    const { playersOrTeams, history } = useSelector(selectDataInGameEndPopUp)

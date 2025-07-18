@@ -8,13 +8,10 @@ import { handleUndoCricket } from '@/controllers/game-cricket/handleUndoCricket'
 import { handleSubmitScoreButton } from '@/controllers/game-cricket/handleSubmitScoreButton'
 
 const ThrowValueSectionCricket = () => {
-
    const dispatch = useDispatch()
-
-   const { gameType } = useSelector((state: RootState) => state.gameSettings)
-
-   const {currentPlayerThrows, currentPlayerThrowsCount } = useSelector((state: RootState) => state.game)
-
+   const gameType = useSelector((state: RootState) => state.gameSettings.gameType)
+   const currentPlayerThrows = useSelector((state: RootState) => state.game?.currentPlayerThrows ?? [])
+   const currentPlayerThrowsCount = useSelector((state: RootState) => state.game?.currentPlayerThrowsCount ?? 0)
    //Memoized (@/redux/memoizedSelectors.ts):
    const { playersOrTeams, index, currentPlayerIndexInTeam, history } = useSelector(selectDataInThrowValueSection)
    

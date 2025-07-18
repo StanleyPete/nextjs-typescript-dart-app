@@ -21,14 +21,14 @@ export const selectDataInCurrentPlayerThrowSection = createSelector(
 
          if (gameSettings.gameType === 'single') return {
             playersOrTeams: gameCricketSingle?.players ?? [],
-            index: gameCricketSingle.currentPlayerIndex,
+            index: gameCricketSingle?.currentPlayerIndex ?? 0,
             currentPlayerIndexInTeam: 0,
          }
 
          if (gameSettings.gameType === 'teams') return {
-            playersOrTeams: gameCricketTeams.teams,
-            index: gameCricketTeams.currentTeamIndex,
-            currentPlayerIndexInTeam: gameCricketTeams.currentPlayerIndexInTeam,
+            playersOrTeams: gameCricketTeams?.teams ?? [],
+            index: gameCricketTeams?.currentTeamIndex ?? 0,
+            currentPlayerIndexInTeam: gameCricketTeams?.currentPlayerIndexInTeam ?? 0,
          }
         
          return {
@@ -48,7 +48,7 @@ export const selectDataInCurrentPlayerThrowSection = createSelector(
          if (gameSettings.gameType === 'teams') return {
             playersOrTeams: gameClassicTeams?.teams ?? [],
             index: gameClassicTeams?.currentTeamIndex ?? 0,
-            currentPlayerIndexInTeam: gameClassicTeams.currentPlayerIndexInTeam,
+            currentPlayerIndexInTeam: gameClassicTeams?.currentPlayerIndexInTeam ?? 0,
          }
         
          return {
